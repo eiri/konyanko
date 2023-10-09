@@ -3,9 +3,7 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/url"
 	"strings"
 
 	"entgo.io/ent"
@@ -23,9 +21,9 @@ type Episode struct {
 	// Number holds the value of the "number" field.
 	Number int `json:"number,omitempty"`
 	// ViewURL holds the value of the "view_url" field.
-	ViewURL *url.URL `json:"view_url,omitempty"`
+	ViewURL string `json:"view_url,omitempty"`
 	// DownloadURL holds the value of the "download_url" field.
-	DownloadURL *url.URL `json:"download_url,omitempty"`
+	DownloadURL string `json:"download_url,omitempty"`
 	// FileName holds the value of the "file_name" field.
 	FileName string `json:"file_name,omitempty"`
 	// FileSize holds the value of the "file_size" field.
@@ -86,11 +84,9 @@ func (*Episode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case episode.FieldViewURL, episode.FieldDownloadURL:
-			values[i] = new([]byte)
 		case episode.FieldID, episode.FieldNumber, episode.FieldFileSize:
 			values[i] = new(sql.NullInt64)
-		case episode.FieldFileName, episode.FieldResolution, episode.FieldVideoCodec, episode.FieldAudioCodec:
+		case episode.FieldViewURL, episode.FieldDownloadURL, episode.FieldFileName, episode.FieldResolution, episode.FieldVideoCodec, episode.FieldAudioCodec:
 			values[i] = new(sql.NullString)
 		case episode.ForeignKeys[0]: // anime_id
 			values[i] = new(sql.NullInt64)
@@ -124,20 +120,16 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 				e.Number = int(value.Int64)
 			}
 		case episode.FieldViewURL:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field view_url", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.ViewURL); err != nil {
-					return fmt.Errorf("unmarshal field view_url: %w", err)
-				}
+			} else if value.Valid {
+				e.ViewURL = value.String
 			}
 		case episode.FieldDownloadURL:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field download_url", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.DownloadURL); err != nil {
-					return fmt.Errorf("unmarshal field download_url: %w", err)
-				}
+			} else if value.Valid {
+				e.DownloadURL = value.String
 			}
 		case episode.FieldFileName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -233,10 +225,10 @@ func (e *Episode) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Number))
 	builder.WriteString(", ")
 	builder.WriteString("view_url=")
-	builder.WriteString(fmt.Sprintf("%v", e.ViewURL))
+	builder.WriteString(e.ViewURL)
 	builder.WriteString(", ")
 	builder.WriteString("download_url=")
-	builder.WriteString(fmt.Sprintf("%v", e.DownloadURL))
+	builder.WriteString(e.DownloadURL)
 	builder.WriteString(", ")
 	builder.WriteString("file_name=")
 	builder.WriteString(e.FileName)

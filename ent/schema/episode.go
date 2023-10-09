@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"net/url"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -17,9 +15,9 @@ type Episode struct {
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("number").Positive(),
-		field.JSON("view_url", &url.URL{}),
-		field.JSON("download_url", &url.URL{}),
-		field.String("file_name").Unique(),
+		field.String("view_url").Unique(),
+		field.String("download_url").Unique(),
+		field.String("file_name"),
 		field.Int("file_size").Positive(),
 		field.String("resolution").Optional(),
 		field.String("video_codec").Optional(),

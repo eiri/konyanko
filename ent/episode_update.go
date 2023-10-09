@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/url"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -44,14 +43,14 @@ func (eu *EpisodeUpdate) AddNumber(i int) *EpisodeUpdate {
 }
 
 // SetViewURL sets the "view_url" field.
-func (eu *EpisodeUpdate) SetViewURL(u *url.URL) *EpisodeUpdate {
-	eu.mutation.SetViewURL(u)
+func (eu *EpisodeUpdate) SetViewURL(s string) *EpisodeUpdate {
+	eu.mutation.SetViewURL(s)
 	return eu
 }
 
 // SetDownloadURL sets the "download_url" field.
-func (eu *EpisodeUpdate) SetDownloadURL(u *url.URL) *EpisodeUpdate {
-	eu.mutation.SetDownloadURL(u)
+func (eu *EpisodeUpdate) SetDownloadURL(s string) *EpisodeUpdate {
+	eu.mutation.SetDownloadURL(s)
 	return eu
 }
 
@@ -245,10 +244,10 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.AddField(episode.FieldNumber, field.TypeInt, value)
 	}
 	if value, ok := eu.mutation.ViewURL(); ok {
-		_spec.SetField(episode.FieldViewURL, field.TypeJSON, value)
+		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.DownloadURL(); ok {
-		_spec.SetField(episode.FieldDownloadURL, field.TypeJSON, value)
+		_spec.SetField(episode.FieldDownloadURL, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.FileName(); ok {
 		_spec.SetField(episode.FieldFileName, field.TypeString, value)
@@ -369,14 +368,14 @@ func (euo *EpisodeUpdateOne) AddNumber(i int) *EpisodeUpdateOne {
 }
 
 // SetViewURL sets the "view_url" field.
-func (euo *EpisodeUpdateOne) SetViewURL(u *url.URL) *EpisodeUpdateOne {
-	euo.mutation.SetViewURL(u)
+func (euo *EpisodeUpdateOne) SetViewURL(s string) *EpisodeUpdateOne {
+	euo.mutation.SetViewURL(s)
 	return euo
 }
 
 // SetDownloadURL sets the "download_url" field.
-func (euo *EpisodeUpdateOne) SetDownloadURL(u *url.URL) *EpisodeUpdateOne {
-	euo.mutation.SetDownloadURL(u)
+func (euo *EpisodeUpdateOne) SetDownloadURL(s string) *EpisodeUpdateOne {
+	euo.mutation.SetDownloadURL(s)
 	return euo
 }
 
@@ -600,10 +599,10 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 		_spec.AddField(episode.FieldNumber, field.TypeInt, value)
 	}
 	if value, ok := euo.mutation.ViewURL(); ok {
-		_spec.SetField(episode.FieldViewURL, field.TypeJSON, value)
+		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.DownloadURL(); ok {
-		_spec.SetField(episode.FieldDownloadURL, field.TypeJSON, value)
+		_spec.SetField(episode.FieldDownloadURL, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.FileName(); ok {
 		_spec.SetField(episode.FieldFileName, field.TypeString, value)

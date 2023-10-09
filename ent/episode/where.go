@@ -58,6 +58,16 @@ func Number(v int) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldNumber, v))
 }
 
+// ViewURL applies equality check predicate on the "view_url" field. It's identical to ViewURLEQ.
+func ViewURL(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldViewURL, v))
+}
+
+// DownloadURL applies equality check predicate on the "download_url" field. It's identical to DownloadURLEQ.
+func DownloadURL(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldDownloadURL, v))
+}
+
 // FileName applies equality check predicate on the "file_name" field. It's identical to FileNameEQ.
 func FileName(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldFileName, v))
@@ -121,6 +131,136 @@ func NumberLT(v int) predicate.Episode {
 // NumberLTE applies the LTE predicate on the "number" field.
 func NumberLTE(v int) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldNumber, v))
+}
+
+// ViewURLEQ applies the EQ predicate on the "view_url" field.
+func ViewURLEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldViewURL, v))
+}
+
+// ViewURLNEQ applies the NEQ predicate on the "view_url" field.
+func ViewURLNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldViewURL, v))
+}
+
+// ViewURLIn applies the In predicate on the "view_url" field.
+func ViewURLIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldViewURL, vs...))
+}
+
+// ViewURLNotIn applies the NotIn predicate on the "view_url" field.
+func ViewURLNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldViewURL, vs...))
+}
+
+// ViewURLGT applies the GT predicate on the "view_url" field.
+func ViewURLGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldViewURL, v))
+}
+
+// ViewURLGTE applies the GTE predicate on the "view_url" field.
+func ViewURLGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldViewURL, v))
+}
+
+// ViewURLLT applies the LT predicate on the "view_url" field.
+func ViewURLLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldViewURL, v))
+}
+
+// ViewURLLTE applies the LTE predicate on the "view_url" field.
+func ViewURLLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldViewURL, v))
+}
+
+// ViewURLContains applies the Contains predicate on the "view_url" field.
+func ViewURLContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldViewURL, v))
+}
+
+// ViewURLHasPrefix applies the HasPrefix predicate on the "view_url" field.
+func ViewURLHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldViewURL, v))
+}
+
+// ViewURLHasSuffix applies the HasSuffix predicate on the "view_url" field.
+func ViewURLHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldViewURL, v))
+}
+
+// ViewURLEqualFold applies the EqualFold predicate on the "view_url" field.
+func ViewURLEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldViewURL, v))
+}
+
+// ViewURLContainsFold applies the ContainsFold predicate on the "view_url" field.
+func ViewURLContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldViewURL, v))
+}
+
+// DownloadURLEQ applies the EQ predicate on the "download_url" field.
+func DownloadURLEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldDownloadURL, v))
+}
+
+// DownloadURLNEQ applies the NEQ predicate on the "download_url" field.
+func DownloadURLNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldDownloadURL, v))
+}
+
+// DownloadURLIn applies the In predicate on the "download_url" field.
+func DownloadURLIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldDownloadURL, vs...))
+}
+
+// DownloadURLNotIn applies the NotIn predicate on the "download_url" field.
+func DownloadURLNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldDownloadURL, vs...))
+}
+
+// DownloadURLGT applies the GT predicate on the "download_url" field.
+func DownloadURLGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldDownloadURL, v))
+}
+
+// DownloadURLGTE applies the GTE predicate on the "download_url" field.
+func DownloadURLGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldDownloadURL, v))
+}
+
+// DownloadURLLT applies the LT predicate on the "download_url" field.
+func DownloadURLLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldDownloadURL, v))
+}
+
+// DownloadURLLTE applies the LTE predicate on the "download_url" field.
+func DownloadURLLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldDownloadURL, v))
+}
+
+// DownloadURLContains applies the Contains predicate on the "download_url" field.
+func DownloadURLContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldDownloadURL, v))
+}
+
+// DownloadURLHasPrefix applies the HasPrefix predicate on the "download_url" field.
+func DownloadURLHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldDownloadURL, v))
+}
+
+// DownloadURLHasSuffix applies the HasSuffix predicate on the "download_url" field.
+func DownloadURLHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldDownloadURL, v))
+}
+
+// DownloadURLEqualFold applies the EqualFold predicate on the "download_url" field.
+func DownloadURLEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldDownloadURL, v))
+}
+
+// DownloadURLContainsFold applies the ContainsFold predicate on the "download_url" field.
+func DownloadURLContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldDownloadURL, v))
 }
 
 // FileNameEQ applies the EQ predicate on the "file_name" field.

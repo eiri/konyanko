@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/url"
 	"sync"
 
 	"entgo.io/ent"
@@ -458,8 +457,8 @@ type EpisodeMutation struct {
 	id                   *int
 	number               *int
 	addnumber            *int
-	view_url             **url.URL
-	download_url         **url.URL
+	view_url             *string
+	download_url         *string
 	file_name            *string
 	file_size            *int
 	addfile_size         *int
@@ -631,12 +630,12 @@ func (m *EpisodeMutation) ResetNumber() {
 }
 
 // SetViewURL sets the "view_url" field.
-func (m *EpisodeMutation) SetViewURL(u *url.URL) {
-	m.view_url = &u
+func (m *EpisodeMutation) SetViewURL(s string) {
+	m.view_url = &s
 }
 
 // ViewURL returns the value of the "view_url" field in the mutation.
-func (m *EpisodeMutation) ViewURL() (r *url.URL, exists bool) {
+func (m *EpisodeMutation) ViewURL() (r string, exists bool) {
 	v := m.view_url
 	if v == nil {
 		return
@@ -647,7 +646,7 @@ func (m *EpisodeMutation) ViewURL() (r *url.URL, exists bool) {
 // OldViewURL returns the old "view_url" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldViewURL(ctx context.Context) (v *url.URL, err error) {
+func (m *EpisodeMutation) OldViewURL(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldViewURL is only allowed on UpdateOne operations")
 	}
@@ -667,12 +666,12 @@ func (m *EpisodeMutation) ResetViewURL() {
 }
 
 // SetDownloadURL sets the "download_url" field.
-func (m *EpisodeMutation) SetDownloadURL(u *url.URL) {
-	m.download_url = &u
+func (m *EpisodeMutation) SetDownloadURL(s string) {
+	m.download_url = &s
 }
 
 // DownloadURL returns the value of the "download_url" field in the mutation.
-func (m *EpisodeMutation) DownloadURL() (r *url.URL, exists bool) {
+func (m *EpisodeMutation) DownloadURL() (r string, exists bool) {
 	v := m.download_url
 	if v == nil {
 		return
@@ -683,7 +682,7 @@ func (m *EpisodeMutation) DownloadURL() (r *url.URL, exists bool) {
 // OldDownloadURL returns the old "download_url" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldDownloadURL(ctx context.Context) (v *url.URL, err error) {
+func (m *EpisodeMutation) OldDownloadURL(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDownloadURL is only allowed on UpdateOne operations")
 	}
@@ -1144,14 +1143,14 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 		m.SetNumber(v)
 		return nil
 	case episode.FieldViewURL:
-		v, ok := value.(*url.URL)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetViewURL(v)
 		return nil
 	case episode.FieldDownloadURL:
-		v, ok := value.(*url.URL)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

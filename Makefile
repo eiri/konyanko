@@ -34,6 +34,10 @@ schema: ENTITY := Episode
 schema:
 	go run -mod=mod entgo.io/ent/cmd/ent new $(ENTITY)
 
+.PHONY: describe
+describe:
+	go run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema
+
 .PHONY: generate
 generate:
 	go generate ./ent

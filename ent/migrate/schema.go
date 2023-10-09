@@ -23,9 +23,9 @@ var (
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "number", Type: field.TypeInt},
-		{Name: "view_url", Type: field.TypeJSON},
-		{Name: "download_url", Type: field.TypeJSON},
-		{Name: "file_name", Type: field.TypeString, Unique: true},
+		{Name: "view_url", Type: field.TypeString, Unique: true},
+		{Name: "download_url", Type: field.TypeString, Unique: true},
+		{Name: "file_name", Type: field.TypeString},
 		{Name: "file_size", Type: field.TypeInt},
 		{Name: "resolution", Type: field.TypeString, Nullable: true},
 		{Name: "video_codec", Type: field.TypeString, Nullable: true},

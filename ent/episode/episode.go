@@ -105,6 +105,16 @@ func ByNumber(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumber, opts...).ToFunc()
 }
 
+// ByViewURL orders the results by the view_url field.
+func ByViewURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldViewURL, opts...).ToFunc()
+}
+
+// ByDownloadURL orders the results by the download_url field.
+func ByDownloadURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDownloadURL, opts...).ToFunc()
+}
+
 // ByFileName orders the results by the file_name field.
 func ByFileName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFileName, opts...).ToFunc()

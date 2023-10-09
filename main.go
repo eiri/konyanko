@@ -6,9 +6,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/eiri/konyanko/ent"
+	"github.com/eiri/konyanko/ent/anime"
+	"github.com/eiri/konyanko/ent/releasegroup"
 
+	"github.com/dustin/go-humanize"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nssteinbrenner/anitogo"
 	"github.com/zhengchun/syndfeed"
@@ -73,32 +77,99 @@ func Import() error {
 	if err != nil {
 		return fmt.Errorf("failed opening RSS file: %v", err)
 	}
+	defer r.Close()
 
 	feed, _ := syndfeed.ParseRSS(r)
 	for _, item := range feed.Items {
-		log.Println(item.Title)
-		log.Println(item.Links[0].URL)
-		log.Println(item.Id)
-		for _, ext := range item.ElementExtensions {
-			if ext.Name == "size" {
-				log.Println(ext.Value)
-			}
-		}
 		ctx := context.Background()
-		e, err := CreateEpisode(ctx, client, item)
+		_, err := CreateEpisode(ctx, client, item)
 		if err != nil {
 			return fmt.Errorf("failed to add an episode: %v", err)
 		}
-		log.Println("episode was created: ", e)
 	}
 	return nil
 }
 
 func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item) (*ent.Episode, error) {
-	return client.Episode.
+	e := anitogo.Parse(item.Title, anitogo.DefaultOptions)
+	if e.AnimeTitle == "" {
+		// FIXME! shortcut
+		log.Printf("can't parse title %q\n", item.Title)
+		return nil, nil
+	}
+
+	//FIXME!! obvsly needs transaction and anime/release_group cache
+
+	anime, err := client.Anime.
+		Query().
+		Where(anime.Title(e.AnimeTitle)).
+		Only(ctx)
+	switch {
+	case ent.IsNotFound(err):
+		anime, err = client.Anime.
+			Create().
+			SetTitle(e.AnimeTitle).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+	case err != nil:
+		return nil, err
+	}
+
+	releaseGroup, err := client.ReleaseGroup.
+		Query().
+		Where(releasegroup.Name(e.ReleaseGroup)).
+		Only(ctx)
+	switch {
+	case ent.IsNotFound(err):
+		releaseGroup, err = client.ReleaseGroup.
+			Create().
+			SetName(e.ReleaseGroup).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+	case err != nil:
+		return nil, err
+	}
+
+	episodeNumber := 1
+	if len(e.EpisodeNumber) > 0 {
+		episodeNumber, _ = strconv.Atoi(e.EpisodeNumber[0])
+	}
+
+	fileSize := uint64(0)
+	for _, ext := range item.ElementExtensions {
+		if ext.Name == "size" {
+			fileSize, _ = humanize.ParseBytes(ext.Value)
+			break
+		}
+	}
+
+	episode := client.Episode.
 		Create().
-		SetFileName(item.Title).
-		Save(ctx)
+		SetTitle(anime).
+		SetReleaseGroup(releaseGroup).
+		SetNumber(episodeNumber).
+		SetViewURL(item.Id).
+		SetDownloadURL(item.Links[0].URL).
+		SetFileName(e.FileName).
+		SetFileSize(int(fileSize))
+
+	if e.VideoResolution != "" {
+		episode = episode.SetResolution(e.VideoResolution)
+	}
+
+	if len(e.VideoTerm) > 0 {
+		episode = episode.SetVideoCodec(e.VideoTerm[0])
+	}
+
+	if len(e.AudioTerm) > 0 {
+		episode = episode.SetAudioCodec(e.AudioTerm[0])
+	}
+
+	return episode.Save(ctx)
 }
 
 func List() error {

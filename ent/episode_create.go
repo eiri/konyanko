@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/url"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -29,14 +28,14 @@ func (ec *EpisodeCreate) SetNumber(i int) *EpisodeCreate {
 }
 
 // SetViewURL sets the "view_url" field.
-func (ec *EpisodeCreate) SetViewURL(u *url.URL) *EpisodeCreate {
-	ec.mutation.SetViewURL(u)
+func (ec *EpisodeCreate) SetViewURL(s string) *EpisodeCreate {
+	ec.mutation.SetViewURL(s)
 	return ec
 }
 
 // SetDownloadURL sets the "download_url" field.
-func (ec *EpisodeCreate) SetDownloadURL(u *url.URL) *EpisodeCreate {
-	ec.mutation.SetDownloadURL(u)
+func (ec *EpisodeCreate) SetDownloadURL(s string) *EpisodeCreate {
+	ec.mutation.SetDownloadURL(s)
 	return ec
 }
 
@@ -217,11 +216,11 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_node.Number = value
 	}
 	if value, ok := ec.mutation.ViewURL(); ok {
-		_spec.SetField(episode.FieldViewURL, field.TypeJSON, value)
+		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
 		_node.ViewURL = value
 	}
 	if value, ok := ec.mutation.DownloadURL(); ok {
-		_spec.SetField(episode.FieldDownloadURL, field.TypeJSON, value)
+		_spec.SetField(episode.FieldDownloadURL, field.TypeString, value)
 		_node.DownloadURL = value
 	}
 	if value, ok := ec.mutation.FileName(); ok {
