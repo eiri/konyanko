@@ -1,0 +1,24 @@
+# Editors
+*.sublime-project
+*.sublime-workspace
+*.swp
+
+# Mac OS X files
+.DS_Store
+
+# Binaries for programs and plugins
+/konyanko
+/release/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+*.tgz
+*.zip
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
