@@ -1,8 +1,28 @@
 .DEFAULT_GOAL := all
 
+PROJECT := konyanko
+SRC := $(wildcard *.go ./ent/**/*.go)
+
 .PHONY: all
-all:
-	echo "ohai"
+all: build
+	./$(PROJECT) -help
+
+$(PROJECT): $(SRC)
+	go build -o $(PROJECT) main.go
+
+.PHONY: build
+build: $(PROJECT)
+
+.PHONY: migrate
+migrate: $(PROJECT)
+	./$< -c $@
+
+nyaa.xml:
+	curl -o $@ https://nyaa.si/?page=rss&c=1_2
+
+.PHONY: import
+import: $(PROJECT) nyaa.xml
+	./$< -c $@
 
 .PHONY: schema
 schema: ENTITY := Episode
@@ -12,7 +32,3 @@ schema:
 .PHONY: generate
 generate:
 	go generate ./ent
-
-.PHONY: migrate
-migrate:
-	go run migration.go
