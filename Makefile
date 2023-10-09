@@ -24,6 +24,10 @@ nyaa.xml:
 import: $(PROJECT) nyaa.xml
 	./$< -c $@
 
+.PHONY: list
+list: $(PROJECT)
+	./$< -c $@
+
 .PHONY: schema
 schema: ENTITY := Episode
 schema:
