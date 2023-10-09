@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -176,21 +177,19 @@ func List() error {
 	ctx := context.Background()
 	episodes, err := client.Episode.
 		Query().
+		WithTitle().
+		WithReleaseGroup().
 		All(ctx)
 	if err != nil {
 		return fmt.Errorf("failed querying episodes: %w", err)
 	}
 
 	for _, e := range episodes {
-		pe := anitogo.Parse(e.FileName, anitogo.DefaultOptions)
-		log.Println("FileName", pe.FileName)
-		log.Println("AnimeTitle", pe.AnimeTitle)
-		log.Println("EpisodeNumber", pe.EpisodeNumber)
-		log.Println("ReleaseGroup", pe.ReleaseGroup)
-		log.Println("VideoResolution", pe.VideoResolution)
-		log.Println("VideoTerm", pe.VideoTerm)
-		log.Println("AudioTerm", pe.AudioTerm)
-		log.Println("---")
+		data, err := json.MarshalIndent(e, "", "  ")
+		if err != nil {
+			return err
+		}
+		log.Printf("%s\n", data)
 	}
 	return nil
 }
