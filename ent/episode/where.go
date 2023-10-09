@@ -4,6 +4,7 @@ package episode
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/eiri/konyanko/ent/predicate"
 )
 
@@ -52,74 +53,450 @@ func IDLTE(id int) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldID, id))
 }
 
-// Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
-func Title(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldTitle, v))
+// Number applies equality check predicate on the "number" field. It's identical to NumberEQ.
+func Number(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldNumber, v))
 }
 
-// TitleEQ applies the EQ predicate on the "title" field.
-func TitleEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldTitle, v))
+// FileName applies equality check predicate on the "file_name" field. It's identical to FileNameEQ.
+func FileName(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldFileName, v))
 }
 
-// TitleNEQ applies the NEQ predicate on the "title" field.
-func TitleNEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldTitle, v))
+// FileSize applies equality check predicate on the "file_size" field. It's identical to FileSizeEQ.
+func FileSize(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldFileSize, v))
 }
 
-// TitleIn applies the In predicate on the "title" field.
-func TitleIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldTitle, vs...))
+// Resolution applies equality check predicate on the "resolution" field. It's identical to ResolutionEQ.
+func Resolution(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldResolution, v))
 }
 
-// TitleNotIn applies the NotIn predicate on the "title" field.
-func TitleNotIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldTitle, vs...))
+// VideoCodec applies equality check predicate on the "video_codec" field. It's identical to VideoCodecEQ.
+func VideoCodec(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldVideoCodec, v))
 }
 
-// TitleGT applies the GT predicate on the "title" field.
-func TitleGT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldTitle, v))
+// AudioCodec applies equality check predicate on the "audio_codec" field. It's identical to AudioCodecEQ.
+func AudioCodec(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldAudioCodec, v))
 }
 
-// TitleGTE applies the GTE predicate on the "title" field.
-func TitleGTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldTitle, v))
+// NumberEQ applies the EQ predicate on the "number" field.
+func NumberEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldNumber, v))
 }
 
-// TitleLT applies the LT predicate on the "title" field.
-func TitleLT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldTitle, v))
+// NumberNEQ applies the NEQ predicate on the "number" field.
+func NumberNEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldNumber, v))
 }
 
-// TitleLTE applies the LTE predicate on the "title" field.
-func TitleLTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldTitle, v))
+// NumberIn applies the In predicate on the "number" field.
+func NumberIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldNumber, vs...))
 }
 
-// TitleContains applies the Contains predicate on the "title" field.
-func TitleContains(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContains(FieldTitle, v))
+// NumberNotIn applies the NotIn predicate on the "number" field.
+func NumberNotIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldNumber, vs...))
 }
 
-// TitleHasPrefix applies the HasPrefix predicate on the "title" field.
-func TitleHasPrefix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasPrefix(FieldTitle, v))
+// NumberGT applies the GT predicate on the "number" field.
+func NumberGT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldNumber, v))
 }
 
-// TitleHasSuffix applies the HasSuffix predicate on the "title" field.
-func TitleHasSuffix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasSuffix(FieldTitle, v))
+// NumberGTE applies the GTE predicate on the "number" field.
+func NumberGTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldNumber, v))
 }
 
-// TitleEqualFold applies the EqualFold predicate on the "title" field.
-func TitleEqualFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEqualFold(FieldTitle, v))
+// NumberLT applies the LT predicate on the "number" field.
+func NumberLT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldNumber, v))
 }
 
-// TitleContainsFold applies the ContainsFold predicate on the "title" field.
-func TitleContainsFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContainsFold(FieldTitle, v))
+// NumberLTE applies the LTE predicate on the "number" field.
+func NumberLTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldNumber, v))
+}
+
+// FileNameEQ applies the EQ predicate on the "file_name" field.
+func FileNameEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldFileName, v))
+}
+
+// FileNameNEQ applies the NEQ predicate on the "file_name" field.
+func FileNameNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldFileName, v))
+}
+
+// FileNameIn applies the In predicate on the "file_name" field.
+func FileNameIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldFileName, vs...))
+}
+
+// FileNameNotIn applies the NotIn predicate on the "file_name" field.
+func FileNameNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldFileName, vs...))
+}
+
+// FileNameGT applies the GT predicate on the "file_name" field.
+func FileNameGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldFileName, v))
+}
+
+// FileNameGTE applies the GTE predicate on the "file_name" field.
+func FileNameGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldFileName, v))
+}
+
+// FileNameLT applies the LT predicate on the "file_name" field.
+func FileNameLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldFileName, v))
+}
+
+// FileNameLTE applies the LTE predicate on the "file_name" field.
+func FileNameLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldFileName, v))
+}
+
+// FileNameContains applies the Contains predicate on the "file_name" field.
+func FileNameContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldFileName, v))
+}
+
+// FileNameHasPrefix applies the HasPrefix predicate on the "file_name" field.
+func FileNameHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldFileName, v))
+}
+
+// FileNameHasSuffix applies the HasSuffix predicate on the "file_name" field.
+func FileNameHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldFileName, v))
+}
+
+// FileNameEqualFold applies the EqualFold predicate on the "file_name" field.
+func FileNameEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldFileName, v))
+}
+
+// FileNameContainsFold applies the ContainsFold predicate on the "file_name" field.
+func FileNameContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldFileName, v))
+}
+
+// FileSizeEQ applies the EQ predicate on the "file_size" field.
+func FileSizeEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldFileSize, v))
+}
+
+// FileSizeNEQ applies the NEQ predicate on the "file_size" field.
+func FileSizeNEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldFileSize, v))
+}
+
+// FileSizeIn applies the In predicate on the "file_size" field.
+func FileSizeIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldFileSize, vs...))
+}
+
+// FileSizeNotIn applies the NotIn predicate on the "file_size" field.
+func FileSizeNotIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldFileSize, vs...))
+}
+
+// FileSizeGT applies the GT predicate on the "file_size" field.
+func FileSizeGT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldFileSize, v))
+}
+
+// FileSizeGTE applies the GTE predicate on the "file_size" field.
+func FileSizeGTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldFileSize, v))
+}
+
+// FileSizeLT applies the LT predicate on the "file_size" field.
+func FileSizeLT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldFileSize, v))
+}
+
+// FileSizeLTE applies the LTE predicate on the "file_size" field.
+func FileSizeLTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldFileSize, v))
+}
+
+// ResolutionEQ applies the EQ predicate on the "resolution" field.
+func ResolutionEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldResolution, v))
+}
+
+// ResolutionNEQ applies the NEQ predicate on the "resolution" field.
+func ResolutionNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldResolution, v))
+}
+
+// ResolutionIn applies the In predicate on the "resolution" field.
+func ResolutionIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldResolution, vs...))
+}
+
+// ResolutionNotIn applies the NotIn predicate on the "resolution" field.
+func ResolutionNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldResolution, vs...))
+}
+
+// ResolutionGT applies the GT predicate on the "resolution" field.
+func ResolutionGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldResolution, v))
+}
+
+// ResolutionGTE applies the GTE predicate on the "resolution" field.
+func ResolutionGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldResolution, v))
+}
+
+// ResolutionLT applies the LT predicate on the "resolution" field.
+func ResolutionLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldResolution, v))
+}
+
+// ResolutionLTE applies the LTE predicate on the "resolution" field.
+func ResolutionLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldResolution, v))
+}
+
+// ResolutionContains applies the Contains predicate on the "resolution" field.
+func ResolutionContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldResolution, v))
+}
+
+// ResolutionHasPrefix applies the HasPrefix predicate on the "resolution" field.
+func ResolutionHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldResolution, v))
+}
+
+// ResolutionHasSuffix applies the HasSuffix predicate on the "resolution" field.
+func ResolutionHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldResolution, v))
+}
+
+// ResolutionIsNil applies the IsNil predicate on the "resolution" field.
+func ResolutionIsNil() predicate.Episode {
+	return predicate.Episode(sql.FieldIsNull(FieldResolution))
+}
+
+// ResolutionNotNil applies the NotNil predicate on the "resolution" field.
+func ResolutionNotNil() predicate.Episode {
+	return predicate.Episode(sql.FieldNotNull(FieldResolution))
+}
+
+// ResolutionEqualFold applies the EqualFold predicate on the "resolution" field.
+func ResolutionEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldResolution, v))
+}
+
+// ResolutionContainsFold applies the ContainsFold predicate on the "resolution" field.
+func ResolutionContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldResolution, v))
+}
+
+// VideoCodecEQ applies the EQ predicate on the "video_codec" field.
+func VideoCodecEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldVideoCodec, v))
+}
+
+// VideoCodecNEQ applies the NEQ predicate on the "video_codec" field.
+func VideoCodecNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldVideoCodec, v))
+}
+
+// VideoCodecIn applies the In predicate on the "video_codec" field.
+func VideoCodecIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldVideoCodec, vs...))
+}
+
+// VideoCodecNotIn applies the NotIn predicate on the "video_codec" field.
+func VideoCodecNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldVideoCodec, vs...))
+}
+
+// VideoCodecGT applies the GT predicate on the "video_codec" field.
+func VideoCodecGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldVideoCodec, v))
+}
+
+// VideoCodecGTE applies the GTE predicate on the "video_codec" field.
+func VideoCodecGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldVideoCodec, v))
+}
+
+// VideoCodecLT applies the LT predicate on the "video_codec" field.
+func VideoCodecLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldVideoCodec, v))
+}
+
+// VideoCodecLTE applies the LTE predicate on the "video_codec" field.
+func VideoCodecLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldVideoCodec, v))
+}
+
+// VideoCodecContains applies the Contains predicate on the "video_codec" field.
+func VideoCodecContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldVideoCodec, v))
+}
+
+// VideoCodecHasPrefix applies the HasPrefix predicate on the "video_codec" field.
+func VideoCodecHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldVideoCodec, v))
+}
+
+// VideoCodecHasSuffix applies the HasSuffix predicate on the "video_codec" field.
+func VideoCodecHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldVideoCodec, v))
+}
+
+// VideoCodecIsNil applies the IsNil predicate on the "video_codec" field.
+func VideoCodecIsNil() predicate.Episode {
+	return predicate.Episode(sql.FieldIsNull(FieldVideoCodec))
+}
+
+// VideoCodecNotNil applies the NotNil predicate on the "video_codec" field.
+func VideoCodecNotNil() predicate.Episode {
+	return predicate.Episode(sql.FieldNotNull(FieldVideoCodec))
+}
+
+// VideoCodecEqualFold applies the EqualFold predicate on the "video_codec" field.
+func VideoCodecEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldVideoCodec, v))
+}
+
+// VideoCodecContainsFold applies the ContainsFold predicate on the "video_codec" field.
+func VideoCodecContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldVideoCodec, v))
+}
+
+// AudioCodecEQ applies the EQ predicate on the "audio_codec" field.
+func AudioCodecEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldAudioCodec, v))
+}
+
+// AudioCodecNEQ applies the NEQ predicate on the "audio_codec" field.
+func AudioCodecNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldAudioCodec, v))
+}
+
+// AudioCodecIn applies the In predicate on the "audio_codec" field.
+func AudioCodecIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldAudioCodec, vs...))
+}
+
+// AudioCodecNotIn applies the NotIn predicate on the "audio_codec" field.
+func AudioCodecNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldAudioCodec, vs...))
+}
+
+// AudioCodecGT applies the GT predicate on the "audio_codec" field.
+func AudioCodecGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldAudioCodec, v))
+}
+
+// AudioCodecGTE applies the GTE predicate on the "audio_codec" field.
+func AudioCodecGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldAudioCodec, v))
+}
+
+// AudioCodecLT applies the LT predicate on the "audio_codec" field.
+func AudioCodecLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldAudioCodec, v))
+}
+
+// AudioCodecLTE applies the LTE predicate on the "audio_codec" field.
+func AudioCodecLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldAudioCodec, v))
+}
+
+// AudioCodecContains applies the Contains predicate on the "audio_codec" field.
+func AudioCodecContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldAudioCodec, v))
+}
+
+// AudioCodecHasPrefix applies the HasPrefix predicate on the "audio_codec" field.
+func AudioCodecHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldAudioCodec, v))
+}
+
+// AudioCodecHasSuffix applies the HasSuffix predicate on the "audio_codec" field.
+func AudioCodecHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldAudioCodec, v))
+}
+
+// AudioCodecIsNil applies the IsNil predicate on the "audio_codec" field.
+func AudioCodecIsNil() predicate.Episode {
+	return predicate.Episode(sql.FieldIsNull(FieldAudioCodec))
+}
+
+// AudioCodecNotNil applies the NotNil predicate on the "audio_codec" field.
+func AudioCodecNotNil() predicate.Episode {
+	return predicate.Episode(sql.FieldNotNull(FieldAudioCodec))
+}
+
+// AudioCodecEqualFold applies the EqualFold predicate on the "audio_codec" field.
+func AudioCodecEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldAudioCodec, v))
+}
+
+// AudioCodecContainsFold applies the ContainsFold predicate on the "audio_codec" field.
+func AudioCodecContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldAudioCodec, v))
+}
+
+// HasTitle applies the HasEdge predicate on the "title" edge.
+func HasTitle() predicate.Episode {
+	return predicate.Episode(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TitleTable, TitleColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTitleWith applies the HasEdge predicate on the "title" edge with a given conditions (other predicates).
+func HasTitleWith(preds ...predicate.Anime) predicate.Episode {
+	return predicate.Episode(func(s *sql.Selector) {
+		step := newTitleStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReleaseGroup applies the HasEdge predicate on the "release_group" edge.
+func HasReleaseGroup() predicate.Episode {
+	return predicate.Episode(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ReleaseGroupTable, ReleaseGroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReleaseGroupWith applies the HasEdge predicate on the "release_group" edge with a given conditions (other predicates).
+func HasReleaseGroupWith(preds ...predicate.ReleaseGroup) predicate.Episode {
+	return predicate.Episode(func(s *sql.Selector) {
+		step := newReleaseGroupStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

@@ -10,17 +10,22 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ent/predicate"
+	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
 // EpisodeQuery is the builder for querying Episode entities.
 type EpisodeQuery struct {
 	config
-	ctx        *QueryContext
-	order      []episode.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Episode
+	ctx              *QueryContext
+	order            []episode.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.Episode
+	withTitle        *AnimeQuery
+	withReleaseGroup *ReleaseGroupQuery
+	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +60,50 @@ func (eq *EpisodeQuery) Unique(unique bool) *EpisodeQuery {
 func (eq *EpisodeQuery) Order(o ...episode.OrderOption) *EpisodeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
+}
+
+// QueryTitle chains the current query on the "title" edge.
+func (eq *EpisodeQuery) QueryTitle() *AnimeQuery {
+	query := (&AnimeClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(episode.Table, episode.FieldID, selector),
+			sqlgraph.To(anime.Table, anime.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, episode.TitleTable, episode.TitleColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReleaseGroup chains the current query on the "release_group" edge.
+func (eq *EpisodeQuery) QueryReleaseGroup() *ReleaseGroupQuery {
+	query := (&ReleaseGroupClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(episode.Table, episode.FieldID, selector),
+			sqlgraph.To(releasegroup.Table, releasegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, episode.ReleaseGroupTable, episode.ReleaseGroupColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Episode entity from the query.
@@ -244,15 +293,39 @@ func (eq *EpisodeQuery) Clone() *EpisodeQuery {
 		return nil
 	}
 	return &EpisodeQuery{
-		config:     eq.config,
-		ctx:        eq.ctx.Clone(),
-		order:      append([]episode.OrderOption{}, eq.order...),
-		inters:     append([]Interceptor{}, eq.inters...),
-		predicates: append([]predicate.Episode{}, eq.predicates...),
+		config:           eq.config,
+		ctx:              eq.ctx.Clone(),
+		order:            append([]episode.OrderOption{}, eq.order...),
+		inters:           append([]Interceptor{}, eq.inters...),
+		predicates:       append([]predicate.Episode{}, eq.predicates...),
+		withTitle:        eq.withTitle.Clone(),
+		withReleaseGroup: eq.withReleaseGroup.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
 	}
+}
+
+// WithTitle tells the query-builder to eager-load the nodes that are connected to
+// the "title" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EpisodeQuery) WithTitle(opts ...func(*AnimeQuery)) *EpisodeQuery {
+	query := (&AnimeClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withTitle = query
+	return eq
+}
+
+// WithReleaseGroup tells the query-builder to eager-load the nodes that are connected to
+// the "release_group" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EpisodeQuery) WithReleaseGroup(opts ...func(*ReleaseGroupQuery)) *EpisodeQuery {
+	query := (&ReleaseGroupClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withReleaseGroup = query
+	return eq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -261,12 +334,12 @@ func (eq *EpisodeQuery) Clone() *EpisodeQuery {
 // Example:
 //
 //	var v []struct {
-//		Title string `json:"title,omitempty"`
+//		Number int `json:"number,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		GroupBy(episode.FieldTitle).
+//		GroupBy(episode.FieldNumber).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy {
@@ -284,11 +357,11 @@ func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy 
 // Example:
 //
 //	var v []struct {
-//		Title string `json:"title,omitempty"`
+//		Number int `json:"number,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		Select(episode.FieldTitle).
+//		Select(episode.FieldNumber).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) Select(fields ...string) *EpisodeSelect {
 	eq.ctx.Fields = append(eq.ctx.Fields, fields...)
@@ -331,15 +404,27 @@ func (eq *EpisodeQuery) prepareQuery(ctx context.Context) error {
 
 func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Episode, error) {
 	var (
-		nodes = []*Episode{}
-		_spec = eq.querySpec()
+		nodes       = []*Episode{}
+		withFKs     = eq.withFKs
+		_spec       = eq.querySpec()
+		loadedTypes = [2]bool{
+			eq.withTitle != nil,
+			eq.withReleaseGroup != nil,
+		}
 	)
+	if eq.withTitle != nil || eq.withReleaseGroup != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, episode.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Episode).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Episode{config: eq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +436,84 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := eq.withTitle; query != nil {
+		if err := eq.loadTitle(ctx, query, nodes, nil,
+			func(n *Episode, e *Anime) { n.Edges.Title = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withReleaseGroup; query != nil {
+		if err := eq.loadReleaseGroup(ctx, query, nodes, nil,
+			func(n *Episode, e *ReleaseGroup) { n.Edges.ReleaseGroup = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (eq *EpisodeQuery) loadTitle(ctx context.Context, query *AnimeQuery, nodes []*Episode, init func(*Episode), assign func(*Episode, *Anime)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Episode)
+	for i := range nodes {
+		if nodes[i].anime_id == nil {
+			continue
+		}
+		fk := *nodes[i].anime_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(anime.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "anime_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (eq *EpisodeQuery) loadReleaseGroup(ctx context.Context, query *ReleaseGroupQuery, nodes []*Episode, init func(*Episode), assign func(*Episode, *ReleaseGroup)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Episode)
+	for i := range nodes {
+		if nodes[i].release_group_id == nil {
+			continue
+		}
+		fk := *nodes[i].release_group_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(releasegroup.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "release_group_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (eq *EpisodeQuery) sqlCount(ctx context.Context) (int, error) {

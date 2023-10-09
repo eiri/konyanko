@@ -97,7 +97,7 @@ func Import() error {
 func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item) (*ent.Episode, error) {
 	return client.Episode.
 		Create().
-		SetTitle(item.Title).
+		SetFileName(item.Title).
 		Save(ctx)
 }
 
@@ -111,7 +111,7 @@ func List() error {
 	}
 
 	for _, e := range episodes {
-		pe := anitogo.Parse(e.Title, anitogo.DefaultOptions)
+		pe := anitogo.Parse(e.FileName, anitogo.DefaultOptions)
 		log.Println("FileName", pe.FileName)
 		log.Println("AnimeTitle", pe.AnimeTitle)
 		log.Println("EpisodeNumber", pe.EpisodeNumber)

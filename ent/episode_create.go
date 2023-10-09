@@ -6,10 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
 // EpisodeCreate is the builder for creating a Episode entity.
@@ -19,10 +22,106 @@ type EpisodeCreate struct {
 	hooks    []Hook
 }
 
-// SetTitle sets the "title" field.
-func (ec *EpisodeCreate) SetTitle(s string) *EpisodeCreate {
-	ec.mutation.SetTitle(s)
+// SetNumber sets the "number" field.
+func (ec *EpisodeCreate) SetNumber(i int) *EpisodeCreate {
+	ec.mutation.SetNumber(i)
 	return ec
+}
+
+// SetViewURL sets the "view_url" field.
+func (ec *EpisodeCreate) SetViewURL(u *url.URL) *EpisodeCreate {
+	ec.mutation.SetViewURL(u)
+	return ec
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (ec *EpisodeCreate) SetDownloadURL(u *url.URL) *EpisodeCreate {
+	ec.mutation.SetDownloadURL(u)
+	return ec
+}
+
+// SetFileName sets the "file_name" field.
+func (ec *EpisodeCreate) SetFileName(s string) *EpisodeCreate {
+	ec.mutation.SetFileName(s)
+	return ec
+}
+
+// SetFileSize sets the "file_size" field.
+func (ec *EpisodeCreate) SetFileSize(i int) *EpisodeCreate {
+	ec.mutation.SetFileSize(i)
+	return ec
+}
+
+// SetResolution sets the "resolution" field.
+func (ec *EpisodeCreate) SetResolution(s string) *EpisodeCreate {
+	ec.mutation.SetResolution(s)
+	return ec
+}
+
+// SetNillableResolution sets the "resolution" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillableResolution(s *string) *EpisodeCreate {
+	if s != nil {
+		ec.SetResolution(*s)
+	}
+	return ec
+}
+
+// SetVideoCodec sets the "video_codec" field.
+func (ec *EpisodeCreate) SetVideoCodec(s string) *EpisodeCreate {
+	ec.mutation.SetVideoCodec(s)
+	return ec
+}
+
+// SetNillableVideoCodec sets the "video_codec" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillableVideoCodec(s *string) *EpisodeCreate {
+	if s != nil {
+		ec.SetVideoCodec(*s)
+	}
+	return ec
+}
+
+// SetAudioCodec sets the "audio_codec" field.
+func (ec *EpisodeCreate) SetAudioCodec(s string) *EpisodeCreate {
+	ec.mutation.SetAudioCodec(s)
+	return ec
+}
+
+// SetNillableAudioCodec sets the "audio_codec" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillableAudioCodec(s *string) *EpisodeCreate {
+	if s != nil {
+		ec.SetAudioCodec(*s)
+	}
+	return ec
+}
+
+// SetTitleID sets the "title" edge to the Anime entity by ID.
+func (ec *EpisodeCreate) SetTitleID(id int) *EpisodeCreate {
+	ec.mutation.SetTitleID(id)
+	return ec
+}
+
+// SetTitle sets the "title" edge to the Anime entity.
+func (ec *EpisodeCreate) SetTitle(a *Anime) *EpisodeCreate {
+	return ec.SetTitleID(a.ID)
+}
+
+// SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID.
+func (ec *EpisodeCreate) SetReleaseGroupID(id int) *EpisodeCreate {
+	ec.mutation.SetReleaseGroupID(id)
+	return ec
+}
+
+// SetNillableReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID if the given value is not nil.
+func (ec *EpisodeCreate) SetNillableReleaseGroupID(id *int) *EpisodeCreate {
+	if id != nil {
+		ec = ec.SetReleaseGroupID(*id)
+	}
+	return ec
+}
+
+// SetReleaseGroup sets the "release_group" edge to the ReleaseGroup entity.
+func (ec *EpisodeCreate) SetReleaseGroup(r *ReleaseGroup) *EpisodeCreate {
+	return ec.SetReleaseGroupID(r.ID)
 }
 
 // Mutation returns the EpisodeMutation object of the builder.
@@ -59,8 +158,33 @@ func (ec *EpisodeCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ec *EpisodeCreate) check() error {
-	if _, ok := ec.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Episode.title"`)}
+	if _, ok := ec.mutation.Number(); !ok {
+		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "Episode.number"`)}
+	}
+	if v, ok := ec.mutation.Number(); ok {
+		if err := episode.NumberValidator(v); err != nil {
+			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.ViewURL(); !ok {
+		return &ValidationError{Name: "view_url", err: errors.New(`ent: missing required field "Episode.view_url"`)}
+	}
+	if _, ok := ec.mutation.DownloadURL(); !ok {
+		return &ValidationError{Name: "download_url", err: errors.New(`ent: missing required field "Episode.download_url"`)}
+	}
+	if _, ok := ec.mutation.FileName(); !ok {
+		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Episode.file_name"`)}
+	}
+	if _, ok := ec.mutation.FileSize(); !ok {
+		return &ValidationError{Name: "file_size", err: errors.New(`ent: missing required field "Episode.file_size"`)}
+	}
+	if v, ok := ec.mutation.FileSize(); ok {
+		if err := episode.FileSizeValidator(v); err != nil {
+			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.TitleID(); !ok {
+		return &ValidationError{Name: "title", err: errors.New(`ent: missing required edge "Episode.title"`)}
 	}
 	return nil
 }
@@ -88,9 +212,71 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_node = &Episode{config: ec.config}
 		_spec = sqlgraph.NewCreateSpec(episode.Table, sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt))
 	)
-	if value, ok := ec.mutation.Title(); ok {
-		_spec.SetField(episode.FieldTitle, field.TypeString, value)
-		_node.Title = value
+	if value, ok := ec.mutation.Number(); ok {
+		_spec.SetField(episode.FieldNumber, field.TypeInt, value)
+		_node.Number = value
+	}
+	if value, ok := ec.mutation.ViewURL(); ok {
+		_spec.SetField(episode.FieldViewURL, field.TypeJSON, value)
+		_node.ViewURL = value
+	}
+	if value, ok := ec.mutation.DownloadURL(); ok {
+		_spec.SetField(episode.FieldDownloadURL, field.TypeJSON, value)
+		_node.DownloadURL = value
+	}
+	if value, ok := ec.mutation.FileName(); ok {
+		_spec.SetField(episode.FieldFileName, field.TypeString, value)
+		_node.FileName = value
+	}
+	if value, ok := ec.mutation.FileSize(); ok {
+		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
+		_node.FileSize = value
+	}
+	if value, ok := ec.mutation.Resolution(); ok {
+		_spec.SetField(episode.FieldResolution, field.TypeString, value)
+		_node.Resolution = value
+	}
+	if value, ok := ec.mutation.VideoCodec(); ok {
+		_spec.SetField(episode.FieldVideoCodec, field.TypeString, value)
+		_node.VideoCodec = value
+	}
+	if value, ok := ec.mutation.AudioCodec(); ok {
+		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
+		_node.AudioCodec = value
+	}
+	if nodes := ec.mutation.TitleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.TitleTable,
+			Columns: []string{episode.TitleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.anime_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.ReleaseGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.ReleaseGroupTable,
+			Columns: []string{episode.ReleaseGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.release_group_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

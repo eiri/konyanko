@@ -6,5 +6,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Anime is the predicate function for anime builders.
+type Anime func(*sql.Selector)
+
 // Episode is the predicate function for episode builders.
 type Episode func(*sql.Selector)
+
+// ReleaseGroup is the predicate function for releasegroup builders.
+type ReleaseGroup func(*sql.Selector)

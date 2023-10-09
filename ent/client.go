@@ -14,7 +14,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
 // Client is the client that holds all ent builders.
@@ -22,8 +25,12 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Anime is the client for interacting with the Anime builders.
+	Anime *AnimeClient
 	// Episode is the client for interacting with the Episode builders.
 	Episode *EpisodeClient
+	// ReleaseGroup is the client for interacting with the ReleaseGroup builders.
+	ReleaseGroup *ReleaseGroupClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -37,7 +44,9 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Anime = NewAnimeClient(c.config)
 	c.Episode = NewEpisodeClient(c.config)
+	c.ReleaseGroup = NewReleaseGroupClient(c.config)
 }
 
 type (
@@ -121,9 +130,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Episode: NewEpisodeClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Anime:        NewAnimeClient(cfg),
+		Episode:      NewEpisodeClient(cfg),
+		ReleaseGroup: NewReleaseGroupClient(cfg),
 	}, nil
 }
 
@@ -141,16 +152,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Episode: NewEpisodeClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Anime:        NewAnimeClient(cfg),
+		Episode:      NewEpisodeClient(cfg),
+		ReleaseGroup: NewReleaseGroupClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Episode.
+//		Anime.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -172,22 +185,179 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Anime.Use(hooks...)
 	c.Episode.Use(hooks...)
+	c.ReleaseGroup.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Anime.Intercept(interceptors...)
 	c.Episode.Intercept(interceptors...)
+	c.ReleaseGroup.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AnimeMutation:
+		return c.Anime.mutate(ctx, m)
 	case *EpisodeMutation:
 		return c.Episode.mutate(ctx, m)
+	case *ReleaseGroupMutation:
+		return c.ReleaseGroup.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AnimeClient is a client for the Anime schema.
+type AnimeClient struct {
+	config
+}
+
+// NewAnimeClient returns a client for the Anime from the given config.
+func NewAnimeClient(c config) *AnimeClient {
+	return &AnimeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `anime.Hooks(f(g(h())))`.
+func (c *AnimeClient) Use(hooks ...Hook) {
+	c.hooks.Anime = append(c.hooks.Anime, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `anime.Intercept(f(g(h())))`.
+func (c *AnimeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Anime = append(c.inters.Anime, interceptors...)
+}
+
+// Create returns a builder for creating a Anime entity.
+func (c *AnimeClient) Create() *AnimeCreate {
+	mutation := newAnimeMutation(c.config, OpCreate)
+	return &AnimeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Anime entities.
+func (c *AnimeClient) CreateBulk(builders ...*AnimeCreate) *AnimeCreateBulk {
+	return &AnimeCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AnimeClient) MapCreateBulk(slice any, setFunc func(*AnimeCreate, int)) *AnimeCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AnimeCreateBulk{err: fmt.Errorf("calling to AnimeClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AnimeCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AnimeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Anime.
+func (c *AnimeClient) Update() *AnimeUpdate {
+	mutation := newAnimeMutation(c.config, OpUpdate)
+	return &AnimeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AnimeClient) UpdateOne(a *Anime) *AnimeUpdateOne {
+	mutation := newAnimeMutation(c.config, OpUpdateOne, withAnime(a))
+	return &AnimeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AnimeClient) UpdateOneID(id int) *AnimeUpdateOne {
+	mutation := newAnimeMutation(c.config, OpUpdateOne, withAnimeID(id))
+	return &AnimeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Anime.
+func (c *AnimeClient) Delete() *AnimeDelete {
+	mutation := newAnimeMutation(c.config, OpDelete)
+	return &AnimeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AnimeClient) DeleteOne(a *Anime) *AnimeDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AnimeClient) DeleteOneID(id int) *AnimeDeleteOne {
+	builder := c.Delete().Where(anime.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AnimeDeleteOne{builder}
+}
+
+// Query returns a query builder for Anime.
+func (c *AnimeClient) Query() *AnimeQuery {
+	return &AnimeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAnime},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Anime entity by its id.
+func (c *AnimeClient) Get(ctx context.Context, id int) (*Anime, error) {
+	return c.Query().Where(anime.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AnimeClient) GetX(ctx context.Context, id int) *Anime {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEpisodes queries the episodes edge of a Anime.
+func (c *AnimeClient) QueryEpisodes(a *Anime) *EpisodeQuery {
+	query := (&EpisodeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(anime.Table, anime.FieldID, id),
+			sqlgraph.To(episode.Table, episode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, anime.EpisodesTable, anime.EpisodesColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AnimeClient) Hooks() []Hook {
+	return c.hooks.Anime
+}
+
+// Interceptors returns the client interceptors.
+func (c *AnimeClient) Interceptors() []Interceptor {
+	return c.inters.Anime
+}
+
+func (c *AnimeClient) mutate(ctx context.Context, m *AnimeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AnimeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AnimeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AnimeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AnimeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Anime mutation op: %q", m.Op())
 	}
 }
 
@@ -299,6 +469,38 @@ func (c *EpisodeClient) GetX(ctx context.Context, id int) *Episode {
 	return obj
 }
 
+// QueryTitle queries the title edge of a Episode.
+func (c *EpisodeClient) QueryTitle(e *Episode) *AnimeQuery {
+	query := (&AnimeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(episode.Table, episode.FieldID, id),
+			sqlgraph.To(anime.Table, anime.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, episode.TitleTable, episode.TitleColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReleaseGroup queries the release_group edge of a Episode.
+func (c *EpisodeClient) QueryReleaseGroup(e *Episode) *ReleaseGroupQuery {
+	query := (&ReleaseGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(episode.Table, episode.FieldID, id),
+			sqlgraph.To(releasegroup.Table, releasegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, episode.ReleaseGroupTable, episode.ReleaseGroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EpisodeClient) Hooks() []Hook {
 	return c.hooks.Episode
@@ -324,12 +526,161 @@ func (c *EpisodeClient) mutate(ctx context.Context, m *EpisodeMutation) (Value, 
 	}
 }
 
+// ReleaseGroupClient is a client for the ReleaseGroup schema.
+type ReleaseGroupClient struct {
+	config
+}
+
+// NewReleaseGroupClient returns a client for the ReleaseGroup from the given config.
+func NewReleaseGroupClient(c config) *ReleaseGroupClient {
+	return &ReleaseGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `releasegroup.Hooks(f(g(h())))`.
+func (c *ReleaseGroupClient) Use(hooks ...Hook) {
+	c.hooks.ReleaseGroup = append(c.hooks.ReleaseGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `releasegroup.Intercept(f(g(h())))`.
+func (c *ReleaseGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ReleaseGroup = append(c.inters.ReleaseGroup, interceptors...)
+}
+
+// Create returns a builder for creating a ReleaseGroup entity.
+func (c *ReleaseGroupClient) Create() *ReleaseGroupCreate {
+	mutation := newReleaseGroupMutation(c.config, OpCreate)
+	return &ReleaseGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ReleaseGroup entities.
+func (c *ReleaseGroupClient) CreateBulk(builders ...*ReleaseGroupCreate) *ReleaseGroupCreateBulk {
+	return &ReleaseGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ReleaseGroupClient) MapCreateBulk(slice any, setFunc func(*ReleaseGroupCreate, int)) *ReleaseGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ReleaseGroupCreateBulk{err: fmt.Errorf("calling to ReleaseGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ReleaseGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ReleaseGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ReleaseGroup.
+func (c *ReleaseGroupClient) Update() *ReleaseGroupUpdate {
+	mutation := newReleaseGroupMutation(c.config, OpUpdate)
+	return &ReleaseGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReleaseGroupClient) UpdateOne(rg *ReleaseGroup) *ReleaseGroupUpdateOne {
+	mutation := newReleaseGroupMutation(c.config, OpUpdateOne, withReleaseGroup(rg))
+	return &ReleaseGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReleaseGroupClient) UpdateOneID(id int) *ReleaseGroupUpdateOne {
+	mutation := newReleaseGroupMutation(c.config, OpUpdateOne, withReleaseGroupID(id))
+	return &ReleaseGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ReleaseGroup.
+func (c *ReleaseGroupClient) Delete() *ReleaseGroupDelete {
+	mutation := newReleaseGroupMutation(c.config, OpDelete)
+	return &ReleaseGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReleaseGroupClient) DeleteOne(rg *ReleaseGroup) *ReleaseGroupDeleteOne {
+	return c.DeleteOneID(rg.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReleaseGroupClient) DeleteOneID(id int) *ReleaseGroupDeleteOne {
+	builder := c.Delete().Where(releasegroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReleaseGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for ReleaseGroup.
+func (c *ReleaseGroupClient) Query() *ReleaseGroupQuery {
+	return &ReleaseGroupQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReleaseGroup},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ReleaseGroup entity by its id.
+func (c *ReleaseGroupClient) Get(ctx context.Context, id int) (*ReleaseGroup, error) {
+	return c.Query().Where(releasegroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReleaseGroupClient) GetX(ctx context.Context, id int) *ReleaseGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEpisodes queries the episodes edge of a ReleaseGroup.
+func (c *ReleaseGroupClient) QueryEpisodes(rg *ReleaseGroup) *EpisodeQuery {
+	query := (&EpisodeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(releasegroup.Table, releasegroup.FieldID, id),
+			sqlgraph.To(episode.Table, episode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, releasegroup.EpisodesTable, releasegroup.EpisodesColumn),
+		)
+		fromV = sqlgraph.Neighbors(rg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ReleaseGroupClient) Hooks() []Hook {
+	return c.hooks.ReleaseGroup
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReleaseGroupClient) Interceptors() []Interceptor {
+	return c.inters.ReleaseGroup
+}
+
+func (c *ReleaseGroupClient) mutate(ctx context.Context, m *ReleaseGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReleaseGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReleaseGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReleaseGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReleaseGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ReleaseGroup mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Episode []ent.Hook
+		Anime, Episode, ReleaseGroup []ent.Hook
 	}
 	inters struct {
-		Episode []ent.Interceptor
+		Anime, Episode, ReleaseGroup []ent.Interceptor
 	}
 )

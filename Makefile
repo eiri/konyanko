@@ -8,7 +8,7 @@ all: build
 	./$(PROJECT) -help
 
 $(PROJECT): $(SRC)
-	goimports -w main.go
+	fd -e go -X goimports -w
 	go build -o $(PROJECT) main.go
 
 .PHONY: build

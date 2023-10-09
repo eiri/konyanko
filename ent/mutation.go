@@ -6,12 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ent/predicate"
+	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
 const (
@@ -23,20 +26,454 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeEpisode = "Episode"
+	TypeAnime        = "Anime"
+	TypeEpisode      = "Episode"
+	TypeReleaseGroup = "ReleaseGroup"
 )
+
+// AnimeMutation represents an operation that mutates the Anime nodes in the graph.
+type AnimeMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *int
+	title           *string
+	clearedFields   map[string]struct{}
+	episodes        map[int]struct{}
+	removedepisodes map[int]struct{}
+	clearedepisodes bool
+	done            bool
+	oldValue        func(context.Context) (*Anime, error)
+	predicates      []predicate.Anime
+}
+
+var _ ent.Mutation = (*AnimeMutation)(nil)
+
+// animeOption allows management of the mutation configuration using functional options.
+type animeOption func(*AnimeMutation)
+
+// newAnimeMutation creates new mutation for the Anime entity.
+func newAnimeMutation(c config, op Op, opts ...animeOption) *AnimeMutation {
+	m := &AnimeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAnime,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAnimeID sets the ID field of the mutation.
+func withAnimeID(id int) animeOption {
+	return func(m *AnimeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Anime
+		)
+		m.oldValue = func(ctx context.Context) (*Anime, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Anime.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAnime sets the old Anime of the mutation.
+func withAnime(node *Anime) animeOption {
+	return func(m *AnimeMutation) {
+		m.oldValue = func(context.Context) (*Anime, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AnimeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AnimeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AnimeMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AnimeMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Anime.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTitle sets the "title" field.
+func (m *AnimeMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *AnimeMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Anime entity.
+// If the Anime object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnimeMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *AnimeMutation) ResetTitle() {
+	m.title = nil
+}
+
+// AddEpisodeIDs adds the "episodes" edge to the Episode entity by ids.
+func (m *AnimeMutation) AddEpisodeIDs(ids ...int) {
+	if m.episodes == nil {
+		m.episodes = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.episodes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEpisodes clears the "episodes" edge to the Episode entity.
+func (m *AnimeMutation) ClearEpisodes() {
+	m.clearedepisodes = true
+}
+
+// EpisodesCleared reports if the "episodes" edge to the Episode entity was cleared.
+func (m *AnimeMutation) EpisodesCleared() bool {
+	return m.clearedepisodes
+}
+
+// RemoveEpisodeIDs removes the "episodes" edge to the Episode entity by IDs.
+func (m *AnimeMutation) RemoveEpisodeIDs(ids ...int) {
+	if m.removedepisodes == nil {
+		m.removedepisodes = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.episodes, ids[i])
+		m.removedepisodes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEpisodes returns the removed IDs of the "episodes" edge to the Episode entity.
+func (m *AnimeMutation) RemovedEpisodesIDs() (ids []int) {
+	for id := range m.removedepisodes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EpisodesIDs returns the "episodes" edge IDs in the mutation.
+func (m *AnimeMutation) EpisodesIDs() (ids []int) {
+	for id := range m.episodes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEpisodes resets all changes to the "episodes" edge.
+func (m *AnimeMutation) ResetEpisodes() {
+	m.episodes = nil
+	m.clearedepisodes = false
+	m.removedepisodes = nil
+}
+
+// Where appends a list predicates to the AnimeMutation builder.
+func (m *AnimeMutation) Where(ps ...predicate.Anime) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AnimeMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AnimeMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Anime, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AnimeMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AnimeMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Anime).
+func (m *AnimeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AnimeMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.title != nil {
+		fields = append(fields, anime.FieldTitle)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AnimeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case anime.FieldTitle:
+		return m.Title()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AnimeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case anime.FieldTitle:
+		return m.OldTitle(ctx)
+	}
+	return nil, fmt.Errorf("unknown Anime field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AnimeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case anime.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Anime field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AnimeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AnimeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AnimeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Anime numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AnimeMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AnimeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AnimeMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Anime nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AnimeMutation) ResetField(name string) error {
+	switch name {
+	case anime.FieldTitle:
+		m.ResetTitle()
+		return nil
+	}
+	return fmt.Errorf("unknown Anime field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AnimeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.episodes != nil {
+		edges = append(edges, anime.EdgeEpisodes)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AnimeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case anime.EdgeEpisodes:
+		ids := make([]ent.Value, 0, len(m.episodes))
+		for id := range m.episodes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AnimeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedepisodes != nil {
+		edges = append(edges, anime.EdgeEpisodes)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AnimeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case anime.EdgeEpisodes:
+		ids := make([]ent.Value, 0, len(m.removedepisodes))
+		for id := range m.removedepisodes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AnimeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedepisodes {
+		edges = append(edges, anime.EdgeEpisodes)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AnimeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case anime.EdgeEpisodes:
+		return m.clearedepisodes
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AnimeMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Anime unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AnimeMutation) ResetEdge(name string) error {
+	switch name {
+	case anime.EdgeEpisodes:
+		m.ResetEpisodes()
+		return nil
+	}
+	return fmt.Errorf("unknown Anime edge %s", name)
+}
 
 // EpisodeMutation represents an operation that mutates the Episode nodes in the graph.
 type EpisodeMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	title         *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Episode, error)
-	predicates    []predicate.Episode
+	op                   Op
+	typ                  string
+	id                   *int
+	number               *int
+	addnumber            *int
+	view_url             **url.URL
+	download_url         **url.URL
+	file_name            *string
+	file_size            *int
+	addfile_size         *int
+	resolution           *string
+	video_codec          *string
+	audio_codec          *string
+	clearedFields        map[string]struct{}
+	title                *int
+	clearedtitle         bool
+	release_group        *int
+	clearedrelease_group bool
+	done                 bool
+	oldValue             func(context.Context) (*Episode, error)
+	predicates           []predicate.Episode
 }
 
 var _ ent.Mutation = (*EpisodeMutation)(nil)
@@ -137,40 +574,449 @@ func (m *EpisodeMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetTitle sets the "title" field.
-func (m *EpisodeMutation) SetTitle(s string) {
-	m.title = &s
+// SetNumber sets the "number" field.
+func (m *EpisodeMutation) SetNumber(i int) {
+	m.number = &i
+	m.addnumber = nil
 }
 
-// Title returns the value of the "title" field in the mutation.
-func (m *EpisodeMutation) Title() (r string, exists bool) {
-	v := m.title
+// Number returns the value of the "number" field in the mutation.
+func (m *EpisodeMutation) Number() (r int, exists bool) {
+	v := m.number
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldTitle returns the old "title" field's value of the Episode entity.
+// OldNumber returns the old "number" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldTitle(ctx context.Context) (v string, err error) {
+func (m *EpisodeMutation) OldNumber(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTitle requires an ID field in the mutation")
+		return v, errors.New("OldNumber requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
 	}
-	return oldValue.Title, nil
+	return oldValue.Number, nil
 }
 
-// ResetTitle resets all changes to the "title" field.
+// AddNumber adds i to the "number" field.
+func (m *EpisodeMutation) AddNumber(i int) {
+	if m.addnumber != nil {
+		*m.addnumber += i
+	} else {
+		m.addnumber = &i
+	}
+}
+
+// AddedNumber returns the value that was added to the "number" field in this mutation.
+func (m *EpisodeMutation) AddedNumber() (r int, exists bool) {
+	v := m.addnumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNumber resets all changes to the "number" field.
+func (m *EpisodeMutation) ResetNumber() {
+	m.number = nil
+	m.addnumber = nil
+}
+
+// SetViewURL sets the "view_url" field.
+func (m *EpisodeMutation) SetViewURL(u *url.URL) {
+	m.view_url = &u
+}
+
+// ViewURL returns the value of the "view_url" field in the mutation.
+func (m *EpisodeMutation) ViewURL() (r *url.URL, exists bool) {
+	v := m.view_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldViewURL returns the old "view_url" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldViewURL(ctx context.Context) (v *url.URL, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldViewURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldViewURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldViewURL: %w", err)
+	}
+	return oldValue.ViewURL, nil
+}
+
+// ResetViewURL resets all changes to the "view_url" field.
+func (m *EpisodeMutation) ResetViewURL() {
+	m.view_url = nil
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (m *EpisodeMutation) SetDownloadURL(u *url.URL) {
+	m.download_url = &u
+}
+
+// DownloadURL returns the value of the "download_url" field in the mutation.
+func (m *EpisodeMutation) DownloadURL() (r *url.URL, exists bool) {
+	v := m.download_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDownloadURL returns the old "download_url" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldDownloadURL(ctx context.Context) (v *url.URL, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDownloadURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDownloadURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDownloadURL: %w", err)
+	}
+	return oldValue.DownloadURL, nil
+}
+
+// ResetDownloadURL resets all changes to the "download_url" field.
+func (m *EpisodeMutation) ResetDownloadURL() {
+	m.download_url = nil
+}
+
+// SetFileName sets the "file_name" field.
+func (m *EpisodeMutation) SetFileName(s string) {
+	m.file_name = &s
+}
+
+// FileName returns the value of the "file_name" field in the mutation.
+func (m *EpisodeMutation) FileName() (r string, exists bool) {
+	v := m.file_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileName returns the old "file_name" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldFileName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileName: %w", err)
+	}
+	return oldValue.FileName, nil
+}
+
+// ResetFileName resets all changes to the "file_name" field.
+func (m *EpisodeMutation) ResetFileName() {
+	m.file_name = nil
+}
+
+// SetFileSize sets the "file_size" field.
+func (m *EpisodeMutation) SetFileSize(i int) {
+	m.file_size = &i
+	m.addfile_size = nil
+}
+
+// FileSize returns the value of the "file_size" field in the mutation.
+func (m *EpisodeMutation) FileSize() (r int, exists bool) {
+	v := m.file_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileSize returns the old "file_size" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldFileSize(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileSize: %w", err)
+	}
+	return oldValue.FileSize, nil
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (m *EpisodeMutation) AddFileSize(i int) {
+	if m.addfile_size != nil {
+		*m.addfile_size += i
+	} else {
+		m.addfile_size = &i
+	}
+}
+
+// AddedFileSize returns the value that was added to the "file_size" field in this mutation.
+func (m *EpisodeMutation) AddedFileSize() (r int, exists bool) {
+	v := m.addfile_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileSize resets all changes to the "file_size" field.
+func (m *EpisodeMutation) ResetFileSize() {
+	m.file_size = nil
+	m.addfile_size = nil
+}
+
+// SetResolution sets the "resolution" field.
+func (m *EpisodeMutation) SetResolution(s string) {
+	m.resolution = &s
+}
+
+// Resolution returns the value of the "resolution" field in the mutation.
+func (m *EpisodeMutation) Resolution() (r string, exists bool) {
+	v := m.resolution
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResolution returns the old "resolution" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldResolution(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResolution is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResolution requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResolution: %w", err)
+	}
+	return oldValue.Resolution, nil
+}
+
+// ClearResolution clears the value of the "resolution" field.
+func (m *EpisodeMutation) ClearResolution() {
+	m.resolution = nil
+	m.clearedFields[episode.FieldResolution] = struct{}{}
+}
+
+// ResolutionCleared returns if the "resolution" field was cleared in this mutation.
+func (m *EpisodeMutation) ResolutionCleared() bool {
+	_, ok := m.clearedFields[episode.FieldResolution]
+	return ok
+}
+
+// ResetResolution resets all changes to the "resolution" field.
+func (m *EpisodeMutation) ResetResolution() {
+	m.resolution = nil
+	delete(m.clearedFields, episode.FieldResolution)
+}
+
+// SetVideoCodec sets the "video_codec" field.
+func (m *EpisodeMutation) SetVideoCodec(s string) {
+	m.video_codec = &s
+}
+
+// VideoCodec returns the value of the "video_codec" field in the mutation.
+func (m *EpisodeMutation) VideoCodec() (r string, exists bool) {
+	v := m.video_codec
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVideoCodec returns the old "video_codec" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldVideoCodec(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVideoCodec is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVideoCodec requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVideoCodec: %w", err)
+	}
+	return oldValue.VideoCodec, nil
+}
+
+// ClearVideoCodec clears the value of the "video_codec" field.
+func (m *EpisodeMutation) ClearVideoCodec() {
+	m.video_codec = nil
+	m.clearedFields[episode.FieldVideoCodec] = struct{}{}
+}
+
+// VideoCodecCleared returns if the "video_codec" field was cleared in this mutation.
+func (m *EpisodeMutation) VideoCodecCleared() bool {
+	_, ok := m.clearedFields[episode.FieldVideoCodec]
+	return ok
+}
+
+// ResetVideoCodec resets all changes to the "video_codec" field.
+func (m *EpisodeMutation) ResetVideoCodec() {
+	m.video_codec = nil
+	delete(m.clearedFields, episode.FieldVideoCodec)
+}
+
+// SetAudioCodec sets the "audio_codec" field.
+func (m *EpisodeMutation) SetAudioCodec(s string) {
+	m.audio_codec = &s
+}
+
+// AudioCodec returns the value of the "audio_codec" field in the mutation.
+func (m *EpisodeMutation) AudioCodec() (r string, exists bool) {
+	v := m.audio_codec
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAudioCodec returns the old "audio_codec" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldAudioCodec(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAudioCodec is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAudioCodec requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAudioCodec: %w", err)
+	}
+	return oldValue.AudioCodec, nil
+}
+
+// ClearAudioCodec clears the value of the "audio_codec" field.
+func (m *EpisodeMutation) ClearAudioCodec() {
+	m.audio_codec = nil
+	m.clearedFields[episode.FieldAudioCodec] = struct{}{}
+}
+
+// AudioCodecCleared returns if the "audio_codec" field was cleared in this mutation.
+func (m *EpisodeMutation) AudioCodecCleared() bool {
+	_, ok := m.clearedFields[episode.FieldAudioCodec]
+	return ok
+}
+
+// ResetAudioCodec resets all changes to the "audio_codec" field.
+func (m *EpisodeMutation) ResetAudioCodec() {
+	m.audio_codec = nil
+	delete(m.clearedFields, episode.FieldAudioCodec)
+}
+
+// SetTitleID sets the "title" edge to the Anime entity by id.
+func (m *EpisodeMutation) SetTitleID(id int) {
+	m.title = &id
+}
+
+// ClearTitle clears the "title" edge to the Anime entity.
+func (m *EpisodeMutation) ClearTitle() {
+	m.clearedtitle = true
+}
+
+// TitleCleared reports if the "title" edge to the Anime entity was cleared.
+func (m *EpisodeMutation) TitleCleared() bool {
+	return m.clearedtitle
+}
+
+// TitleID returns the "title" edge ID in the mutation.
+func (m *EpisodeMutation) TitleID() (id int, exists bool) {
+	if m.title != nil {
+		return *m.title, true
+	}
+	return
+}
+
+// TitleIDs returns the "title" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TitleID instead. It exists only for internal usage by the builders.
+func (m *EpisodeMutation) TitleIDs() (ids []int) {
+	if id := m.title; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTitle resets all changes to the "title" edge.
 func (m *EpisodeMutation) ResetTitle() {
 	m.title = nil
+	m.clearedtitle = false
+}
+
+// SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by id.
+func (m *EpisodeMutation) SetReleaseGroupID(id int) {
+	m.release_group = &id
+}
+
+// ClearReleaseGroup clears the "release_group" edge to the ReleaseGroup entity.
+func (m *EpisodeMutation) ClearReleaseGroup() {
+	m.clearedrelease_group = true
+}
+
+// ReleaseGroupCleared reports if the "release_group" edge to the ReleaseGroup entity was cleared.
+func (m *EpisodeMutation) ReleaseGroupCleared() bool {
+	return m.clearedrelease_group
+}
+
+// ReleaseGroupID returns the "release_group" edge ID in the mutation.
+func (m *EpisodeMutation) ReleaseGroupID() (id int, exists bool) {
+	if m.release_group != nil {
+		return *m.release_group, true
+	}
+	return
+}
+
+// ReleaseGroupIDs returns the "release_group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ReleaseGroupID instead. It exists only for internal usage by the builders.
+func (m *EpisodeMutation) ReleaseGroupIDs() (ids []int) {
+	if id := m.release_group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReleaseGroup resets all changes to the "release_group" edge.
+func (m *EpisodeMutation) ResetReleaseGroup() {
+	m.release_group = nil
+	m.clearedrelease_group = false
 }
 
 // Where appends a list predicates to the EpisodeMutation builder.
@@ -207,9 +1053,30 @@ func (m *EpisodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EpisodeMutation) Fields() []string {
-	fields := make([]string, 0, 1)
-	if m.title != nil {
-		fields = append(fields, episode.FieldTitle)
+	fields := make([]string, 0, 8)
+	if m.number != nil {
+		fields = append(fields, episode.FieldNumber)
+	}
+	if m.view_url != nil {
+		fields = append(fields, episode.FieldViewURL)
+	}
+	if m.download_url != nil {
+		fields = append(fields, episode.FieldDownloadURL)
+	}
+	if m.file_name != nil {
+		fields = append(fields, episode.FieldFileName)
+	}
+	if m.file_size != nil {
+		fields = append(fields, episode.FieldFileSize)
+	}
+	if m.resolution != nil {
+		fields = append(fields, episode.FieldResolution)
+	}
+	if m.video_codec != nil {
+		fields = append(fields, episode.FieldVideoCodec)
+	}
+	if m.audio_codec != nil {
+		fields = append(fields, episode.FieldAudioCodec)
 	}
 	return fields
 }
@@ -219,8 +1086,22 @@ func (m *EpisodeMutation) Fields() []string {
 // schema.
 func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case episode.FieldTitle:
-		return m.Title()
+	case episode.FieldNumber:
+		return m.Number()
+	case episode.FieldViewURL:
+		return m.ViewURL()
+	case episode.FieldDownloadURL:
+		return m.DownloadURL()
+	case episode.FieldFileName:
+		return m.FileName()
+	case episode.FieldFileSize:
+		return m.FileSize()
+	case episode.FieldResolution:
+		return m.Resolution()
+	case episode.FieldVideoCodec:
+		return m.VideoCodec()
+	case episode.FieldAudioCodec:
+		return m.AudioCodec()
 	}
 	return nil, false
 }
@@ -230,8 +1111,22 @@ func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case episode.FieldTitle:
-		return m.OldTitle(ctx)
+	case episode.FieldNumber:
+		return m.OldNumber(ctx)
+	case episode.FieldViewURL:
+		return m.OldViewURL(ctx)
+	case episode.FieldDownloadURL:
+		return m.OldDownloadURL(ctx)
+	case episode.FieldFileName:
+		return m.OldFileName(ctx)
+	case episode.FieldFileSize:
+		return m.OldFileSize(ctx)
+	case episode.FieldResolution:
+		return m.OldResolution(ctx)
+	case episode.FieldVideoCodec:
+		return m.OldVideoCodec(ctx)
+	case episode.FieldAudioCodec:
+		return m.OldAudioCodec(ctx)
 	}
 	return nil, fmt.Errorf("unknown Episode field %s", name)
 }
@@ -241,12 +1136,61 @@ func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case episode.FieldTitle:
+	case episode.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNumber(v)
+		return nil
+	case episode.FieldViewURL:
+		v, ok := value.(*url.URL)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetViewURL(v)
+		return nil
+	case episode.FieldDownloadURL:
+		v, ok := value.(*url.URL)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDownloadURL(v)
+		return nil
+	case episode.FieldFileName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetTitle(v)
+		m.SetFileName(v)
+		return nil
+	case episode.FieldFileSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileSize(v)
+		return nil
+	case episode.FieldResolution:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResolution(v)
+		return nil
+	case episode.FieldVideoCodec:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVideoCodec(v)
+		return nil
+	case episode.FieldAudioCodec:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAudioCodec(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Episode field %s", name)
@@ -255,13 +1199,26 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *EpisodeMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addnumber != nil {
+		fields = append(fields, episode.FieldNumber)
+	}
+	if m.addfile_size != nil {
+		fields = append(fields, episode.FieldFileSize)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *EpisodeMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case episode.FieldNumber:
+		return m.AddedNumber()
+	case episode.FieldFileSize:
+		return m.AddedFileSize()
+	}
 	return nil, false
 }
 
@@ -270,6 +1227,20 @@ func (m *EpisodeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EpisodeMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case episode.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNumber(v)
+		return nil
+	case episode.FieldFileSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileSize(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Episode numeric field %s", name)
 }
@@ -277,7 +1248,17 @@ func (m *EpisodeMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *EpisodeMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(episode.FieldResolution) {
+		fields = append(fields, episode.FieldResolution)
+	}
+	if m.FieldCleared(episode.FieldVideoCodec) {
+		fields = append(fields, episode.FieldVideoCodec)
+	}
+	if m.FieldCleared(episode.FieldAudioCodec) {
+		fields = append(fields, episode.FieldAudioCodec)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -290,6 +1271,17 @@ func (m *EpisodeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *EpisodeMutation) ClearField(name string) error {
+	switch name {
+	case episode.FieldResolution:
+		m.ClearResolution()
+		return nil
+	case episode.FieldVideoCodec:
+		m.ClearVideoCodec()
+		return nil
+	case episode.FieldAudioCodec:
+		m.ClearAudioCodec()
+		return nil
+	}
 	return fmt.Errorf("unknown Episode nullable field %s", name)
 }
 
@@ -297,8 +1289,29 @@ func (m *EpisodeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EpisodeMutation) ResetField(name string) error {
 	switch name {
-	case episode.FieldTitle:
-		m.ResetTitle()
+	case episode.FieldNumber:
+		m.ResetNumber()
+		return nil
+	case episode.FieldViewURL:
+		m.ResetViewURL()
+		return nil
+	case episode.FieldDownloadURL:
+		m.ResetDownloadURL()
+		return nil
+	case episode.FieldFileName:
+		m.ResetFileName()
+		return nil
+	case episode.FieldFileSize:
+		m.ResetFileSize()
+		return nil
+	case episode.FieldResolution:
+		m.ResetResolution()
+		return nil
+	case episode.FieldVideoCodec:
+		m.ResetVideoCodec()
+		return nil
+	case episode.FieldAudioCodec:
+		m.ResetAudioCodec()
 		return nil
 	}
 	return fmt.Errorf("unknown Episode field %s", name)
@@ -306,19 +1319,35 @@ func (m *EpisodeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EpisodeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.title != nil {
+		edges = append(edges, episode.EdgeTitle)
+	}
+	if m.release_group != nil {
+		edges = append(edges, episode.EdgeReleaseGroup)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *EpisodeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case episode.EdgeTitle:
+		if id := m.title; id != nil {
+			return []ent.Value{*id}
+		}
+	case episode.EdgeReleaseGroup:
+		if id := m.release_group; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EpisodeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -330,24 +1359,471 @@ func (m *EpisodeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EpisodeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.clearedtitle {
+		edges = append(edges, episode.EdgeTitle)
+	}
+	if m.clearedrelease_group {
+		edges = append(edges, episode.EdgeReleaseGroup)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *EpisodeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case episode.EdgeTitle:
+		return m.clearedtitle
+	case episode.EdgeReleaseGroup:
+		return m.clearedrelease_group
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *EpisodeMutation) ClearEdge(name string) error {
+	switch name {
+	case episode.EdgeTitle:
+		m.ClearTitle()
+		return nil
+	case episode.EdgeReleaseGroup:
+		m.ClearReleaseGroup()
+		return nil
+	}
 	return fmt.Errorf("unknown Episode unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *EpisodeMutation) ResetEdge(name string) error {
+	switch name {
+	case episode.EdgeTitle:
+		m.ResetTitle()
+		return nil
+	case episode.EdgeReleaseGroup:
+		m.ResetReleaseGroup()
+		return nil
+	}
 	return fmt.Errorf("unknown Episode edge %s", name)
+}
+
+// ReleaseGroupMutation represents an operation that mutates the ReleaseGroup nodes in the graph.
+type ReleaseGroupMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *int
+	name            *string
+	clearedFields   map[string]struct{}
+	episodes        map[int]struct{}
+	removedepisodes map[int]struct{}
+	clearedepisodes bool
+	done            bool
+	oldValue        func(context.Context) (*ReleaseGroup, error)
+	predicates      []predicate.ReleaseGroup
+}
+
+var _ ent.Mutation = (*ReleaseGroupMutation)(nil)
+
+// releasegroupOption allows management of the mutation configuration using functional options.
+type releasegroupOption func(*ReleaseGroupMutation)
+
+// newReleaseGroupMutation creates new mutation for the ReleaseGroup entity.
+func newReleaseGroupMutation(c config, op Op, opts ...releasegroupOption) *ReleaseGroupMutation {
+	m := &ReleaseGroupMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReleaseGroup,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withReleaseGroupID sets the ID field of the mutation.
+func withReleaseGroupID(id int) releasegroupOption {
+	return func(m *ReleaseGroupMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ReleaseGroup
+		)
+		m.oldValue = func(ctx context.Context) (*ReleaseGroup, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ReleaseGroup.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withReleaseGroup sets the old ReleaseGroup of the mutation.
+func withReleaseGroup(node *ReleaseGroup) releasegroupOption {
+	return func(m *ReleaseGroupMutation) {
+		m.oldValue = func(context.Context) (*ReleaseGroup, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReleaseGroupMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReleaseGroupMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ReleaseGroupMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ReleaseGroupMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ReleaseGroup.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetName sets the "name" field.
+func (m *ReleaseGroupMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ReleaseGroupMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the ReleaseGroup entity.
+// If the ReleaseGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReleaseGroupMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ReleaseGroupMutation) ResetName() {
+	m.name = nil
+}
+
+// AddEpisodeIDs adds the "episodes" edge to the Episode entity by ids.
+func (m *ReleaseGroupMutation) AddEpisodeIDs(ids ...int) {
+	if m.episodes == nil {
+		m.episodes = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.episodes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEpisodes clears the "episodes" edge to the Episode entity.
+func (m *ReleaseGroupMutation) ClearEpisodes() {
+	m.clearedepisodes = true
+}
+
+// EpisodesCleared reports if the "episodes" edge to the Episode entity was cleared.
+func (m *ReleaseGroupMutation) EpisodesCleared() bool {
+	return m.clearedepisodes
+}
+
+// RemoveEpisodeIDs removes the "episodes" edge to the Episode entity by IDs.
+func (m *ReleaseGroupMutation) RemoveEpisodeIDs(ids ...int) {
+	if m.removedepisodes == nil {
+		m.removedepisodes = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.episodes, ids[i])
+		m.removedepisodes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEpisodes returns the removed IDs of the "episodes" edge to the Episode entity.
+func (m *ReleaseGroupMutation) RemovedEpisodesIDs() (ids []int) {
+	for id := range m.removedepisodes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EpisodesIDs returns the "episodes" edge IDs in the mutation.
+func (m *ReleaseGroupMutation) EpisodesIDs() (ids []int) {
+	for id := range m.episodes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEpisodes resets all changes to the "episodes" edge.
+func (m *ReleaseGroupMutation) ResetEpisodes() {
+	m.episodes = nil
+	m.clearedepisodes = false
+	m.removedepisodes = nil
+}
+
+// Where appends a list predicates to the ReleaseGroupMutation builder.
+func (m *ReleaseGroupMutation) Where(ps ...predicate.ReleaseGroup) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ReleaseGroupMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ReleaseGroupMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ReleaseGroup, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ReleaseGroupMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ReleaseGroupMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ReleaseGroup).
+func (m *ReleaseGroupMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReleaseGroupMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.name != nil {
+		fields = append(fields, releasegroup.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReleaseGroupMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case releasegroup.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReleaseGroupMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case releasegroup.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown ReleaseGroup field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReleaseGroupMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case releasegroup.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ReleaseGroup field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReleaseGroupMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReleaseGroupMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReleaseGroupMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ReleaseGroup numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReleaseGroupMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReleaseGroupMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReleaseGroupMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ReleaseGroup nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReleaseGroupMutation) ResetField(name string) error {
+	switch name {
+	case releasegroup.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown ReleaseGroup field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReleaseGroupMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.episodes != nil {
+		edges = append(edges, releasegroup.EdgeEpisodes)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReleaseGroupMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case releasegroup.EdgeEpisodes:
+		ids := make([]ent.Value, 0, len(m.episodes))
+		for id := range m.episodes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReleaseGroupMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedepisodes != nil {
+		edges = append(edges, releasegroup.EdgeEpisodes)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReleaseGroupMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case releasegroup.EdgeEpisodes:
+		ids := make([]ent.Value, 0, len(m.removedepisodes))
+		for id := range m.removedepisodes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReleaseGroupMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedepisodes {
+		edges = append(edges, releasegroup.EdgeEpisodes)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReleaseGroupMutation) EdgeCleared(name string) bool {
+	switch name {
+	case releasegroup.EdgeEpisodes:
+		return m.clearedepisodes
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReleaseGroupMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ReleaseGroup unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReleaseGroupMutation) ResetEdge(name string) error {
+	switch name {
+	case releasegroup.EdgeEpisodes:
+		m.ResetEpisodes()
+		return nil
+	}
+	return fmt.Errorf("unknown ReleaseGroup edge %s", name)
 }

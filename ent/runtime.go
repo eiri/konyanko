@@ -2,8 +2,23 @@
 
 package ent
 
+import (
+	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/schema"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	episodeFields := schema.Episode{}.Fields()
+	_ = episodeFields
+	// episodeDescNumber is the schema descriptor for number field.
+	episodeDescNumber := episodeFields[0].Descriptor()
+	// episode.NumberValidator is a validator for the "number" field. It is called by the builders before save.
+	episode.NumberValidator = episodeDescNumber.Validators[0].(func(int) error)
+	// episodeDescFileSize is the schema descriptor for file_size field.
+	episodeDescFileSize := episodeFields[4].Descriptor()
+	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
+	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
 }

@@ -24,7 +24,7 @@ Anime
 - title:str
 - preferred:bool
 
-Subber
+ReleaseGroup
 ---
 - name:str
 - preferred:bool
@@ -33,9 +33,11 @@ Episode
 ---
 - anime_id:id
 - number:int
-- url:str
+- view_url:str
+- download_url:str
+- release_group_id:id
 - file_name:str
-- subber_id:id
+- file_size:int
 - resolution:enum
-- codec:enum
-- size:int
+- video_codec:enum
+- audio_codec:enum

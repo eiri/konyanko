@@ -6,12 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ent/predicate"
+	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
 // EpisodeUpdate is the builder for updating Episode entities.
@@ -27,15 +30,155 @@ func (eu *EpisodeUpdate) Where(ps ...predicate.Episode) *EpisodeUpdate {
 	return eu
 }
 
-// SetTitle sets the "title" field.
-func (eu *EpisodeUpdate) SetTitle(s string) *EpisodeUpdate {
-	eu.mutation.SetTitle(s)
+// SetNumber sets the "number" field.
+func (eu *EpisodeUpdate) SetNumber(i int) *EpisodeUpdate {
+	eu.mutation.ResetNumber()
+	eu.mutation.SetNumber(i)
 	return eu
+}
+
+// AddNumber adds i to the "number" field.
+func (eu *EpisodeUpdate) AddNumber(i int) *EpisodeUpdate {
+	eu.mutation.AddNumber(i)
+	return eu
+}
+
+// SetViewURL sets the "view_url" field.
+func (eu *EpisodeUpdate) SetViewURL(u *url.URL) *EpisodeUpdate {
+	eu.mutation.SetViewURL(u)
+	return eu
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (eu *EpisodeUpdate) SetDownloadURL(u *url.URL) *EpisodeUpdate {
+	eu.mutation.SetDownloadURL(u)
+	return eu
+}
+
+// SetFileName sets the "file_name" field.
+func (eu *EpisodeUpdate) SetFileName(s string) *EpisodeUpdate {
+	eu.mutation.SetFileName(s)
+	return eu
+}
+
+// SetFileSize sets the "file_size" field.
+func (eu *EpisodeUpdate) SetFileSize(i int) *EpisodeUpdate {
+	eu.mutation.ResetFileSize()
+	eu.mutation.SetFileSize(i)
+	return eu
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (eu *EpisodeUpdate) AddFileSize(i int) *EpisodeUpdate {
+	eu.mutation.AddFileSize(i)
+	return eu
+}
+
+// SetResolution sets the "resolution" field.
+func (eu *EpisodeUpdate) SetResolution(s string) *EpisodeUpdate {
+	eu.mutation.SetResolution(s)
+	return eu
+}
+
+// SetNillableResolution sets the "resolution" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableResolution(s *string) *EpisodeUpdate {
+	if s != nil {
+		eu.SetResolution(*s)
+	}
+	return eu
+}
+
+// ClearResolution clears the value of the "resolution" field.
+func (eu *EpisodeUpdate) ClearResolution() *EpisodeUpdate {
+	eu.mutation.ClearResolution()
+	return eu
+}
+
+// SetVideoCodec sets the "video_codec" field.
+func (eu *EpisodeUpdate) SetVideoCodec(s string) *EpisodeUpdate {
+	eu.mutation.SetVideoCodec(s)
+	return eu
+}
+
+// SetNillableVideoCodec sets the "video_codec" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableVideoCodec(s *string) *EpisodeUpdate {
+	if s != nil {
+		eu.SetVideoCodec(*s)
+	}
+	return eu
+}
+
+// ClearVideoCodec clears the value of the "video_codec" field.
+func (eu *EpisodeUpdate) ClearVideoCodec() *EpisodeUpdate {
+	eu.mutation.ClearVideoCodec()
+	return eu
+}
+
+// SetAudioCodec sets the "audio_codec" field.
+func (eu *EpisodeUpdate) SetAudioCodec(s string) *EpisodeUpdate {
+	eu.mutation.SetAudioCodec(s)
+	return eu
+}
+
+// SetNillableAudioCodec sets the "audio_codec" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableAudioCodec(s *string) *EpisodeUpdate {
+	if s != nil {
+		eu.SetAudioCodec(*s)
+	}
+	return eu
+}
+
+// ClearAudioCodec clears the value of the "audio_codec" field.
+func (eu *EpisodeUpdate) ClearAudioCodec() *EpisodeUpdate {
+	eu.mutation.ClearAudioCodec()
+	return eu
+}
+
+// SetTitleID sets the "title" edge to the Anime entity by ID.
+func (eu *EpisodeUpdate) SetTitleID(id int) *EpisodeUpdate {
+	eu.mutation.SetTitleID(id)
+	return eu
+}
+
+// SetTitle sets the "title" edge to the Anime entity.
+func (eu *EpisodeUpdate) SetTitle(a *Anime) *EpisodeUpdate {
+	return eu.SetTitleID(a.ID)
+}
+
+// SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID.
+func (eu *EpisodeUpdate) SetReleaseGroupID(id int) *EpisodeUpdate {
+	eu.mutation.SetReleaseGroupID(id)
+	return eu
+}
+
+// SetNillableReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableReleaseGroupID(id *int) *EpisodeUpdate {
+	if id != nil {
+		eu = eu.SetReleaseGroupID(*id)
+	}
+	return eu
+}
+
+// SetReleaseGroup sets the "release_group" edge to the ReleaseGroup entity.
+func (eu *EpisodeUpdate) SetReleaseGroup(r *ReleaseGroup) *EpisodeUpdate {
+	return eu.SetReleaseGroupID(r.ID)
 }
 
 // Mutation returns the EpisodeMutation object of the builder.
 func (eu *EpisodeUpdate) Mutation() *EpisodeMutation {
 	return eu.mutation
+}
+
+// ClearTitle clears the "title" edge to the Anime entity.
+func (eu *EpisodeUpdate) ClearTitle() *EpisodeUpdate {
+	eu.mutation.ClearTitle()
+	return eu
+}
+
+// ClearReleaseGroup clears the "release_group" edge to the ReleaseGroup entity.
+func (eu *EpisodeUpdate) ClearReleaseGroup() *EpisodeUpdate {
+	eu.mutation.ClearReleaseGroup()
+	return eu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -65,7 +208,28 @@ func (eu *EpisodeUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (eu *EpisodeUpdate) check() error {
+	if v, ok := eu.mutation.Number(); ok {
+		if err := episode.NumberValidator(v); err != nil {
+			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.FileSize(); ok {
+		if err := episode.FileSizeValidator(v); err != nil {
+			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
+		}
+	}
+	if _, ok := eu.mutation.TitleID(); eu.mutation.TitleCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Episode.title"`)
+	}
+	return nil
+}
+
 func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := eu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(episode.Table, episode.Columns, sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt))
 	if ps := eu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -74,8 +238,102 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := eu.mutation.Title(); ok {
-		_spec.SetField(episode.FieldTitle, field.TypeString, value)
+	if value, ok := eu.mutation.Number(); ok {
+		_spec.SetField(episode.FieldNumber, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedNumber(); ok {
+		_spec.AddField(episode.FieldNumber, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.ViewURL(); ok {
+		_spec.SetField(episode.FieldViewURL, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.DownloadURL(); ok {
+		_spec.SetField(episode.FieldDownloadURL, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.FileName(); ok {
+		_spec.SetField(episode.FieldFileName, field.TypeString, value)
+	}
+	if value, ok := eu.mutation.FileSize(); ok {
+		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedFileSize(); ok {
+		_spec.AddField(episode.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.Resolution(); ok {
+		_spec.SetField(episode.FieldResolution, field.TypeString, value)
+	}
+	if eu.mutation.ResolutionCleared() {
+		_spec.ClearField(episode.FieldResolution, field.TypeString)
+	}
+	if value, ok := eu.mutation.VideoCodec(); ok {
+		_spec.SetField(episode.FieldVideoCodec, field.TypeString, value)
+	}
+	if eu.mutation.VideoCodecCleared() {
+		_spec.ClearField(episode.FieldVideoCodec, field.TypeString)
+	}
+	if value, ok := eu.mutation.AudioCodec(); ok {
+		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
+	}
+	if eu.mutation.AudioCodecCleared() {
+		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
+	}
+	if eu.mutation.TitleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.TitleTable,
+			Columns: []string{episode.TitleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.TitleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.TitleTable,
+			Columns: []string{episode.TitleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.ReleaseGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.ReleaseGroupTable,
+			Columns: []string{episode.ReleaseGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.ReleaseGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.ReleaseGroupTable,
+			Columns: []string{episode.ReleaseGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -97,15 +355,155 @@ type EpisodeUpdateOne struct {
 	mutation *EpisodeMutation
 }
 
-// SetTitle sets the "title" field.
-func (euo *EpisodeUpdateOne) SetTitle(s string) *EpisodeUpdateOne {
-	euo.mutation.SetTitle(s)
+// SetNumber sets the "number" field.
+func (euo *EpisodeUpdateOne) SetNumber(i int) *EpisodeUpdateOne {
+	euo.mutation.ResetNumber()
+	euo.mutation.SetNumber(i)
 	return euo
+}
+
+// AddNumber adds i to the "number" field.
+func (euo *EpisodeUpdateOne) AddNumber(i int) *EpisodeUpdateOne {
+	euo.mutation.AddNumber(i)
+	return euo
+}
+
+// SetViewURL sets the "view_url" field.
+func (euo *EpisodeUpdateOne) SetViewURL(u *url.URL) *EpisodeUpdateOne {
+	euo.mutation.SetViewURL(u)
+	return euo
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (euo *EpisodeUpdateOne) SetDownloadURL(u *url.URL) *EpisodeUpdateOne {
+	euo.mutation.SetDownloadURL(u)
+	return euo
+}
+
+// SetFileName sets the "file_name" field.
+func (euo *EpisodeUpdateOne) SetFileName(s string) *EpisodeUpdateOne {
+	euo.mutation.SetFileName(s)
+	return euo
+}
+
+// SetFileSize sets the "file_size" field.
+func (euo *EpisodeUpdateOne) SetFileSize(i int) *EpisodeUpdateOne {
+	euo.mutation.ResetFileSize()
+	euo.mutation.SetFileSize(i)
+	return euo
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (euo *EpisodeUpdateOne) AddFileSize(i int) *EpisodeUpdateOne {
+	euo.mutation.AddFileSize(i)
+	return euo
+}
+
+// SetResolution sets the "resolution" field.
+func (euo *EpisodeUpdateOne) SetResolution(s string) *EpisodeUpdateOne {
+	euo.mutation.SetResolution(s)
+	return euo
+}
+
+// SetNillableResolution sets the "resolution" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableResolution(s *string) *EpisodeUpdateOne {
+	if s != nil {
+		euo.SetResolution(*s)
+	}
+	return euo
+}
+
+// ClearResolution clears the value of the "resolution" field.
+func (euo *EpisodeUpdateOne) ClearResolution() *EpisodeUpdateOne {
+	euo.mutation.ClearResolution()
+	return euo
+}
+
+// SetVideoCodec sets the "video_codec" field.
+func (euo *EpisodeUpdateOne) SetVideoCodec(s string) *EpisodeUpdateOne {
+	euo.mutation.SetVideoCodec(s)
+	return euo
+}
+
+// SetNillableVideoCodec sets the "video_codec" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableVideoCodec(s *string) *EpisodeUpdateOne {
+	if s != nil {
+		euo.SetVideoCodec(*s)
+	}
+	return euo
+}
+
+// ClearVideoCodec clears the value of the "video_codec" field.
+func (euo *EpisodeUpdateOne) ClearVideoCodec() *EpisodeUpdateOne {
+	euo.mutation.ClearVideoCodec()
+	return euo
+}
+
+// SetAudioCodec sets the "audio_codec" field.
+func (euo *EpisodeUpdateOne) SetAudioCodec(s string) *EpisodeUpdateOne {
+	euo.mutation.SetAudioCodec(s)
+	return euo
+}
+
+// SetNillableAudioCodec sets the "audio_codec" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableAudioCodec(s *string) *EpisodeUpdateOne {
+	if s != nil {
+		euo.SetAudioCodec(*s)
+	}
+	return euo
+}
+
+// ClearAudioCodec clears the value of the "audio_codec" field.
+func (euo *EpisodeUpdateOne) ClearAudioCodec() *EpisodeUpdateOne {
+	euo.mutation.ClearAudioCodec()
+	return euo
+}
+
+// SetTitleID sets the "title" edge to the Anime entity by ID.
+func (euo *EpisodeUpdateOne) SetTitleID(id int) *EpisodeUpdateOne {
+	euo.mutation.SetTitleID(id)
+	return euo
+}
+
+// SetTitle sets the "title" edge to the Anime entity.
+func (euo *EpisodeUpdateOne) SetTitle(a *Anime) *EpisodeUpdateOne {
+	return euo.SetTitleID(a.ID)
+}
+
+// SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID.
+func (euo *EpisodeUpdateOne) SetReleaseGroupID(id int) *EpisodeUpdateOne {
+	euo.mutation.SetReleaseGroupID(id)
+	return euo
+}
+
+// SetNillableReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableReleaseGroupID(id *int) *EpisodeUpdateOne {
+	if id != nil {
+		euo = euo.SetReleaseGroupID(*id)
+	}
+	return euo
+}
+
+// SetReleaseGroup sets the "release_group" edge to the ReleaseGroup entity.
+func (euo *EpisodeUpdateOne) SetReleaseGroup(r *ReleaseGroup) *EpisodeUpdateOne {
+	return euo.SetReleaseGroupID(r.ID)
 }
 
 // Mutation returns the EpisodeMutation object of the builder.
 func (euo *EpisodeUpdateOne) Mutation() *EpisodeMutation {
 	return euo.mutation
+}
+
+// ClearTitle clears the "title" edge to the Anime entity.
+func (euo *EpisodeUpdateOne) ClearTitle() *EpisodeUpdateOne {
+	euo.mutation.ClearTitle()
+	return euo
+}
+
+// ClearReleaseGroup clears the "release_group" edge to the ReleaseGroup entity.
+func (euo *EpisodeUpdateOne) ClearReleaseGroup() *EpisodeUpdateOne {
+	euo.mutation.ClearReleaseGroup()
+	return euo
 }
 
 // Where appends a list predicates to the EpisodeUpdate builder.
@@ -148,7 +546,28 @@ func (euo *EpisodeUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (euo *EpisodeUpdateOne) check() error {
+	if v, ok := euo.mutation.Number(); ok {
+		if err := episode.NumberValidator(v); err != nil {
+			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.FileSize(); ok {
+		if err := episode.FileSizeValidator(v); err != nil {
+			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
+		}
+	}
+	if _, ok := euo.mutation.TitleID(); euo.mutation.TitleCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Episode.title"`)
+	}
+	return nil
+}
+
 func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err error) {
+	if err := euo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(episode.Table, episode.Columns, sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt))
 	id, ok := euo.mutation.ID()
 	if !ok {
@@ -174,8 +593,102 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 			}
 		}
 	}
-	if value, ok := euo.mutation.Title(); ok {
-		_spec.SetField(episode.FieldTitle, field.TypeString, value)
+	if value, ok := euo.mutation.Number(); ok {
+		_spec.SetField(episode.FieldNumber, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedNumber(); ok {
+		_spec.AddField(episode.FieldNumber, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.ViewURL(); ok {
+		_spec.SetField(episode.FieldViewURL, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.DownloadURL(); ok {
+		_spec.SetField(episode.FieldDownloadURL, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.FileName(); ok {
+		_spec.SetField(episode.FieldFileName, field.TypeString, value)
+	}
+	if value, ok := euo.mutation.FileSize(); ok {
+		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedFileSize(); ok {
+		_spec.AddField(episode.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.Resolution(); ok {
+		_spec.SetField(episode.FieldResolution, field.TypeString, value)
+	}
+	if euo.mutation.ResolutionCleared() {
+		_spec.ClearField(episode.FieldResolution, field.TypeString)
+	}
+	if value, ok := euo.mutation.VideoCodec(); ok {
+		_spec.SetField(episode.FieldVideoCodec, field.TypeString, value)
+	}
+	if euo.mutation.VideoCodecCleared() {
+		_spec.ClearField(episode.FieldVideoCodec, field.TypeString)
+	}
+	if value, ok := euo.mutation.AudioCodec(); ok {
+		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
+	}
+	if euo.mutation.AudioCodecCleared() {
+		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
+	}
+	if euo.mutation.TitleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.TitleTable,
+			Columns: []string{episode.TitleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.TitleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.TitleTable,
+			Columns: []string{episode.TitleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.ReleaseGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.ReleaseGroupTable,
+			Columns: []string{episode.ReleaseGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.ReleaseGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   episode.ReleaseGroupTable,
+			Columns: []string{episode.ReleaseGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Episode{config: euo.config}
 	_spec.Assign = _node.assignValues

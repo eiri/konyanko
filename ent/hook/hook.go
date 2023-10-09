@@ -9,6 +9,18 @@ import (
 	"github.com/eiri/konyanko/ent"
 )
 
+// The AnimeFunc type is an adapter to allow the use of ordinary
+// function as Anime mutator.
+type AnimeFunc func(context.Context, *ent.AnimeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnimeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnimeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnimeMutation", m)
+}
+
 // The EpisodeFunc type is an adapter to allow the use of ordinary
 // function as Episode mutator.
 type EpisodeFunc func(context.Context, *ent.EpisodeMutation) (ent.Value, error)
@@ -19,6 +31,18 @@ func (f EpisodeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EpisodeMutation", m)
+}
+
+// The ReleaseGroupFunc type is an adapter to allow the use of ordinary
+// function as ReleaseGroup mutator.
+type ReleaseGroupFunc func(context.Context, *ent.ReleaseGroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReleaseGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ReleaseGroupMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReleaseGroupMutation", m)
 }
 
 // Condition is a hook condition function.
