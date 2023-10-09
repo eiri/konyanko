@@ -10,6 +10,7 @@ import (
 	"github.com/eiri/konyanko/ent"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/nssteinbrenner/anitogo"
 	"github.com/zhengchun/syndfeed"
 )
 
@@ -110,7 +111,15 @@ func List() error {
 	}
 
 	for _, e := range episodes {
-		log.Printf("%d %s", e.ID, e.Title)
+		pe := anitogo.Parse(e.Title, anitogo.DefaultOptions)
+		log.Println("FileName", pe.FileName)
+		log.Println("AnimeTitle", pe.AnimeTitle)
+		log.Println("EpisodeNumber", pe.EpisodeNumber)
+		log.Println("ReleaseGroup", pe.ReleaseGroup)
+		log.Println("VideoResolution", pe.VideoResolution)
+		log.Println("VideoTerm", pe.VideoTerm)
+		log.Println("AudioTerm", pe.AudioTerm)
+		log.Println("---")
 	}
 	return nil
 }

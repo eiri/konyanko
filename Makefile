@@ -8,6 +8,7 @@ all: build
 	./$(PROJECT) -help
 
 $(PROJECT): $(SRC)
+	goimports -w main.go
 	go build -o $(PROJECT) main.go
 
 .PHONY: build
@@ -18,7 +19,7 @@ migrate: $(PROJECT)
 	./$< -c $@
 
 nyaa.xml:
-	curl -o $@ https://nyaa.si/?page=rss&c=1_2
+	curl -o $@ "https://nyaa.si/?page=rss&c=1_2"
 
 .PHONY: import
 import: $(PROJECT) nyaa.xml

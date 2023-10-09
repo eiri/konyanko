@@ -5,6 +5,7 @@ go 1.20
 require (
 	entgo.io/ent v0.12.4
 	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/nssteinbrenner/anitogo v0.0.0-20200907113149-eb04a0056b4a
 	github.com/zhengchun/syndfeed v0.0.0-20180313023127-b04d7ffab27d
 )
 
