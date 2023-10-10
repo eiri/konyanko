@@ -17,17 +17,15 @@ A nyaa.si aggregator.
 - [ ] Goreleaser
 - [ ] Myanimelist integration
 
-## Schama
+## Schema
 
 Anime
 ---
 - title:str
-- preferred:bool
 
 ReleaseGroup
 ---
 - name:str
-- preferred:bool
 
 Episode
 ---
@@ -38,6 +36,28 @@ Episode
 - release_group_id:id
 - file_name:str
 - file_size:int
-- resolution:enum
-- video_codec:enum
-- audio_codec:enum
+- resolution:string
+- video_codec:string
+- audio_codec:string
+
+Irregular
+---
+- view_url:str
+- download_url:str
+- file_name:str
+- file_size:int
+
+Preferred
+---
+- anime_id:id
+- release_group_id:id
+- resolution:string
+
+## Dev runflow
+
+```bash
+$ make generate
+$ make migrate
+$ make import
+$ make describe
+```

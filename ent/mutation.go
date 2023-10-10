@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/irregular"
 	"github.com/eiri/konyanko/ent/predicate"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
@@ -27,6 +28,7 @@ const (
 	// Node types.
 	TypeAnime        = "Anime"
 	TypeEpisode      = "Episode"
+	TypeIrregular    = "Irregular"
 	TypeReleaseGroup = "ReleaseGroup"
 )
 
@@ -1406,6 +1408,530 @@ func (m *EpisodeMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Episode edge %s", name)
+}
+
+// IrregularMutation represents an operation that mutates the Irregular nodes in the graph.
+type IrregularMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	view_url      *string
+	download_url  *string
+	file_name     *string
+	file_size     *int
+	addfile_size  *int
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Irregular, error)
+	predicates    []predicate.Irregular
+}
+
+var _ ent.Mutation = (*IrregularMutation)(nil)
+
+// irregularOption allows management of the mutation configuration using functional options.
+type irregularOption func(*IrregularMutation)
+
+// newIrregularMutation creates new mutation for the Irregular entity.
+func newIrregularMutation(c config, op Op, opts ...irregularOption) *IrregularMutation {
+	m := &IrregularMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeIrregular,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withIrregularID sets the ID field of the mutation.
+func withIrregularID(id int) irregularOption {
+	return func(m *IrregularMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Irregular
+		)
+		m.oldValue = func(ctx context.Context) (*Irregular, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Irregular.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withIrregular sets the old Irregular of the mutation.
+func withIrregular(node *Irregular) irregularOption {
+	return func(m *IrregularMutation) {
+		m.oldValue = func(context.Context) (*Irregular, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m IrregularMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m IrregularMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *IrregularMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *IrregularMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Irregular.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetViewURL sets the "view_url" field.
+func (m *IrregularMutation) SetViewURL(s string) {
+	m.view_url = &s
+}
+
+// ViewURL returns the value of the "view_url" field in the mutation.
+func (m *IrregularMutation) ViewURL() (r string, exists bool) {
+	v := m.view_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldViewURL returns the old "view_url" field's value of the Irregular entity.
+// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IrregularMutation) OldViewURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldViewURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldViewURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldViewURL: %w", err)
+	}
+	return oldValue.ViewURL, nil
+}
+
+// ResetViewURL resets all changes to the "view_url" field.
+func (m *IrregularMutation) ResetViewURL() {
+	m.view_url = nil
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (m *IrregularMutation) SetDownloadURL(s string) {
+	m.download_url = &s
+}
+
+// DownloadURL returns the value of the "download_url" field in the mutation.
+func (m *IrregularMutation) DownloadURL() (r string, exists bool) {
+	v := m.download_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDownloadURL returns the old "download_url" field's value of the Irregular entity.
+// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IrregularMutation) OldDownloadURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDownloadURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDownloadURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDownloadURL: %w", err)
+	}
+	return oldValue.DownloadURL, nil
+}
+
+// ResetDownloadURL resets all changes to the "download_url" field.
+func (m *IrregularMutation) ResetDownloadURL() {
+	m.download_url = nil
+}
+
+// SetFileName sets the "file_name" field.
+func (m *IrregularMutation) SetFileName(s string) {
+	m.file_name = &s
+}
+
+// FileName returns the value of the "file_name" field in the mutation.
+func (m *IrregularMutation) FileName() (r string, exists bool) {
+	v := m.file_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileName returns the old "file_name" field's value of the Irregular entity.
+// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IrregularMutation) OldFileName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileName: %w", err)
+	}
+	return oldValue.FileName, nil
+}
+
+// ResetFileName resets all changes to the "file_name" field.
+func (m *IrregularMutation) ResetFileName() {
+	m.file_name = nil
+}
+
+// SetFileSize sets the "file_size" field.
+func (m *IrregularMutation) SetFileSize(i int) {
+	m.file_size = &i
+	m.addfile_size = nil
+}
+
+// FileSize returns the value of the "file_size" field in the mutation.
+func (m *IrregularMutation) FileSize() (r int, exists bool) {
+	v := m.file_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileSize returns the old "file_size" field's value of the Irregular entity.
+// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IrregularMutation) OldFileSize(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileSize: %w", err)
+	}
+	return oldValue.FileSize, nil
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (m *IrregularMutation) AddFileSize(i int) {
+	if m.addfile_size != nil {
+		*m.addfile_size += i
+	} else {
+		m.addfile_size = &i
+	}
+}
+
+// AddedFileSize returns the value that was added to the "file_size" field in this mutation.
+func (m *IrregularMutation) AddedFileSize() (r int, exists bool) {
+	v := m.addfile_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileSize resets all changes to the "file_size" field.
+func (m *IrregularMutation) ResetFileSize() {
+	m.file_size = nil
+	m.addfile_size = nil
+}
+
+// Where appends a list predicates to the IrregularMutation builder.
+func (m *IrregularMutation) Where(ps ...predicate.Irregular) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the IrregularMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *IrregularMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Irregular, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *IrregularMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *IrregularMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Irregular).
+func (m *IrregularMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *IrregularMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.view_url != nil {
+		fields = append(fields, irregular.FieldViewURL)
+	}
+	if m.download_url != nil {
+		fields = append(fields, irregular.FieldDownloadURL)
+	}
+	if m.file_name != nil {
+		fields = append(fields, irregular.FieldFileName)
+	}
+	if m.file_size != nil {
+		fields = append(fields, irregular.FieldFileSize)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *IrregularMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case irregular.FieldViewURL:
+		return m.ViewURL()
+	case irregular.FieldDownloadURL:
+		return m.DownloadURL()
+	case irregular.FieldFileName:
+		return m.FileName()
+	case irregular.FieldFileSize:
+		return m.FileSize()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *IrregularMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case irregular.FieldViewURL:
+		return m.OldViewURL(ctx)
+	case irregular.FieldDownloadURL:
+		return m.OldDownloadURL(ctx)
+	case irregular.FieldFileName:
+		return m.OldFileName(ctx)
+	case irregular.FieldFileSize:
+		return m.OldFileSize(ctx)
+	}
+	return nil, fmt.Errorf("unknown Irregular field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *IrregularMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case irregular.FieldViewURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetViewURL(v)
+		return nil
+	case irregular.FieldDownloadURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDownloadURL(v)
+		return nil
+	case irregular.FieldFileName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileName(v)
+		return nil
+	case irregular.FieldFileSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileSize(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Irregular field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *IrregularMutation) AddedFields() []string {
+	var fields []string
+	if m.addfile_size != nil {
+		fields = append(fields, irregular.FieldFileSize)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *IrregularMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case irregular.FieldFileSize:
+		return m.AddedFileSize()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *IrregularMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case irregular.FieldFileSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileSize(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Irregular numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *IrregularMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *IrregularMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *IrregularMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Irregular nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *IrregularMutation) ResetField(name string) error {
+	switch name {
+	case irregular.FieldViewURL:
+		m.ResetViewURL()
+		return nil
+	case irregular.FieldDownloadURL:
+		m.ResetDownloadURL()
+		return nil
+	case irregular.FieldFileName:
+		m.ResetFileName()
+		return nil
+	case irregular.FieldFileSize:
+		m.ResetFileSize()
+		return nil
+	}
+	return fmt.Errorf("unknown Irregular field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *IrregularMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *IrregularMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *IrregularMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *IrregularMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *IrregularMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *IrregularMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *IrregularMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Irregular unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *IrregularMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Irregular edge %s", name)
 }
 
 // ReleaseGroupMutation represents an operation that mutates the ReleaseGroup nodes in the graph.

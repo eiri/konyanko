@@ -33,6 +33,18 @@ func (f EpisodeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EpisodeMutation", m)
 }
 
+// The IrregularFunc type is an adapter to allow the use of ordinary
+// function as Irregular mutator.
+type IrregularFunc func(context.Context, *ent.IrregularMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f IrregularFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.IrregularMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.IrregularMutation", m)
+}
+
 // The ReleaseGroupFunc type is an adapter to allow the use of ordinary
 // function as ReleaseGroup mutator.
 type ReleaseGroupFunc func(context.Context, *ent.ReleaseGroupMutation) (ent.Value, error)

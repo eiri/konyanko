@@ -86,8 +86,12 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultNumber holds the default value on creation for the "number" field.
+	DefaultNumber int
 	// NumberValidator is a validator for the "number" field. It is called by the builders before save.
 	NumberValidator func(int) error
+	// FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	FileNameValidator func(string) error
 	// FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	FileSizeValidator func(int) error
 )

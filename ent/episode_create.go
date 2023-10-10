@@ -27,6 +27,14 @@ func (ec *EpisodeCreate) SetNumber(i int) *EpisodeCreate {
 	return ec
 }
 
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillableNumber(i *int) *EpisodeCreate {
+	if i != nil {
+		ec.SetNumber(*i)
+	}
+	return ec
+}
+
 // SetViewURL sets the "view_url" field.
 func (ec *EpisodeCreate) SetViewURL(s string) *EpisodeCreate {
 	ec.mutation.SetViewURL(s)
@@ -130,6 +138,7 @@ func (ec *EpisodeCreate) Mutation() *EpisodeMutation {
 
 // Save creates the Episode in the database.
 func (ec *EpisodeCreate) Save(ctx context.Context) (*Episode, error) {
+	ec.defaults()
 	return withHooks(ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
@@ -155,6 +164,14 @@ func (ec *EpisodeCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ec *EpisodeCreate) defaults() {
+	if _, ok := ec.mutation.Number(); !ok {
+		v := episode.DefaultNumber
+		ec.mutation.SetNumber(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ec *EpisodeCreate) check() error {
 	if _, ok := ec.mutation.Number(); !ok {
@@ -173,6 +190,11 @@ func (ec *EpisodeCreate) check() error {
 	}
 	if _, ok := ec.mutation.FileName(); !ok {
 		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Episode.file_name"`)}
+	}
+	if v, ok := ec.mutation.FileName(); ok {
+		if err := episode.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
+		}
 	}
 	if _, ok := ec.mutation.FileSize(); !ok {
 		return &ValidationError{Name: "file_size", err: errors.New(`ent: missing required field "Episode.file_size"`)}
@@ -298,6 +320,7 @@ func (ecb *EpisodeCreateBulk) Save(ctx context.Context) ([]*Episode, error) {
 	for i := range ecb.builders {
 		func(i int, root context.Context) {
 			builder := ecb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*EpisodeMutation)
 				if !ok {

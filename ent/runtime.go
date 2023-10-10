@@ -4,6 +4,7 @@ package ent
 
 import (
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/irregular"
 	"github.com/eiri/konyanko/ent/schema"
 )
 
@@ -15,10 +16,26 @@ func init() {
 	_ = episodeFields
 	// episodeDescNumber is the schema descriptor for number field.
 	episodeDescNumber := episodeFields[0].Descriptor()
+	// episode.DefaultNumber holds the default value on creation for the number field.
+	episode.DefaultNumber = episodeDescNumber.Default.(int)
 	// episode.NumberValidator is a validator for the "number" field. It is called by the builders before save.
 	episode.NumberValidator = episodeDescNumber.Validators[0].(func(int) error)
+	// episodeDescFileName is the schema descriptor for file_name field.
+	episodeDescFileName := episodeFields[3].Descriptor()
+	// episode.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	episode.FileNameValidator = episodeDescFileName.Validators[0].(func(string) error)
 	// episodeDescFileSize is the schema descriptor for file_size field.
 	episodeDescFileSize := episodeFields[4].Descriptor()
 	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
+	irregularFields := schema.Irregular{}.Fields()
+	_ = irregularFields
+	// irregularDescFileName is the schema descriptor for file_name field.
+	irregularDescFileName := irregularFields[2].Descriptor()
+	// irregular.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	irregular.FileNameValidator = irregularDescFileName.Validators[0].(func(string) error)
+	// irregularDescFileSize is the schema descriptor for file_size field.
+	irregularDescFileSize := irregularFields[3].Descriptor()
+	// irregular.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
+	irregular.FileSizeValidator = irregularDescFileSize.Validators[0].(func(int) error)
 }

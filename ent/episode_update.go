@@ -36,6 +36,14 @@ func (eu *EpisodeUpdate) SetNumber(i int) *EpisodeUpdate {
 	return eu
 }
 
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableNumber(i *int) *EpisodeUpdate {
+	if i != nil {
+		eu.SetNumber(*i)
+	}
+	return eu
+}
+
 // AddNumber adds i to the "number" field.
 func (eu *EpisodeUpdate) AddNumber(i int) *EpisodeUpdate {
 	eu.mutation.AddNumber(i)
@@ -214,6 +222,11 @@ func (eu *EpisodeUpdate) check() error {
 			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
 		}
 	}
+	if v, ok := eu.mutation.FileName(); ok {
+		if err := episode.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
+		}
+	}
 	if v, ok := eu.mutation.FileSize(); ok {
 		if err := episode.FileSizeValidator(v); err != nil {
 			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
@@ -358,6 +371,14 @@ type EpisodeUpdateOne struct {
 func (euo *EpisodeUpdateOne) SetNumber(i int) *EpisodeUpdateOne {
 	euo.mutation.ResetNumber()
 	euo.mutation.SetNumber(i)
+	return euo
+}
+
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableNumber(i *int) *EpisodeUpdateOne {
+	if i != nil {
+		euo.SetNumber(*i)
+	}
 	return euo
 }
 
@@ -550,6 +571,11 @@ func (euo *EpisodeUpdateOne) check() error {
 	if v, ok := euo.mutation.Number(); ok {
 		if err := episode.NumberValidator(v); err != nil {
 			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.FileName(); ok {
+		if err := episode.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
 		}
 	}
 	if v, ok := euo.mutation.FileSize(); ok {

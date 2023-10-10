@@ -17,6 +17,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/irregular"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
@@ -29,6 +30,8 @@ type Client struct {
 	Anime *AnimeClient
 	// Episode is the client for interacting with the Episode builders.
 	Episode *EpisodeClient
+	// Irregular is the client for interacting with the Irregular builders.
+	Irregular *IrregularClient
 	// ReleaseGroup is the client for interacting with the ReleaseGroup builders.
 	ReleaseGroup *ReleaseGroupClient
 }
@@ -46,6 +49,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Anime = NewAnimeClient(c.config)
 	c.Episode = NewEpisodeClient(c.config)
+	c.Irregular = NewIrregularClient(c.config)
 	c.ReleaseGroup = NewReleaseGroupClient(c.config)
 }
 
@@ -134,6 +138,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:       cfg,
 		Anime:        NewAnimeClient(cfg),
 		Episode:      NewEpisodeClient(cfg),
+		Irregular:    NewIrregularClient(cfg),
 		ReleaseGroup: NewReleaseGroupClient(cfg),
 	}, nil
 }
@@ -156,6 +161,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:       cfg,
 		Anime:        NewAnimeClient(cfg),
 		Episode:      NewEpisodeClient(cfg),
+		Irregular:    NewIrregularClient(cfg),
 		ReleaseGroup: NewReleaseGroupClient(cfg),
 	}, nil
 }
@@ -187,6 +193,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Anime.Use(hooks...)
 	c.Episode.Use(hooks...)
+	c.Irregular.Use(hooks...)
 	c.ReleaseGroup.Use(hooks...)
 }
 
@@ -195,6 +202,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Anime.Intercept(interceptors...)
 	c.Episode.Intercept(interceptors...)
+	c.Irregular.Intercept(interceptors...)
 	c.ReleaseGroup.Intercept(interceptors...)
 }
 
@@ -205,6 +213,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Anime.mutate(ctx, m)
 	case *EpisodeMutation:
 		return c.Episode.mutate(ctx, m)
+	case *IrregularMutation:
+		return c.Irregular.mutate(ctx, m)
 	case *ReleaseGroupMutation:
 		return c.ReleaseGroup.mutate(ctx, m)
 	default:
@@ -526,6 +536,139 @@ func (c *EpisodeClient) mutate(ctx context.Context, m *EpisodeMutation) (Value, 
 	}
 }
 
+// IrregularClient is a client for the Irregular schema.
+type IrregularClient struct {
+	config
+}
+
+// NewIrregularClient returns a client for the Irregular from the given config.
+func NewIrregularClient(c config) *IrregularClient {
+	return &IrregularClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `irregular.Hooks(f(g(h())))`.
+func (c *IrregularClient) Use(hooks ...Hook) {
+	c.hooks.Irregular = append(c.hooks.Irregular, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `irregular.Intercept(f(g(h())))`.
+func (c *IrregularClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Irregular = append(c.inters.Irregular, interceptors...)
+}
+
+// Create returns a builder for creating a Irregular entity.
+func (c *IrregularClient) Create() *IrregularCreate {
+	mutation := newIrregularMutation(c.config, OpCreate)
+	return &IrregularCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Irregular entities.
+func (c *IrregularClient) CreateBulk(builders ...*IrregularCreate) *IrregularCreateBulk {
+	return &IrregularCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *IrregularClient) MapCreateBulk(slice any, setFunc func(*IrregularCreate, int)) *IrregularCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &IrregularCreateBulk{err: fmt.Errorf("calling to IrregularClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*IrregularCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &IrregularCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Irregular.
+func (c *IrregularClient) Update() *IrregularUpdate {
+	mutation := newIrregularMutation(c.config, OpUpdate)
+	return &IrregularUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *IrregularClient) UpdateOne(i *Irregular) *IrregularUpdateOne {
+	mutation := newIrregularMutation(c.config, OpUpdateOne, withIrregular(i))
+	return &IrregularUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *IrregularClient) UpdateOneID(id int) *IrregularUpdateOne {
+	mutation := newIrregularMutation(c.config, OpUpdateOne, withIrregularID(id))
+	return &IrregularUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Irregular.
+func (c *IrregularClient) Delete() *IrregularDelete {
+	mutation := newIrregularMutation(c.config, OpDelete)
+	return &IrregularDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *IrregularClient) DeleteOne(i *Irregular) *IrregularDeleteOne {
+	return c.DeleteOneID(i.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *IrregularClient) DeleteOneID(id int) *IrregularDeleteOne {
+	builder := c.Delete().Where(irregular.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &IrregularDeleteOne{builder}
+}
+
+// Query returns a query builder for Irregular.
+func (c *IrregularClient) Query() *IrregularQuery {
+	return &IrregularQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeIrregular},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Irregular entity by its id.
+func (c *IrregularClient) Get(ctx context.Context, id int) (*Irregular, error) {
+	return c.Query().Where(irregular.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *IrregularClient) GetX(ctx context.Context, id int) *Irregular {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *IrregularClient) Hooks() []Hook {
+	return c.hooks.Irregular
+}
+
+// Interceptors returns the client interceptors.
+func (c *IrregularClient) Interceptors() []Interceptor {
+	return c.inters.Irregular
+}
+
+func (c *IrregularClient) mutate(ctx context.Context, m *IrregularMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&IrregularCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&IrregularUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&IrregularUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&IrregularDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Irregular mutation op: %q", m.Op())
+	}
+}
+
 // ReleaseGroupClient is a client for the ReleaseGroup schema.
 type ReleaseGroupClient struct {
 	config
@@ -678,9 +821,9 @@ func (c *ReleaseGroupClient) mutate(ctx context.Context, m *ReleaseGroupMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Anime, Episode, ReleaseGroup []ent.Hook
+		Anime, Episode, Irregular, ReleaseGroup []ent.Hook
 	}
 	inters struct {
-		Anime, Episode, ReleaseGroup []ent.Interceptor
+		Anime, Episode, Irregular, ReleaseGroup []ent.Interceptor
 	}
 )

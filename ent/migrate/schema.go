@@ -22,7 +22,7 @@ var (
 	// EpisodesColumns holds the columns for the "episodes" table.
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "number", Type: field.TypeInt},
+		{Name: "number", Type: field.TypeInt, Default: 1},
 		{Name: "view_url", Type: field.TypeString, Unique: true},
 		{Name: "download_url", Type: field.TypeString, Unique: true},
 		{Name: "file_name", Type: field.TypeString},
@@ -52,6 +52,27 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "episode_resolution",
+				Unique:  false,
+				Columns: []*schema.Column{EpisodesColumns[6]},
+			},
+		},
+	}
+	// IrregularsColumns holds the columns for the "irregulars" table.
+	IrregularsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "view_url", Type: field.TypeString, Unique: true},
+		{Name: "download_url", Type: field.TypeString, Unique: true},
+		{Name: "file_name", Type: field.TypeString},
+		{Name: "file_size", Type: field.TypeInt},
+	}
+	// IrregularsTable holds the schema information for the "irregulars" table.
+	IrregularsTable = &schema.Table{
+		Name:       "irregulars",
+		Columns:    IrregularsColumns,
+		PrimaryKey: []*schema.Column{IrregularsColumns[0]},
 	}
 	// ReleaseGroupsColumns holds the columns for the "release_groups" table.
 	ReleaseGroupsColumns = []*schema.Column{
@@ -68,6 +89,7 @@ var (
 	Tables = []*schema.Table{
 		AnimesTable,
 		EpisodesTable,
+		IrregularsTable,
 		ReleaseGroupsTable,
 	}
 )

@@ -11,6 +11,7 @@ import (
 
 	"github.com/eiri/konyanko/ent"
 	"github.com/eiri/konyanko/ent/anime"
+	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ent/releasegroup"
 
 	"github.com/dustin/go-humanize"
@@ -92,10 +93,37 @@ func Import() error {
 }
 
 func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item) (*ent.Episode, error) {
+	if c, err := client.Episode.Query().Where(episode.ViewURL(item.Id)).Aggregate(ent.Count()).Int(ctx); c == 1 && err == nil {
+		log.Printf("Found %q, skip\n", item.Title)
+		return nil, nil
+	}
+
+	log.Printf("Adding %q\n", item.Title)
+
+	fileName := item.Title
+	fileSize := 0
+	for _, ext := range item.ElementExtensions {
+		if ext.Name == "size" {
+			fs, _ := humanize.ParseBytes(ext.Value)
+			fileSize = int(fs)
+			break
+		}
+	}
+	viewURL := item.Id
+	downloadURL := item.Links[0].URL
+
 	e := anitogo.Parse(item.Title, anitogo.DefaultOptions)
 	if e.AnimeTitle == "" {
-		// FIXME! shortcut
-		log.Printf("can't parse title %q\n", item.Title)
+		_, err := client.Irregular.
+			Create().
+			SetViewURL(viewURL).
+			SetDownloadURL(downloadURL).
+			SetFileName(fileName).
+			SetFileSize(fileSize).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
 		return nil, nil
 	}
 
@@ -135,28 +163,21 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 		return nil, err
 	}
 
-	episodeNumber := 1
-	if len(e.EpisodeNumber) > 0 {
-		episodeNumber, _ = strconv.Atoi(e.EpisodeNumber[0])
-	}
-
-	fileSize := uint64(0)
-	for _, ext := range item.ElementExtensions {
-		if ext.Name == "size" {
-			fileSize, _ = humanize.ParseBytes(ext.Value)
-			break
-		}
-	}
-
 	episode := client.Episode.
 		Create().
 		SetTitle(anime).
 		SetReleaseGroup(releaseGroup).
-		SetNumber(episodeNumber).
-		SetViewURL(item.Id).
-		SetDownloadURL(item.Links[0].URL).
-		SetFileName(e.FileName).
-		SetFileSize(int(fileSize))
+		SetViewURL(viewURL).
+		SetDownloadURL(downloadURL).
+		SetFileName(fileName).
+		SetFileSize(fileSize)
+
+	//FIXME! if we have AnimeSeason+AnimeSeasonPrefix but don't have EpisodeNumber assume this is a batch
+	if len(e.EpisodeNumber) > 0 {
+		if n, err := strconv.Atoi(e.EpisodeNumber[0]); err == nil {
+			episode = episode.SetNumber(n)
+		}
+	}
 
 	if e.VideoResolution != "" {
 		episode = episode.SetResolution(e.VideoResolution)

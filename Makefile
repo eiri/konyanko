@@ -27,7 +27,7 @@ import: $(PROJECT) nyaa.xml
 
 .PHONY: list
 list: $(PROJECT)
-	./$< -c $@
+	@./$< -c $@
 
 .PHONY: schema
 schema: ENTITY := Episode

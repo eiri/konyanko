@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/irregular"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
@@ -77,6 +78,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			anime.Table:        anime.ValidColumn,
 			episode.Table:      episode.ValidColumn,
+			irregular.Table:    irregular.ValidColumn,
 			releasegroup.Table: releasegroup.ValidColumn,
 		})
 	})
