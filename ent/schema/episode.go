@@ -15,7 +15,8 @@ type Episode struct {
 // Fields of the Episode.
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("number").NonNegative().Default(0),
+		field.Int("episode_number").NonNegative().Default(0),
+		field.Int("anime_season").NonNegative().Default(1),
 		field.String("view_url").Unique(),
 		field.String("download_url").Unique(),
 		field.String("file_name").NotEmpty(),

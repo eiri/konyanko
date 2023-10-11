@@ -14,18 +14,24 @@ import (
 func init() {
 	episodeFields := schema.Episode{}.Fields()
 	_ = episodeFields
-	// episodeDescNumber is the schema descriptor for number field.
-	episodeDescNumber := episodeFields[0].Descriptor()
-	// episode.DefaultNumber holds the default value on creation for the number field.
-	episode.DefaultNumber = episodeDescNumber.Default.(int)
-	// episode.NumberValidator is a validator for the "number" field. It is called by the builders before save.
-	episode.NumberValidator = episodeDescNumber.Validators[0].(func(int) error)
+	// episodeDescEpisodeNumber is the schema descriptor for episode_number field.
+	episodeDescEpisodeNumber := episodeFields[0].Descriptor()
+	// episode.DefaultEpisodeNumber holds the default value on creation for the episode_number field.
+	episode.DefaultEpisodeNumber = episodeDescEpisodeNumber.Default.(int)
+	// episode.EpisodeNumberValidator is a validator for the "episode_number" field. It is called by the builders before save.
+	episode.EpisodeNumberValidator = episodeDescEpisodeNumber.Validators[0].(func(int) error)
+	// episodeDescAnimeSeason is the schema descriptor for anime_season field.
+	episodeDescAnimeSeason := episodeFields[1].Descriptor()
+	// episode.DefaultAnimeSeason holds the default value on creation for the anime_season field.
+	episode.DefaultAnimeSeason = episodeDescAnimeSeason.Default.(int)
+	// episode.AnimeSeasonValidator is a validator for the "anime_season" field. It is called by the builders before save.
+	episode.AnimeSeasonValidator = episodeDescAnimeSeason.Validators[0].(func(int) error)
 	// episodeDescFileName is the schema descriptor for file_name field.
-	episodeDescFileName := episodeFields[3].Descriptor()
+	episodeDescFileName := episodeFields[4].Descriptor()
 	// episode.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
 	episode.FileNameValidator = episodeDescFileName.Validators[0].(func(string) error)
 	// episodeDescFileSize is the schema descriptor for file_size field.
-	episodeDescFileSize := episodeFields[4].Descriptor()
+	episodeDescFileSize := episodeFields[5].Descriptor()
 	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
 	irregularFields := schema.Irregular{}.Fields()

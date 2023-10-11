@@ -12,8 +12,10 @@ const (
 	Label = "episode"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldNumber holds the string denoting the number field in the database.
-	FieldNumber = "number"
+	// FieldEpisodeNumber holds the string denoting the episode_number field in the database.
+	FieldEpisodeNumber = "episode_number"
+	// FieldAnimeSeason holds the string denoting the anime_season field in the database.
+	FieldAnimeSeason = "anime_season"
 	// FieldViewURL holds the string denoting the view_url field in the database.
 	FieldViewURL = "view_url"
 	// FieldDownloadURL holds the string denoting the download_url field in the database.
@@ -53,7 +55,8 @@ const (
 // Columns holds all SQL columns for episode fields.
 var Columns = []string{
 	FieldID,
-	FieldNumber,
+	FieldEpisodeNumber,
+	FieldAnimeSeason,
 	FieldViewURL,
 	FieldDownloadURL,
 	FieldFileName,
@@ -86,10 +89,14 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultNumber holds the default value on creation for the "number" field.
-	DefaultNumber int
-	// NumberValidator is a validator for the "number" field. It is called by the builders before save.
-	NumberValidator func(int) error
+	// DefaultEpisodeNumber holds the default value on creation for the "episode_number" field.
+	DefaultEpisodeNumber int
+	// EpisodeNumberValidator is a validator for the "episode_number" field. It is called by the builders before save.
+	EpisodeNumberValidator func(int) error
+	// DefaultAnimeSeason holds the default value on creation for the "anime_season" field.
+	DefaultAnimeSeason int
+	// AnimeSeasonValidator is a validator for the "anime_season" field. It is called by the builders before save.
+	AnimeSeasonValidator func(int) error
 	// FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
 	FileNameValidator func(string) error
 	// FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
@@ -104,9 +111,14 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByNumber orders the results by the number field.
-func ByNumber(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNumber, opts...).ToFunc()
+// ByEpisodeNumber orders the results by the episode_number field.
+func ByEpisodeNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEpisodeNumber, opts...).ToFunc()
+}
+
+// ByAnimeSeason orders the results by the anime_season field.
+func ByAnimeSeason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAnimeSeason, opts...).ToFunc()
 }
 
 // ByViewURL orders the results by the view_url field.

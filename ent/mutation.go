@@ -457,8 +457,10 @@ type EpisodeMutation struct {
 	op                   Op
 	typ                  string
 	id                   *int
-	number               *int
-	addnumber            *int
+	episode_number       *int
+	addepisode_number    *int
+	anime_season         *int
+	addanime_season      *int
 	view_url             *string
 	download_url         *string
 	file_name            *string
@@ -575,60 +577,116 @@ func (m *EpisodeMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetNumber sets the "number" field.
-func (m *EpisodeMutation) SetNumber(i int) {
-	m.number = &i
-	m.addnumber = nil
+// SetEpisodeNumber sets the "episode_number" field.
+func (m *EpisodeMutation) SetEpisodeNumber(i int) {
+	m.episode_number = &i
+	m.addepisode_number = nil
 }
 
-// Number returns the value of the "number" field in the mutation.
-func (m *EpisodeMutation) Number() (r int, exists bool) {
-	v := m.number
+// EpisodeNumber returns the value of the "episode_number" field in the mutation.
+func (m *EpisodeMutation) EpisodeNumber() (r int, exists bool) {
+	v := m.episode_number
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNumber returns the old "number" field's value of the Episode entity.
+// OldEpisodeNumber returns the old "episode_number" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldNumber(ctx context.Context) (v int, err error) {
+func (m *EpisodeMutation) OldEpisodeNumber(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
+		return v, errors.New("OldEpisodeNumber is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNumber requires an ID field in the mutation")
+		return v, errors.New("OldEpisodeNumber requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
+		return v, fmt.Errorf("querying old value for OldEpisodeNumber: %w", err)
 	}
-	return oldValue.Number, nil
+	return oldValue.EpisodeNumber, nil
 }
 
-// AddNumber adds i to the "number" field.
-func (m *EpisodeMutation) AddNumber(i int) {
-	if m.addnumber != nil {
-		*m.addnumber += i
+// AddEpisodeNumber adds i to the "episode_number" field.
+func (m *EpisodeMutation) AddEpisodeNumber(i int) {
+	if m.addepisode_number != nil {
+		*m.addepisode_number += i
 	} else {
-		m.addnumber = &i
+		m.addepisode_number = &i
 	}
 }
 
-// AddedNumber returns the value that was added to the "number" field in this mutation.
-func (m *EpisodeMutation) AddedNumber() (r int, exists bool) {
-	v := m.addnumber
+// AddedEpisodeNumber returns the value that was added to the "episode_number" field in this mutation.
+func (m *EpisodeMutation) AddedEpisodeNumber() (r int, exists bool) {
+	v := m.addepisode_number
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetNumber resets all changes to the "number" field.
-func (m *EpisodeMutation) ResetNumber() {
-	m.number = nil
-	m.addnumber = nil
+// ResetEpisodeNumber resets all changes to the "episode_number" field.
+func (m *EpisodeMutation) ResetEpisodeNumber() {
+	m.episode_number = nil
+	m.addepisode_number = nil
+}
+
+// SetAnimeSeason sets the "anime_season" field.
+func (m *EpisodeMutation) SetAnimeSeason(i int) {
+	m.anime_season = &i
+	m.addanime_season = nil
+}
+
+// AnimeSeason returns the value of the "anime_season" field in the mutation.
+func (m *EpisodeMutation) AnimeSeason() (r int, exists bool) {
+	v := m.anime_season
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnimeSeason returns the old "anime_season" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldAnimeSeason(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnimeSeason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnimeSeason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnimeSeason: %w", err)
+	}
+	return oldValue.AnimeSeason, nil
+}
+
+// AddAnimeSeason adds i to the "anime_season" field.
+func (m *EpisodeMutation) AddAnimeSeason(i int) {
+	if m.addanime_season != nil {
+		*m.addanime_season += i
+	} else {
+		m.addanime_season = &i
+	}
+}
+
+// AddedAnimeSeason returns the value that was added to the "anime_season" field in this mutation.
+func (m *EpisodeMutation) AddedAnimeSeason() (r int, exists bool) {
+	v := m.addanime_season
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAnimeSeason resets all changes to the "anime_season" field.
+func (m *EpisodeMutation) ResetAnimeSeason() {
+	m.anime_season = nil
+	m.addanime_season = nil
 }
 
 // SetViewURL sets the "view_url" field.
@@ -1054,9 +1112,12 @@ func (m *EpisodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EpisodeMutation) Fields() []string {
-	fields := make([]string, 0, 8)
-	if m.number != nil {
-		fields = append(fields, episode.FieldNumber)
+	fields := make([]string, 0, 9)
+	if m.episode_number != nil {
+		fields = append(fields, episode.FieldEpisodeNumber)
+	}
+	if m.anime_season != nil {
+		fields = append(fields, episode.FieldAnimeSeason)
 	}
 	if m.view_url != nil {
 		fields = append(fields, episode.FieldViewURL)
@@ -1087,8 +1148,10 @@ func (m *EpisodeMutation) Fields() []string {
 // schema.
 func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case episode.FieldNumber:
-		return m.Number()
+	case episode.FieldEpisodeNumber:
+		return m.EpisodeNumber()
+	case episode.FieldAnimeSeason:
+		return m.AnimeSeason()
 	case episode.FieldViewURL:
 		return m.ViewURL()
 	case episode.FieldDownloadURL:
@@ -1112,8 +1175,10 @@ func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case episode.FieldNumber:
-		return m.OldNumber(ctx)
+	case episode.FieldEpisodeNumber:
+		return m.OldEpisodeNumber(ctx)
+	case episode.FieldAnimeSeason:
+		return m.OldAnimeSeason(ctx)
 	case episode.FieldViewURL:
 		return m.OldViewURL(ctx)
 	case episode.FieldDownloadURL:
@@ -1137,12 +1202,19 @@ func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case episode.FieldNumber:
+	case episode.FieldEpisodeNumber:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNumber(v)
+		m.SetEpisodeNumber(v)
+		return nil
+	case episode.FieldAnimeSeason:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnimeSeason(v)
 		return nil
 	case episode.FieldViewURL:
 		v, ok := value.(string)
@@ -1201,8 +1273,11 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EpisodeMutation) AddedFields() []string {
 	var fields []string
-	if m.addnumber != nil {
-		fields = append(fields, episode.FieldNumber)
+	if m.addepisode_number != nil {
+		fields = append(fields, episode.FieldEpisodeNumber)
+	}
+	if m.addanime_season != nil {
+		fields = append(fields, episode.FieldAnimeSeason)
 	}
 	if m.addfile_size != nil {
 		fields = append(fields, episode.FieldFileSize)
@@ -1215,8 +1290,10 @@ func (m *EpisodeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EpisodeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case episode.FieldNumber:
-		return m.AddedNumber()
+	case episode.FieldEpisodeNumber:
+		return m.AddedEpisodeNumber()
+	case episode.FieldAnimeSeason:
+		return m.AddedAnimeSeason()
 	case episode.FieldFileSize:
 		return m.AddedFileSize()
 	}
@@ -1228,12 +1305,19 @@ func (m *EpisodeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EpisodeMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case episode.FieldNumber:
+	case episode.FieldEpisodeNumber:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddNumber(v)
+		m.AddEpisodeNumber(v)
+		return nil
+	case episode.FieldAnimeSeason:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAnimeSeason(v)
 		return nil
 	case episode.FieldFileSize:
 		v, ok := value.(int)
@@ -1290,8 +1374,11 @@ func (m *EpisodeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EpisodeMutation) ResetField(name string) error {
 	switch name {
-	case episode.FieldNumber:
-		m.ResetNumber()
+	case episode.FieldEpisodeNumber:
+		m.ResetEpisodeNumber()
+		return nil
+	case episode.FieldAnimeSeason:
+		m.ResetAnimeSeason()
 		return nil
 	case episode.FieldViewURL:
 		m.ResetViewURL()

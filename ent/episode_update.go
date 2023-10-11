@@ -29,24 +29,45 @@ func (eu *EpisodeUpdate) Where(ps ...predicate.Episode) *EpisodeUpdate {
 	return eu
 }
 
-// SetNumber sets the "number" field.
-func (eu *EpisodeUpdate) SetNumber(i int) *EpisodeUpdate {
-	eu.mutation.ResetNumber()
-	eu.mutation.SetNumber(i)
+// SetEpisodeNumber sets the "episode_number" field.
+func (eu *EpisodeUpdate) SetEpisodeNumber(i int) *EpisodeUpdate {
+	eu.mutation.ResetEpisodeNumber()
+	eu.mutation.SetEpisodeNumber(i)
 	return eu
 }
 
-// SetNillableNumber sets the "number" field if the given value is not nil.
-func (eu *EpisodeUpdate) SetNillableNumber(i *int) *EpisodeUpdate {
+// SetNillableEpisodeNumber sets the "episode_number" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableEpisodeNumber(i *int) *EpisodeUpdate {
 	if i != nil {
-		eu.SetNumber(*i)
+		eu.SetEpisodeNumber(*i)
 	}
 	return eu
 }
 
-// AddNumber adds i to the "number" field.
-func (eu *EpisodeUpdate) AddNumber(i int) *EpisodeUpdate {
-	eu.mutation.AddNumber(i)
+// AddEpisodeNumber adds i to the "episode_number" field.
+func (eu *EpisodeUpdate) AddEpisodeNumber(i int) *EpisodeUpdate {
+	eu.mutation.AddEpisodeNumber(i)
+	return eu
+}
+
+// SetAnimeSeason sets the "anime_season" field.
+func (eu *EpisodeUpdate) SetAnimeSeason(i int) *EpisodeUpdate {
+	eu.mutation.ResetAnimeSeason()
+	eu.mutation.SetAnimeSeason(i)
+	return eu
+}
+
+// SetNillableAnimeSeason sets the "anime_season" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableAnimeSeason(i *int) *EpisodeUpdate {
+	if i != nil {
+		eu.SetAnimeSeason(*i)
+	}
+	return eu
+}
+
+// AddAnimeSeason adds i to the "anime_season" field.
+func (eu *EpisodeUpdate) AddAnimeSeason(i int) *EpisodeUpdate {
+	eu.mutation.AddAnimeSeason(i)
 	return eu
 }
 
@@ -217,9 +238,14 @@ func (eu *EpisodeUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EpisodeUpdate) check() error {
-	if v, ok := eu.mutation.Number(); ok {
-		if err := episode.NumberValidator(v); err != nil {
-			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
+	if v, ok := eu.mutation.EpisodeNumber(); ok {
+		if err := episode.EpisodeNumberValidator(v); err != nil {
+			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.AnimeSeason(); ok {
+		if err := episode.AnimeSeasonValidator(v); err != nil {
+			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
 	}
 	if v, ok := eu.mutation.FileName(); ok {
@@ -250,11 +276,17 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := eu.mutation.Number(); ok {
-		_spec.SetField(episode.FieldNumber, field.TypeInt, value)
+	if value, ok := eu.mutation.EpisodeNumber(); ok {
+		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
 	}
-	if value, ok := eu.mutation.AddedNumber(); ok {
-		_spec.AddField(episode.FieldNumber, field.TypeInt, value)
+	if value, ok := eu.mutation.AddedEpisodeNumber(); ok {
+		_spec.AddField(episode.FieldEpisodeNumber, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AnimeSeason(); ok {
+		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedAnimeSeason(); ok {
+		_spec.AddField(episode.FieldAnimeSeason, field.TypeInt, value)
 	}
 	if value, ok := eu.mutation.ViewURL(); ok {
 		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
@@ -367,24 +399,45 @@ type EpisodeUpdateOne struct {
 	mutation *EpisodeMutation
 }
 
-// SetNumber sets the "number" field.
-func (euo *EpisodeUpdateOne) SetNumber(i int) *EpisodeUpdateOne {
-	euo.mutation.ResetNumber()
-	euo.mutation.SetNumber(i)
+// SetEpisodeNumber sets the "episode_number" field.
+func (euo *EpisodeUpdateOne) SetEpisodeNumber(i int) *EpisodeUpdateOne {
+	euo.mutation.ResetEpisodeNumber()
+	euo.mutation.SetEpisodeNumber(i)
 	return euo
 }
 
-// SetNillableNumber sets the "number" field if the given value is not nil.
-func (euo *EpisodeUpdateOne) SetNillableNumber(i *int) *EpisodeUpdateOne {
+// SetNillableEpisodeNumber sets the "episode_number" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableEpisodeNumber(i *int) *EpisodeUpdateOne {
 	if i != nil {
-		euo.SetNumber(*i)
+		euo.SetEpisodeNumber(*i)
 	}
 	return euo
 }
 
-// AddNumber adds i to the "number" field.
-func (euo *EpisodeUpdateOne) AddNumber(i int) *EpisodeUpdateOne {
-	euo.mutation.AddNumber(i)
+// AddEpisodeNumber adds i to the "episode_number" field.
+func (euo *EpisodeUpdateOne) AddEpisodeNumber(i int) *EpisodeUpdateOne {
+	euo.mutation.AddEpisodeNumber(i)
+	return euo
+}
+
+// SetAnimeSeason sets the "anime_season" field.
+func (euo *EpisodeUpdateOne) SetAnimeSeason(i int) *EpisodeUpdateOne {
+	euo.mutation.ResetAnimeSeason()
+	euo.mutation.SetAnimeSeason(i)
+	return euo
+}
+
+// SetNillableAnimeSeason sets the "anime_season" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableAnimeSeason(i *int) *EpisodeUpdateOne {
+	if i != nil {
+		euo.SetAnimeSeason(*i)
+	}
+	return euo
+}
+
+// AddAnimeSeason adds i to the "anime_season" field.
+func (euo *EpisodeUpdateOne) AddAnimeSeason(i int) *EpisodeUpdateOne {
+	euo.mutation.AddAnimeSeason(i)
 	return euo
 }
 
@@ -568,9 +621,14 @@ func (euo *EpisodeUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EpisodeUpdateOne) check() error {
-	if v, ok := euo.mutation.Number(); ok {
-		if err := episode.NumberValidator(v); err != nil {
-			return &ValidationError{Name: "number", err: fmt.Errorf(`ent: validator failed for field "Episode.number": %w`, err)}
+	if v, ok := euo.mutation.EpisodeNumber(); ok {
+		if err := episode.EpisodeNumberValidator(v); err != nil {
+			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.AnimeSeason(); ok {
+		if err := episode.AnimeSeasonValidator(v); err != nil {
+			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
 	}
 	if v, ok := euo.mutation.FileName(); ok {
@@ -618,11 +676,17 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 			}
 		}
 	}
-	if value, ok := euo.mutation.Number(); ok {
-		_spec.SetField(episode.FieldNumber, field.TypeInt, value)
+	if value, ok := euo.mutation.EpisodeNumber(); ok {
+		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
 	}
-	if value, ok := euo.mutation.AddedNumber(); ok {
-		_spec.AddField(episode.FieldNumber, field.TypeInt, value)
+	if value, ok := euo.mutation.AddedEpisodeNumber(); ok {
+		_spec.AddField(episode.FieldEpisodeNumber, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AnimeSeason(); ok {
+		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedAnimeSeason(); ok {
+		_spec.AddField(episode.FieldAnimeSeason, field.TypeInt, value)
 	}
 	if value, ok := euo.mutation.ViewURL(); ok {
 		_spec.SetField(episode.FieldViewURL, field.TypeString, value)

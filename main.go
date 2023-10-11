@@ -178,7 +178,13 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 	//FIXME! if we have AnimeSeason+AnimeSeasonPrefix but don't have EpisodeNumber assume this is a batch
 	if len(e.EpisodeNumber) > 0 {
 		if n, err := strconv.Atoi(e.EpisodeNumber[0]); err == nil {
-			episode = episode.SetNumber(n)
+			episode = episode.SetEpisodeNumber(n)
+		}
+	}
+
+	if len(e.AnimeSeason) > 0 {
+		if n, err := strconv.Atoi(e.AnimeSeason[0]); err == nil {
+			episode = episode.SetAnimeSeason(n)
 		}
 	}
 

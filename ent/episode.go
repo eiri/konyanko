@@ -18,8 +18,10 @@ type Episode struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Number holds the value of the "number" field.
-	Number int `json:"number,omitempty"`
+	// EpisodeNumber holds the value of the "episode_number" field.
+	EpisodeNumber int `json:"episode_number,omitempty"`
+	// AnimeSeason holds the value of the "anime_season" field.
+	AnimeSeason int `json:"anime_season,omitempty"`
 	// ViewURL holds the value of the "view_url" field.
 	ViewURL string `json:"view_url,omitempty"`
 	// DownloadURL holds the value of the "download_url" field.
@@ -84,7 +86,7 @@ func (*Episode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case episode.FieldID, episode.FieldNumber, episode.FieldFileSize:
+		case episode.FieldID, episode.FieldEpisodeNumber, episode.FieldAnimeSeason, episode.FieldFileSize:
 			values[i] = new(sql.NullInt64)
 		case episode.FieldViewURL, episode.FieldDownloadURL, episode.FieldFileName, episode.FieldResolution, episode.FieldVideoCodec, episode.FieldAudioCodec:
 			values[i] = new(sql.NullString)
@@ -113,11 +115,17 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			e.ID = int(value.Int64)
-		case episode.FieldNumber:
+		case episode.FieldEpisodeNumber:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field number", values[i])
+				return fmt.Errorf("unexpected type %T for field episode_number", values[i])
 			} else if value.Valid {
-				e.Number = int(value.Int64)
+				e.EpisodeNumber = int(value.Int64)
+			}
+		case episode.FieldAnimeSeason:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field anime_season", values[i])
+			} else if value.Valid {
+				e.AnimeSeason = int(value.Int64)
 			}
 		case episode.FieldViewURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -221,8 +229,11 @@ func (e *Episode) String() string {
 	var builder strings.Builder
 	builder.WriteString("Episode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", e.ID))
-	builder.WriteString("number=")
-	builder.WriteString(fmt.Sprintf("%v", e.Number))
+	builder.WriteString("episode_number=")
+	builder.WriteString(fmt.Sprintf("%v", e.EpisodeNumber))
+	builder.WriteString(", ")
+	builder.WriteString("anime_season=")
+	builder.WriteString(fmt.Sprintf("%v", e.AnimeSeason))
 	builder.WriteString(", ")
 	builder.WriteString("view_url=")
 	builder.WriteString(e.ViewURL)

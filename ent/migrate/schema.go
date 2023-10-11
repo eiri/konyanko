@@ -22,7 +22,8 @@ var (
 	// EpisodesColumns holds the columns for the "episodes" table.
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "number", Type: field.TypeInt, Default: 0},
+		{Name: "episode_number", Type: field.TypeInt, Default: 0},
+		{Name: "anime_season", Type: field.TypeInt, Default: 1},
 		{Name: "view_url", Type: field.TypeString, Unique: true},
 		{Name: "download_url", Type: field.TypeString, Unique: true},
 		{Name: "file_name", Type: field.TypeString},
@@ -41,13 +42,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "episodes_animes_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[9]},
+				Columns:    []*schema.Column{EpisodesColumns[10]},
 				RefColumns: []*schema.Column{AnimesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "episodes_release_groups_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[10]},
+				Columns:    []*schema.Column{EpisodesColumns[11]},
 				RefColumns: []*schema.Column{ReleaseGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -56,7 +57,7 @@ var (
 			{
 				Name:    "episode_resolution",
 				Unique:  false,
-				Columns: []*schema.Column{EpisodesColumns[6]},
+				Columns: []*schema.Column{EpisodesColumns[7]},
 			},
 		},
 	}
