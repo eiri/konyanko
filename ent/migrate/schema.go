@@ -22,7 +22,7 @@ var (
 	// EpisodesColumns holds the columns for the "episodes" table.
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "number", Type: field.TypeInt, Default: 1},
+		{Name: "number", Type: field.TypeInt, Default: 0},
 		{Name: "view_url", Type: field.TypeString, Unique: true},
 		{Name: "download_url", Type: field.TypeString, Unique: true},
 		{Name: "file_name", Type: field.TypeString},
@@ -73,6 +73,13 @@ var (
 		Name:       "irregulars",
 		Columns:    IrregularsColumns,
 		PrimaryKey: []*schema.Column{IrregularsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "irregular_view_url",
+				Unique:  false,
+				Columns: []*schema.Column{IrregularsColumns[1]},
+			},
+		},
 	}
 	// ReleaseGroupsColumns holds the columns for the "release_groups" table.
 	ReleaseGroupsColumns = []*schema.Column{

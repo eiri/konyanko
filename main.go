@@ -12,6 +12,7 @@ import (
 	"github.com/eiri/konyanko/ent"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/irregular"
 	"github.com/eiri/konyanko/ent/releasegroup"
 
 	"github.com/dustin/go-humanize"
@@ -114,15 +115,17 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 
 	e := anitogo.Parse(item.Title, anitogo.DefaultOptions)
 	if e.AnimeTitle == "" {
-		_, err := client.Irregular.
-			Create().
-			SetViewURL(viewURL).
-			SetDownloadURL(downloadURL).
-			SetFileName(fileName).
-			SetFileSize(fileSize).
-			Save(ctx)
-		if err != nil {
-			return nil, err
+		if c, err := client.Irregular.Query().Where(irregular.ViewURL(item.Id)).Aggregate(ent.Count()).Int(ctx); c == 0 && err == nil {
+			_, err := client.Irregular.
+				Create().
+				SetViewURL(viewURL).
+				SetDownloadURL(downloadURL).
+				SetFileName(fileName).
+				SetFileSize(fileSize).
+				Save(ctx)
+			if err != nil {
+				return nil, err
+			}
 		}
 		return nil, nil
 	}
