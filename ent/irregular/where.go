@@ -3,6 +3,8 @@
 package irregular
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/eiri/konyanko/ent/predicate"
 )
@@ -70,6 +72,11 @@ func FileName(v string) predicate.Irregular {
 // FileSize applies equality check predicate on the "file_size" field. It's identical to FileSizeEQ.
 func FileSize(v int) predicate.Irregular {
 	return predicate.Irregular(sql.FieldEQ(FieldFileSize, v))
+}
+
+// PublishDate applies equality check predicate on the "publish_date" field. It's identical to PublishDateEQ.
+func PublishDate(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldEQ(FieldPublishDate, v))
 }
 
 // ViewURLEQ applies the EQ predicate on the "view_url" field.
@@ -305,6 +312,46 @@ func FileSizeLT(v int) predicate.Irregular {
 // FileSizeLTE applies the LTE predicate on the "file_size" field.
 func FileSizeLTE(v int) predicate.Irregular {
 	return predicate.Irregular(sql.FieldLTE(FieldFileSize, v))
+}
+
+// PublishDateEQ applies the EQ predicate on the "publish_date" field.
+func PublishDateEQ(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldEQ(FieldPublishDate, v))
+}
+
+// PublishDateNEQ applies the NEQ predicate on the "publish_date" field.
+func PublishDateNEQ(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldNEQ(FieldPublishDate, v))
+}
+
+// PublishDateIn applies the In predicate on the "publish_date" field.
+func PublishDateIn(vs ...time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldIn(FieldPublishDate, vs...))
+}
+
+// PublishDateNotIn applies the NotIn predicate on the "publish_date" field.
+func PublishDateNotIn(vs ...time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldNotIn(FieldPublishDate, vs...))
+}
+
+// PublishDateGT applies the GT predicate on the "publish_date" field.
+func PublishDateGT(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldGT(FieldPublishDate, v))
+}
+
+// PublishDateGTE applies the GTE predicate on the "publish_date" field.
+func PublishDateGTE(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldGTE(FieldPublishDate, v))
+}
+
+// PublishDateLT applies the LT predicate on the "publish_date" field.
+func PublishDateLT(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldLT(FieldPublishDate, v))
+}
+
+// PublishDateLTE applies the LTE predicate on the "publish_date" field.
+func PublishDateLTE(v time.Time) predicate.Irregular {
+	return predicate.Irregular(sql.FieldLTE(FieldPublishDate, v))
 }
 
 // And groups predicates with the AND operator between them.

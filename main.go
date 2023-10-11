@@ -112,6 +112,7 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 	}
 	viewURL := item.Id
 	downloadURL := item.Links[0].URL
+	publishDate := item.PublishDate
 
 	e := anitogo.Parse(item.Title, anitogo.DefaultOptions)
 	if e.AnimeTitle == "" {
@@ -122,6 +123,7 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 				SetDownloadURL(downloadURL).
 				SetFileName(fileName).
 				SetFileSize(fileSize).
+				SetPublishDate(publishDate).
 				Save(ctx)
 			if err != nil {
 				return nil, err
@@ -173,7 +175,8 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 		SetViewURL(viewURL).
 		SetDownloadURL(downloadURL).
 		SetFileName(fileName).
-		SetFileSize(fileSize)
+		SetFileSize(fileSize).
+		SetPublishDate(publishDate)
 
 	//FIXME! if we have AnimeSeason+AnimeSeasonPrefix but don't have EpisodeNumber assume this is a batch
 	if len(e.EpisodeNumber) > 0 {

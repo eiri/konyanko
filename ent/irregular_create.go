@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -43,6 +44,20 @@ func (ic *IrregularCreate) SetFileSize(i int) *IrregularCreate {
 	return ic
 }
 
+// SetPublishDate sets the "publish_date" field.
+func (ic *IrregularCreate) SetPublishDate(t time.Time) *IrregularCreate {
+	ic.mutation.SetPublishDate(t)
+	return ic
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (ic *IrregularCreate) SetNillablePublishDate(t *time.Time) *IrregularCreate {
+	if t != nil {
+		ic.SetPublishDate(*t)
+	}
+	return ic
+}
+
 // Mutation returns the IrregularMutation object of the builder.
 func (ic *IrregularCreate) Mutation() *IrregularMutation {
 	return ic.mutation
@@ -50,6 +65,7 @@ func (ic *IrregularCreate) Mutation() *IrregularMutation {
 
 // Save creates the Irregular in the database.
 func (ic *IrregularCreate) Save(ctx context.Context) (*Irregular, error) {
+	ic.defaults()
 	return withHooks(ctx, ic.sqlSave, ic.mutation, ic.hooks)
 }
 
@@ -72,6 +88,14 @@ func (ic *IrregularCreate) Exec(ctx context.Context) error {
 func (ic *IrregularCreate) ExecX(ctx context.Context) {
 	if err := ic.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ic *IrregularCreate) defaults() {
+	if _, ok := ic.mutation.PublishDate(); !ok {
+		v := irregular.DefaultPublishDate()
+		ic.mutation.SetPublishDate(v)
 	}
 }
 
@@ -98,6 +122,9 @@ func (ic *IrregularCreate) check() error {
 		if err := irregular.FileSizeValidator(v); err != nil {
 			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Irregular.file_size": %w`, err)}
 		}
+	}
+	if _, ok := ic.mutation.PublishDate(); !ok {
+		return &ValidationError{Name: "publish_date", err: errors.New(`ent: missing required field "Irregular.publish_date"`)}
 	}
 	return nil
 }
@@ -141,6 +168,10 @@ func (ic *IrregularCreate) createSpec() (*Irregular, *sqlgraph.CreateSpec) {
 		_spec.SetField(irregular.FieldFileSize, field.TypeInt, value)
 		_node.FileSize = value
 	}
+	if value, ok := ic.mutation.PublishDate(); ok {
+		_spec.SetField(irregular.FieldPublishDate, field.TypeTime, value)
+		_node.PublishDate = value
+	}
 	return _node, _spec
 }
 
@@ -162,6 +193,7 @@ func (icb *IrregularCreateBulk) Save(ctx context.Context) ([]*Irregular, error) 
 	for i := range icb.builders {
 		func(i int, root context.Context) {
 			builder := icb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*IrregularMutation)
 				if !ok {

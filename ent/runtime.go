@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ent/irregular"
 	"github.com/eiri/konyanko/ent/schema"
@@ -34,6 +36,10 @@ func init() {
 	episodeDescFileSize := episodeFields[5].Descriptor()
 	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
+	// episodeDescPublishDate is the schema descriptor for publish_date field.
+	episodeDescPublishDate := episodeFields[9].Descriptor()
+	// episode.DefaultPublishDate holds the default value on creation for the publish_date field.
+	episode.DefaultPublishDate = episodeDescPublishDate.Default.(func() time.Time)
 	irregularFields := schema.Irregular{}.Fields()
 	_ = irregularFields
 	// irregularDescFileName is the schema descriptor for file_name field.
@@ -44,4 +50,8 @@ func init() {
 	irregularDescFileSize := irregularFields[3].Descriptor()
 	// irregular.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	irregular.FileSizeValidator = irregularDescFileSize.Validators[0].(func(int) error)
+	// irregularDescPublishDate is the schema descriptor for publish_date field.
+	irregularDescPublishDate := irregularFields[4].Descriptor()
+	// irregular.DefaultPublishDate holds the default value on creation for the publish_date field.
+	irregular.DefaultPublishDate = irregularDescPublishDate.Default.(func() time.Time)
 }

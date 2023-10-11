@@ -3,6 +3,8 @@
 package irregular
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -19,6 +21,8 @@ const (
 	FieldFileName = "file_name"
 	// FieldFileSize holds the string denoting the file_size field in the database.
 	FieldFileSize = "file_size"
+	// FieldPublishDate holds the string denoting the publish_date field in the database.
+	FieldPublishDate = "publish_date"
 	// Table holds the table name of the irregular in the database.
 	Table = "irregulars"
 )
@@ -30,6 +34,7 @@ var Columns = []string{
 	FieldDownloadURL,
 	FieldFileName,
 	FieldFileSize,
+	FieldPublishDate,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -47,6 +52,8 @@ var (
 	FileNameValidator func(string) error
 	// FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	FileSizeValidator func(int) error
+	// DefaultPublishDate holds the default value on creation for the "publish_date" field.
+	DefaultPublishDate func() time.Time
 )
 
 // OrderOption defines the ordering options for the Irregular queries.
@@ -75,4 +82,9 @@ func ByFileName(opts ...sql.OrderTermOption) OrderOption {
 // ByFileSize orders the results by the file_size field.
 func ByFileSize(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFileSize, opts...).ToFunc()
+}
+
+// ByPublishDate orders the results by the publish_date field.
+func ByPublishDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPublishDate, opts...).ToFunc()
 }

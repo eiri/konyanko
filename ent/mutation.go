@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -469,6 +470,7 @@ type EpisodeMutation struct {
 	resolution           *string
 	video_codec          *string
 	audio_codec          *string
+	publish_date         *time.Time
 	clearedFields        map[string]struct{}
 	title                *int
 	clearedtitle         bool
@@ -1000,6 +1002,42 @@ func (m *EpisodeMutation) ResetAudioCodec() {
 	delete(m.clearedFields, episode.FieldAudioCodec)
 }
 
+// SetPublishDate sets the "publish_date" field.
+func (m *EpisodeMutation) SetPublishDate(t time.Time) {
+	m.publish_date = &t
+}
+
+// PublishDate returns the value of the "publish_date" field in the mutation.
+func (m *EpisodeMutation) PublishDate() (r time.Time, exists bool) {
+	v := m.publish_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPublishDate returns the old "publish_date" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldPublishDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPublishDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPublishDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPublishDate: %w", err)
+	}
+	return oldValue.PublishDate, nil
+}
+
+// ResetPublishDate resets all changes to the "publish_date" field.
+func (m *EpisodeMutation) ResetPublishDate() {
+	m.publish_date = nil
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by id.
 func (m *EpisodeMutation) SetTitleID(id int) {
 	m.title = &id
@@ -1112,7 +1150,7 @@ func (m *EpisodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EpisodeMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.episode_number != nil {
 		fields = append(fields, episode.FieldEpisodeNumber)
 	}
@@ -1140,6 +1178,9 @@ func (m *EpisodeMutation) Fields() []string {
 	if m.audio_codec != nil {
 		fields = append(fields, episode.FieldAudioCodec)
 	}
+	if m.publish_date != nil {
+		fields = append(fields, episode.FieldPublishDate)
+	}
 	return fields
 }
 
@@ -1166,6 +1207,8 @@ func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 		return m.VideoCodec()
 	case episode.FieldAudioCodec:
 		return m.AudioCodec()
+	case episode.FieldPublishDate:
+		return m.PublishDate()
 	}
 	return nil, false
 }
@@ -1193,6 +1236,8 @@ func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldVideoCodec(ctx)
 	case episode.FieldAudioCodec:
 		return m.OldAudioCodec(ctx)
+	case episode.FieldPublishDate:
+		return m.OldPublishDate(ctx)
 	}
 	return nil, fmt.Errorf("unknown Episode field %s", name)
 }
@@ -1264,6 +1309,13 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAudioCodec(v)
+		return nil
+	case episode.FieldPublishDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPublishDate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Episode field %s", name)
@@ -1401,6 +1453,9 @@ func (m *EpisodeMutation) ResetField(name string) error {
 	case episode.FieldAudioCodec:
 		m.ResetAudioCodec()
 		return nil
+	case episode.FieldPublishDate:
+		m.ResetPublishDate()
+		return nil
 	}
 	return fmt.Errorf("unknown Episode field %s", name)
 }
@@ -1508,6 +1563,7 @@ type IrregularMutation struct {
 	file_name     *string
 	file_size     *int
 	addfile_size  *int
+	publish_date  *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Irregular, error)
@@ -1776,6 +1832,42 @@ func (m *IrregularMutation) ResetFileSize() {
 	m.addfile_size = nil
 }
 
+// SetPublishDate sets the "publish_date" field.
+func (m *IrregularMutation) SetPublishDate(t time.Time) {
+	m.publish_date = &t
+}
+
+// PublishDate returns the value of the "publish_date" field in the mutation.
+func (m *IrregularMutation) PublishDate() (r time.Time, exists bool) {
+	v := m.publish_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPublishDate returns the old "publish_date" field's value of the Irregular entity.
+// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IrregularMutation) OldPublishDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPublishDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPublishDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPublishDate: %w", err)
+	}
+	return oldValue.PublishDate, nil
+}
+
+// ResetPublishDate resets all changes to the "publish_date" field.
+func (m *IrregularMutation) ResetPublishDate() {
+	m.publish_date = nil
+}
+
 // Where appends a list predicates to the IrregularMutation builder.
 func (m *IrregularMutation) Where(ps ...predicate.Irregular) {
 	m.predicates = append(m.predicates, ps...)
@@ -1810,7 +1902,7 @@ func (m *IrregularMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IrregularMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.view_url != nil {
 		fields = append(fields, irregular.FieldViewURL)
 	}
@@ -1822,6 +1914,9 @@ func (m *IrregularMutation) Fields() []string {
 	}
 	if m.file_size != nil {
 		fields = append(fields, irregular.FieldFileSize)
+	}
+	if m.publish_date != nil {
+		fields = append(fields, irregular.FieldPublishDate)
 	}
 	return fields
 }
@@ -1839,6 +1934,8 @@ func (m *IrregularMutation) Field(name string) (ent.Value, bool) {
 		return m.FileName()
 	case irregular.FieldFileSize:
 		return m.FileSize()
+	case irregular.FieldPublishDate:
+		return m.PublishDate()
 	}
 	return nil, false
 }
@@ -1856,6 +1953,8 @@ func (m *IrregularMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldFileName(ctx)
 	case irregular.FieldFileSize:
 		return m.OldFileSize(ctx)
+	case irregular.FieldPublishDate:
+		return m.OldPublishDate(ctx)
 	}
 	return nil, fmt.Errorf("unknown Irregular field %s", name)
 }
@@ -1892,6 +1991,13 @@ func (m *IrregularMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFileSize(v)
+		return nil
+	case irregular.FieldPublishDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPublishDate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Irregular field %s", name)
@@ -1968,6 +2074,9 @@ func (m *IrregularMutation) ResetField(name string) error {
 		return nil
 	case irregular.FieldFileSize:
 		m.ResetFileSize()
+		return nil
+	case irregular.FieldPublishDate:
+		m.ResetPublishDate()
 		return nil
 	}
 	return fmt.Errorf("unknown Irregular field %s", name)

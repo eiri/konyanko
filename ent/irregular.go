@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -23,7 +24,9 @@ type Irregular struct {
 	// FileName holds the value of the "file_name" field.
 	FileName string `json:"file_name,omitempty"`
 	// FileSize holds the value of the "file_size" field.
-	FileSize     int `json:"file_size,omitempty"`
+	FileSize int `json:"file_size,omitempty"`
+	// PublishDate holds the value of the "publish_date" field.
+	PublishDate  time.Time `json:"publish_date,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -36,6 +39,8 @@ func (*Irregular) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case irregular.FieldViewURL, irregular.FieldDownloadURL, irregular.FieldFileName:
 			values[i] = new(sql.NullString)
+		case irregular.FieldPublishDate:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -80,6 +85,12 @@ func (i *Irregular) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field file_size", values[j])
 			} else if value.Valid {
 				i.FileSize = int(value.Int64)
+			}
+		case irregular.FieldPublishDate:
+			if value, ok := values[j].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field publish_date", values[j])
+			} else if value.Valid {
+				i.PublishDate = value.Time
 			}
 		default:
 			i.selectValues.Set(columns[j], values[j])
@@ -128,6 +139,9 @@ func (i *Irregular) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("file_size=")
 	builder.WriteString(fmt.Sprintf("%v", i.FileSize))
+	builder.WriteString(", ")
+	builder.WriteString("publish_date=")
+	builder.WriteString(i.PublishDate.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

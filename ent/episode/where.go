@@ -3,6 +3,8 @@
 package episode
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/eiri/konyanko/ent/predicate"
@@ -96,6 +98,11 @@ func VideoCodec(v string) predicate.Episode {
 // AudioCodec applies equality check predicate on the "audio_codec" field. It's identical to AudioCodecEQ.
 func AudioCodec(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldAudioCodec, v))
+}
+
+// PublishDate applies equality check predicate on the "publish_date" field. It's identical to PublishDateEQ.
+func PublishDate(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
 }
 
 // EpisodeNumberEQ applies the EQ predicate on the "episode_number" field.
@@ -636,6 +643,46 @@ func AudioCodecEqualFold(v string) predicate.Episode {
 // AudioCodecContainsFold applies the ContainsFold predicate on the "audio_codec" field.
 func AudioCodecContainsFold(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldContainsFold(FieldAudioCodec, v))
+}
+
+// PublishDateEQ applies the EQ predicate on the "publish_date" field.
+func PublishDateEQ(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
+}
+
+// PublishDateNEQ applies the NEQ predicate on the "publish_date" field.
+func PublishDateNEQ(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldPublishDate, v))
+}
+
+// PublishDateIn applies the In predicate on the "publish_date" field.
+func PublishDateIn(vs ...time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldPublishDate, vs...))
+}
+
+// PublishDateNotIn applies the NotIn predicate on the "publish_date" field.
+func PublishDateNotIn(vs ...time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldPublishDate, vs...))
+}
+
+// PublishDateGT applies the GT predicate on the "publish_date" field.
+func PublishDateGT(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldPublishDate, v))
+}
+
+// PublishDateGTE applies the GTE predicate on the "publish_date" field.
+func PublishDateGTE(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldPublishDate, v))
+}
+
+// PublishDateLT applies the LT predicate on the "publish_date" field.
+func PublishDateLT(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldPublishDate, v))
+}
+
+// PublishDateLTE applies the LTE predicate on the "publish_date" field.
+func PublishDateLTE(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldPublishDate, v))
 }
 
 // HasTitle applies the HasEdge predicate on the "title" edge.

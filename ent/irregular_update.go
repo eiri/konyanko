@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -55,6 +56,20 @@ func (iu *IrregularUpdate) SetFileSize(i int) *IrregularUpdate {
 // AddFileSize adds i to the "file_size" field.
 func (iu *IrregularUpdate) AddFileSize(i int) *IrregularUpdate {
 	iu.mutation.AddFileSize(i)
+	return iu
+}
+
+// SetPublishDate sets the "publish_date" field.
+func (iu *IrregularUpdate) SetPublishDate(t time.Time) *IrregularUpdate {
+	iu.mutation.SetPublishDate(t)
+	return iu
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (iu *IrregularUpdate) SetNillablePublishDate(t *time.Time) *IrregularUpdate {
+	if t != nil {
+		iu.SetPublishDate(*t)
+	}
 	return iu
 }
 
@@ -132,6 +147,9 @@ func (iu *IrregularUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := iu.mutation.AddedFileSize(); ok {
 		_spec.AddField(irregular.FieldFileSize, field.TypeInt, value)
 	}
+	if value, ok := iu.mutation.PublishDate(); ok {
+		_spec.SetField(irregular.FieldPublishDate, field.TypeTime, value)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{irregular.Label}
@@ -180,6 +198,20 @@ func (iuo *IrregularUpdateOne) SetFileSize(i int) *IrregularUpdateOne {
 // AddFileSize adds i to the "file_size" field.
 func (iuo *IrregularUpdateOne) AddFileSize(i int) *IrregularUpdateOne {
 	iuo.mutation.AddFileSize(i)
+	return iuo
+}
+
+// SetPublishDate sets the "publish_date" field.
+func (iuo *IrregularUpdateOne) SetPublishDate(t time.Time) *IrregularUpdateOne {
+	iuo.mutation.SetPublishDate(t)
+	return iuo
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (iuo *IrregularUpdateOne) SetNillablePublishDate(t *time.Time) *IrregularUpdateOne {
+	if t != nil {
+		iuo.SetPublishDate(*t)
+	}
 	return iuo
 }
 
@@ -286,6 +318,9 @@ func (iuo *IrregularUpdateOne) sqlSave(ctx context.Context) (_node *Irregular, e
 	}
 	if value, ok := iuo.mutation.AddedFileSize(); ok {
 		_spec.AddField(irregular.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := iuo.mutation.PublishDate(); ok {
+		_spec.SetField(irregular.FieldPublishDate, field.TypeTime, value)
 	}
 	_node = &Irregular{config: iuo.config}
 	_spec.Assign = _node.assignValues

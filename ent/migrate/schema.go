@@ -31,6 +31,7 @@ var (
 		{Name: "resolution", Type: field.TypeString, Nullable: true},
 		{Name: "video_codec", Type: field.TypeString, Nullable: true},
 		{Name: "audio_codec", Type: field.TypeString, Nullable: true},
+		{Name: "publish_date", Type: field.TypeTime},
 		{Name: "anime_id", Type: field.TypeInt},
 		{Name: "release_group_id", Type: field.TypeInt, Nullable: true},
 	}
@@ -42,13 +43,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "episodes_animes_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[10]},
+				Columns:    []*schema.Column{EpisodesColumns[11]},
 				RefColumns: []*schema.Column{AnimesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "episodes_release_groups_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[11]},
+				Columns:    []*schema.Column{EpisodesColumns[12]},
 				RefColumns: []*schema.Column{ReleaseGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -68,6 +69,7 @@ var (
 		{Name: "download_url", Type: field.TypeString, Unique: true},
 		{Name: "file_name", Type: field.TypeString},
 		{Name: "file_size", Type: field.TypeInt},
+		{Name: "publish_date", Type: field.TypeTime},
 	}
 	// IrregularsTable holds the schema information for the "irregulars" table.
 	IrregularsTable = &schema.Table{

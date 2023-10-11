@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -24,6 +26,7 @@ func (Episode) Fields() []ent.Field {
 		field.String("resolution").Optional(),
 		field.String("video_codec").Optional(),
 		field.String("audio_codec").Optional(),
+		field.Time("publish_date").Default(time.Now),
 	}
 }
 

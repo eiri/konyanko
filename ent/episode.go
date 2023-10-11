@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -36,6 +37,8 @@ type Episode struct {
 	VideoCodec string `json:"video_codec,omitempty"`
 	// AudioCodec holds the value of the "audio_codec" field.
 	AudioCodec string `json:"audio_codec,omitempty"`
+	// PublishDate holds the value of the "publish_date" field.
+	PublishDate time.Time `json:"publish_date,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EpisodeQuery when eager-loading is set.
 	Edges            EpisodeEdges `json:"edges"`
@@ -90,6 +93,8 @@ func (*Episode) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case episode.FieldViewURL, episode.FieldDownloadURL, episode.FieldFileName, episode.FieldResolution, episode.FieldVideoCodec, episode.FieldAudioCodec:
 			values[i] = new(sql.NullString)
+		case episode.FieldPublishDate:
+			values[i] = new(sql.NullTime)
 		case episode.ForeignKeys[0]: // anime_id
 			values[i] = new(sql.NullInt64)
 		case episode.ForeignKeys[1]: // release_group_id
@@ -168,6 +173,12 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field audio_codec", values[i])
 			} else if value.Valid {
 				e.AudioCodec = value.String
+			}
+		case episode.FieldPublishDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field publish_date", values[i])
+			} else if value.Valid {
+				e.PublishDate = value.Time
 			}
 		case episode.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -255,6 +266,9 @@ func (e *Episode) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("audio_codec=")
 	builder.WriteString(e.AudioCodec)
+	builder.WriteString(", ")
+	builder.WriteString("publish_date=")
+	builder.WriteString(e.PublishDate.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

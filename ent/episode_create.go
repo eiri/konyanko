@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -115,6 +116,20 @@ func (ec *EpisodeCreate) SetNillableAudioCodec(s *string) *EpisodeCreate {
 	return ec
 }
 
+// SetPublishDate sets the "publish_date" field.
+func (ec *EpisodeCreate) SetPublishDate(t time.Time) *EpisodeCreate {
+	ec.mutation.SetPublishDate(t)
+	return ec
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillablePublishDate(t *time.Time) *EpisodeCreate {
+	if t != nil {
+		ec.SetPublishDate(*t)
+	}
+	return ec
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by ID.
 func (ec *EpisodeCreate) SetTitleID(id int) *EpisodeCreate {
 	ec.mutation.SetTitleID(id)
@@ -188,6 +203,10 @@ func (ec *EpisodeCreate) defaults() {
 		v := episode.DefaultAnimeSeason
 		ec.mutation.SetAnimeSeason(v)
 	}
+	if _, ok := ec.mutation.PublishDate(); !ok {
+		v := episode.DefaultPublishDate()
+		ec.mutation.SetPublishDate(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -229,6 +248,9 @@ func (ec *EpisodeCreate) check() error {
 		if err := episode.FileSizeValidator(v); err != nil {
 			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
 		}
+	}
+	if _, ok := ec.mutation.PublishDate(); !ok {
+		return &ValidationError{Name: "publish_date", err: errors.New(`ent: missing required field "Episode.publish_date"`)}
 	}
 	if _, ok := ec.mutation.TitleID(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required edge "Episode.title"`)}
@@ -294,6 +316,10 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.AudioCodec(); ok {
 		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
 		_node.AudioCodec = value
+	}
+	if value, ok := ec.mutation.PublishDate(); ok {
+		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
+		_node.PublishDate = value
 	}
 	if nodes := ec.mutation.TitleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

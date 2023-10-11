@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -159,6 +160,20 @@ func (eu *EpisodeUpdate) SetNillableAudioCodec(s *string) *EpisodeUpdate {
 // ClearAudioCodec clears the value of the "audio_codec" field.
 func (eu *EpisodeUpdate) ClearAudioCodec() *EpisodeUpdate {
 	eu.mutation.ClearAudioCodec()
+	return eu
+}
+
+// SetPublishDate sets the "publish_date" field.
+func (eu *EpisodeUpdate) SetPublishDate(t time.Time) *EpisodeUpdate {
+	eu.mutation.SetPublishDate(t)
+	return eu
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillablePublishDate(t *time.Time) *EpisodeUpdate {
+	if t != nil {
+		eu.SetPublishDate(*t)
+	}
 	return eu
 }
 
@@ -320,6 +335,9 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.AudioCodecCleared() {
 		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
+	}
+	if value, ok := eu.mutation.PublishDate(); ok {
+		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
 	}
 	if eu.mutation.TitleCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -532,6 +550,20 @@ func (euo *EpisodeUpdateOne) ClearAudioCodec() *EpisodeUpdateOne {
 	return euo
 }
 
+// SetPublishDate sets the "publish_date" field.
+func (euo *EpisodeUpdateOne) SetPublishDate(t time.Time) *EpisodeUpdateOne {
+	euo.mutation.SetPublishDate(t)
+	return euo
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillablePublishDate(t *time.Time) *EpisodeUpdateOne {
+	if t != nil {
+		euo.SetPublishDate(*t)
+	}
+	return euo
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by ID.
 func (euo *EpisodeUpdateOne) SetTitleID(id int) *EpisodeUpdateOne {
 	euo.mutation.SetTitleID(id)
@@ -720,6 +752,9 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 	}
 	if euo.mutation.AudioCodecCleared() {
 		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
+	}
+	if value, ok := euo.mutation.PublishDate(); ok {
+		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
 	}
 	if euo.mutation.TitleCleared() {
 		edge := &sqlgraph.EdgeSpec{

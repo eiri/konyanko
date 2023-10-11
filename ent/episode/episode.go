@@ -3,6 +3,8 @@
 package episode
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -30,6 +32,8 @@ const (
 	FieldVideoCodec = "video_codec"
 	// FieldAudioCodec holds the string denoting the audio_codec field in the database.
 	FieldAudioCodec = "audio_codec"
+	// FieldPublishDate holds the string denoting the publish_date field in the database.
+	FieldPublishDate = "publish_date"
 	// EdgeTitle holds the string denoting the title edge name in mutations.
 	EdgeTitle = "title"
 	// EdgeReleaseGroup holds the string denoting the release_group edge name in mutations.
@@ -64,6 +68,7 @@ var Columns = []string{
 	FieldResolution,
 	FieldVideoCodec,
 	FieldAudioCodec,
+	FieldPublishDate,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "episodes"
@@ -101,6 +106,8 @@ var (
 	FileNameValidator func(string) error
 	// FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	FileSizeValidator func(int) error
+	// DefaultPublishDate holds the default value on creation for the "publish_date" field.
+	DefaultPublishDate func() time.Time
 )
 
 // OrderOption defines the ordering options for the Episode queries.
@@ -154,6 +161,11 @@ func ByVideoCodec(opts ...sql.OrderTermOption) OrderOption {
 // ByAudioCodec orders the results by the audio_codec field.
 func ByAudioCodec(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAudioCodec, opts...).ToFunc()
+}
+
+// ByPublishDate orders the results by the publish_date field.
+func ByPublishDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPublishDate, opts...).ToFunc()
 }
 
 // ByTitleField orders the results by title field.
