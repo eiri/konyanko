@@ -15,7 +15,7 @@ type Episode struct {
 // Fields of the Episode.
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("number").Positive().Default(1),
+		field.Int("number").NonNegative().Default(0),
 		field.String("view_url").Unique(),
 		field.String("download_url").Unique(),
 		field.String("file_name").NotEmpty(),
