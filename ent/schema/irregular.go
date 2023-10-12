@@ -1,10 +1,7 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
-	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
 
@@ -13,15 +10,16 @@ type Irregular struct {
 	ent.Schema
 }
 
+// Mixin of the Irregular.
+func (Irregular) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		ItemMixin{},
+	}
+}
+
 // Fields of the Irregular.
 func (Irregular) Fields() []ent.Field {
-	return []ent.Field{
-		field.String("view_url").Unique(),
-		field.String("download_url").Unique(),
-		field.String("file_name").NotEmpty(),
-		field.Int("file_size").Positive(),
-		field.Time("publish_date").Default(time.Now),
-	}
+	return []ent.Field{}
 }
 
 // Edges of the Irregular.

@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -14,19 +12,21 @@ type Episode struct {
 	ent.Schema
 }
 
+// Mixin of the Episode.
+func (Episode) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		ItemMixin{},
+	}
+}
+
 // Fields of the Episode.
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("episode_number").NonNegative().Default(0),
 		field.Int("anime_season").NonNegative().Default(1),
-		field.String("view_url").Unique(),
-		field.String("download_url").Unique(),
-		field.String("file_name").NotEmpty(),
-		field.Int("file_size").Positive(),
 		field.String("resolution").Optional(),
 		field.String("video_codec").Optional(),
 		field.String("audio_codec").Optional(),
-		field.Time("publish_date").Default(time.Now),
 	}
 }
 

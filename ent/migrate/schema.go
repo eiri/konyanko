@@ -22,16 +22,16 @@ var (
 	// EpisodesColumns holds the columns for the "episodes" table.
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "episode_number", Type: field.TypeInt, Default: 0},
-		{Name: "anime_season", Type: field.TypeInt, Default: 1},
 		{Name: "view_url", Type: field.TypeString, Unique: true},
 		{Name: "download_url", Type: field.TypeString, Unique: true},
 		{Name: "file_name", Type: field.TypeString},
 		{Name: "file_size", Type: field.TypeInt},
+		{Name: "publish_date", Type: field.TypeTime},
+		{Name: "episode_number", Type: field.TypeInt, Default: 0},
+		{Name: "anime_season", Type: field.TypeInt, Default: 1},
 		{Name: "resolution", Type: field.TypeString, Nullable: true},
 		{Name: "video_codec", Type: field.TypeString, Nullable: true},
 		{Name: "audio_codec", Type: field.TypeString, Nullable: true},
-		{Name: "publish_date", Type: field.TypeTime},
 		{Name: "anime_id", Type: field.TypeInt},
 		{Name: "release_group_id", Type: field.TypeInt, Nullable: true},
 	}
@@ -58,7 +58,7 @@ var (
 			{
 				Name:    "episode_resolution",
 				Unique:  false,
-				Columns: []*schema.Column{EpisodesColumns[7]},
+				Columns: []*schema.Column{EpisodesColumns[8]},
 			},
 		},
 	}

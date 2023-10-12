@@ -14,8 +14,23 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	episodeMixin := schema.Episode{}.Mixin()
+	episodeMixinFields0 := episodeMixin[0].Fields()
+	_ = episodeMixinFields0
 	episodeFields := schema.Episode{}.Fields()
 	_ = episodeFields
+	// episodeDescFileName is the schema descriptor for file_name field.
+	episodeDescFileName := episodeMixinFields0[2].Descriptor()
+	// episode.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	episode.FileNameValidator = episodeDescFileName.Validators[0].(func(string) error)
+	// episodeDescFileSize is the schema descriptor for file_size field.
+	episodeDescFileSize := episodeMixinFields0[3].Descriptor()
+	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
+	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
+	// episodeDescPublishDate is the schema descriptor for publish_date field.
+	episodeDescPublishDate := episodeMixinFields0[4].Descriptor()
+	// episode.DefaultPublishDate holds the default value on creation for the publish_date field.
+	episode.DefaultPublishDate = episodeDescPublishDate.Default.(func() time.Time)
 	// episodeDescEpisodeNumber is the schema descriptor for episode_number field.
 	episodeDescEpisodeNumber := episodeFields[0].Descriptor()
 	// episode.DefaultEpisodeNumber holds the default value on creation for the episode_number field.
@@ -28,30 +43,21 @@ func init() {
 	episode.DefaultAnimeSeason = episodeDescAnimeSeason.Default.(int)
 	// episode.AnimeSeasonValidator is a validator for the "anime_season" field. It is called by the builders before save.
 	episode.AnimeSeasonValidator = episodeDescAnimeSeason.Validators[0].(func(int) error)
-	// episodeDescFileName is the schema descriptor for file_name field.
-	episodeDescFileName := episodeFields[4].Descriptor()
-	// episode.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	episode.FileNameValidator = episodeDescFileName.Validators[0].(func(string) error)
-	// episodeDescFileSize is the schema descriptor for file_size field.
-	episodeDescFileSize := episodeFields[5].Descriptor()
-	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
-	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
-	// episodeDescPublishDate is the schema descriptor for publish_date field.
-	episodeDescPublishDate := episodeFields[9].Descriptor()
-	// episode.DefaultPublishDate holds the default value on creation for the publish_date field.
-	episode.DefaultPublishDate = episodeDescPublishDate.Default.(func() time.Time)
+	irregularMixin := schema.Irregular{}.Mixin()
+	irregularMixinFields0 := irregularMixin[0].Fields()
+	_ = irregularMixinFields0
 	irregularFields := schema.Irregular{}.Fields()
 	_ = irregularFields
 	// irregularDescFileName is the schema descriptor for file_name field.
-	irregularDescFileName := irregularFields[2].Descriptor()
+	irregularDescFileName := irregularMixinFields0[2].Descriptor()
 	// irregular.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
 	irregular.FileNameValidator = irregularDescFileName.Validators[0].(func(string) error)
 	// irregularDescFileSize is the schema descriptor for file_size field.
-	irregularDescFileSize := irregularFields[3].Descriptor()
+	irregularDescFileSize := irregularMixinFields0[3].Descriptor()
 	// irregular.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
 	irregular.FileSizeValidator = irregularDescFileSize.Validators[0].(func(int) error)
 	// irregularDescPublishDate is the schema descriptor for publish_date field.
-	irregularDescPublishDate := irregularFields[4].Descriptor()
+	irregularDescPublishDate := irregularMixinFields0[4].Descriptor()
 	// irregular.DefaultPublishDate holds the default value on creation for the publish_date field.
 	irregular.DefaultPublishDate = irregularDescPublishDate.Default.(func() time.Time)
 }

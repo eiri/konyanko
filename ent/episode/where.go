@@ -55,16 +55,6 @@ func IDLTE(id int) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldID, id))
 }
 
-// EpisodeNumber applies equality check predicate on the "episode_number" field. It's identical to EpisodeNumberEQ.
-func EpisodeNumber(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldEpisodeNumber, v))
-}
-
-// AnimeSeason applies equality check predicate on the "anime_season" field. It's identical to AnimeSeasonEQ.
-func AnimeSeason(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldAnimeSeason, v))
-}
-
 // ViewURL applies equality check predicate on the "view_url" field. It's identical to ViewURLEQ.
 func ViewURL(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldViewURL, v))
@@ -85,6 +75,21 @@ func FileSize(v int) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldFileSize, v))
 }
 
+// PublishDate applies equality check predicate on the "publish_date" field. It's identical to PublishDateEQ.
+func PublishDate(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
+}
+
+// EpisodeNumber applies equality check predicate on the "episode_number" field. It's identical to EpisodeNumberEQ.
+func EpisodeNumber(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldEpisodeNumber, v))
+}
+
+// AnimeSeason applies equality check predicate on the "anime_season" field. It's identical to AnimeSeasonEQ.
+func AnimeSeason(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldAnimeSeason, v))
+}
+
 // Resolution applies equality check predicate on the "resolution" field. It's identical to ResolutionEQ.
 func Resolution(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldResolution, v))
@@ -98,91 +103,6 @@ func VideoCodec(v string) predicate.Episode {
 // AudioCodec applies equality check predicate on the "audio_codec" field. It's identical to AudioCodecEQ.
 func AudioCodec(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldAudioCodec, v))
-}
-
-// PublishDate applies equality check predicate on the "publish_date" field. It's identical to PublishDateEQ.
-func PublishDate(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
-}
-
-// EpisodeNumberEQ applies the EQ predicate on the "episode_number" field.
-func EpisodeNumberEQ(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldEpisodeNumber, v))
-}
-
-// EpisodeNumberNEQ applies the NEQ predicate on the "episode_number" field.
-func EpisodeNumberNEQ(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldEpisodeNumber, v))
-}
-
-// EpisodeNumberIn applies the In predicate on the "episode_number" field.
-func EpisodeNumberIn(vs ...int) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldEpisodeNumber, vs...))
-}
-
-// EpisodeNumberNotIn applies the NotIn predicate on the "episode_number" field.
-func EpisodeNumberNotIn(vs ...int) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldEpisodeNumber, vs...))
-}
-
-// EpisodeNumberGT applies the GT predicate on the "episode_number" field.
-func EpisodeNumberGT(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldEpisodeNumber, v))
-}
-
-// EpisodeNumberGTE applies the GTE predicate on the "episode_number" field.
-func EpisodeNumberGTE(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldEpisodeNumber, v))
-}
-
-// EpisodeNumberLT applies the LT predicate on the "episode_number" field.
-func EpisodeNumberLT(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldEpisodeNumber, v))
-}
-
-// EpisodeNumberLTE applies the LTE predicate on the "episode_number" field.
-func EpisodeNumberLTE(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldEpisodeNumber, v))
-}
-
-// AnimeSeasonEQ applies the EQ predicate on the "anime_season" field.
-func AnimeSeasonEQ(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldAnimeSeason, v))
-}
-
-// AnimeSeasonNEQ applies the NEQ predicate on the "anime_season" field.
-func AnimeSeasonNEQ(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldAnimeSeason, v))
-}
-
-// AnimeSeasonIn applies the In predicate on the "anime_season" field.
-func AnimeSeasonIn(vs ...int) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldAnimeSeason, vs...))
-}
-
-// AnimeSeasonNotIn applies the NotIn predicate on the "anime_season" field.
-func AnimeSeasonNotIn(vs ...int) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldAnimeSeason, vs...))
-}
-
-// AnimeSeasonGT applies the GT predicate on the "anime_season" field.
-func AnimeSeasonGT(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldAnimeSeason, v))
-}
-
-// AnimeSeasonGTE applies the GTE predicate on the "anime_season" field.
-func AnimeSeasonGTE(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldAnimeSeason, v))
-}
-
-// AnimeSeasonLT applies the LT predicate on the "anime_season" field.
-func AnimeSeasonLT(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldAnimeSeason, v))
-}
-
-// AnimeSeasonLTE applies the LTE predicate on the "anime_season" field.
-func AnimeSeasonLTE(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldAnimeSeason, v))
 }
 
 // ViewURLEQ applies the EQ predicate on the "view_url" field.
@@ -420,6 +340,126 @@ func FileSizeLTE(v int) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldFileSize, v))
 }
 
+// PublishDateEQ applies the EQ predicate on the "publish_date" field.
+func PublishDateEQ(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
+}
+
+// PublishDateNEQ applies the NEQ predicate on the "publish_date" field.
+func PublishDateNEQ(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldPublishDate, v))
+}
+
+// PublishDateIn applies the In predicate on the "publish_date" field.
+func PublishDateIn(vs ...time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldPublishDate, vs...))
+}
+
+// PublishDateNotIn applies the NotIn predicate on the "publish_date" field.
+func PublishDateNotIn(vs ...time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldPublishDate, vs...))
+}
+
+// PublishDateGT applies the GT predicate on the "publish_date" field.
+func PublishDateGT(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldPublishDate, v))
+}
+
+// PublishDateGTE applies the GTE predicate on the "publish_date" field.
+func PublishDateGTE(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldPublishDate, v))
+}
+
+// PublishDateLT applies the LT predicate on the "publish_date" field.
+func PublishDateLT(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldPublishDate, v))
+}
+
+// PublishDateLTE applies the LTE predicate on the "publish_date" field.
+func PublishDateLTE(v time.Time) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldPublishDate, v))
+}
+
+// EpisodeNumberEQ applies the EQ predicate on the "episode_number" field.
+func EpisodeNumberEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldEpisodeNumber, v))
+}
+
+// EpisodeNumberNEQ applies the NEQ predicate on the "episode_number" field.
+func EpisodeNumberNEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldEpisodeNumber, v))
+}
+
+// EpisodeNumberIn applies the In predicate on the "episode_number" field.
+func EpisodeNumberIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldEpisodeNumber, vs...))
+}
+
+// EpisodeNumberNotIn applies the NotIn predicate on the "episode_number" field.
+func EpisodeNumberNotIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldEpisodeNumber, vs...))
+}
+
+// EpisodeNumberGT applies the GT predicate on the "episode_number" field.
+func EpisodeNumberGT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldEpisodeNumber, v))
+}
+
+// EpisodeNumberGTE applies the GTE predicate on the "episode_number" field.
+func EpisodeNumberGTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldEpisodeNumber, v))
+}
+
+// EpisodeNumberLT applies the LT predicate on the "episode_number" field.
+func EpisodeNumberLT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldEpisodeNumber, v))
+}
+
+// EpisodeNumberLTE applies the LTE predicate on the "episode_number" field.
+func EpisodeNumberLTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldEpisodeNumber, v))
+}
+
+// AnimeSeasonEQ applies the EQ predicate on the "anime_season" field.
+func AnimeSeasonEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldAnimeSeason, v))
+}
+
+// AnimeSeasonNEQ applies the NEQ predicate on the "anime_season" field.
+func AnimeSeasonNEQ(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldAnimeSeason, v))
+}
+
+// AnimeSeasonIn applies the In predicate on the "anime_season" field.
+func AnimeSeasonIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldAnimeSeason, vs...))
+}
+
+// AnimeSeasonNotIn applies the NotIn predicate on the "anime_season" field.
+func AnimeSeasonNotIn(vs ...int) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldAnimeSeason, vs...))
+}
+
+// AnimeSeasonGT applies the GT predicate on the "anime_season" field.
+func AnimeSeasonGT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldAnimeSeason, v))
+}
+
+// AnimeSeasonGTE applies the GTE predicate on the "anime_season" field.
+func AnimeSeasonGTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldAnimeSeason, v))
+}
+
+// AnimeSeasonLT applies the LT predicate on the "anime_season" field.
+func AnimeSeasonLT(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldAnimeSeason, v))
+}
+
+// AnimeSeasonLTE applies the LTE predicate on the "anime_season" field.
+func AnimeSeasonLTE(v int) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldAnimeSeason, v))
+}
+
 // ResolutionEQ applies the EQ predicate on the "resolution" field.
 func ResolutionEQ(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldResolution, v))
@@ -643,46 +683,6 @@ func AudioCodecEqualFold(v string) predicate.Episode {
 // AudioCodecContainsFold applies the ContainsFold predicate on the "audio_codec" field.
 func AudioCodecContainsFold(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldContainsFold(FieldAudioCodec, v))
-}
-
-// PublishDateEQ applies the EQ predicate on the "publish_date" field.
-func PublishDateEQ(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
-}
-
-// PublishDateNEQ applies the NEQ predicate on the "publish_date" field.
-func PublishDateNEQ(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldPublishDate, v))
-}
-
-// PublishDateIn applies the In predicate on the "publish_date" field.
-func PublishDateIn(vs ...time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldPublishDate, vs...))
-}
-
-// PublishDateNotIn applies the NotIn predicate on the "publish_date" field.
-func PublishDateNotIn(vs ...time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldPublishDate, vs...))
-}
-
-// PublishDateGT applies the GT predicate on the "publish_date" field.
-func PublishDateGT(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldPublishDate, v))
-}
-
-// PublishDateGTE applies the GTE predicate on the "publish_date" field.
-func PublishDateGTE(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldPublishDate, v))
-}
-
-// PublishDateLT applies the LT predicate on the "publish_date" field.
-func PublishDateLT(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldPublishDate, v))
-}
-
-// PublishDateLTE applies the LTE predicate on the "publish_date" field.
-func PublishDateLTE(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldPublishDate, v))
 }
 
 // HasTitle applies the HasEdge predicate on the "title" edge.

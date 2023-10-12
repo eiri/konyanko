@@ -30,6 +30,51 @@ func (eu *EpisodeUpdate) Where(ps ...predicate.Episode) *EpisodeUpdate {
 	return eu
 }
 
+// SetViewURL sets the "view_url" field.
+func (eu *EpisodeUpdate) SetViewURL(s string) *EpisodeUpdate {
+	eu.mutation.SetViewURL(s)
+	return eu
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (eu *EpisodeUpdate) SetDownloadURL(s string) *EpisodeUpdate {
+	eu.mutation.SetDownloadURL(s)
+	return eu
+}
+
+// SetFileName sets the "file_name" field.
+func (eu *EpisodeUpdate) SetFileName(s string) *EpisodeUpdate {
+	eu.mutation.SetFileName(s)
+	return eu
+}
+
+// SetFileSize sets the "file_size" field.
+func (eu *EpisodeUpdate) SetFileSize(i int) *EpisodeUpdate {
+	eu.mutation.ResetFileSize()
+	eu.mutation.SetFileSize(i)
+	return eu
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (eu *EpisodeUpdate) AddFileSize(i int) *EpisodeUpdate {
+	eu.mutation.AddFileSize(i)
+	return eu
+}
+
+// SetPublishDate sets the "publish_date" field.
+func (eu *EpisodeUpdate) SetPublishDate(t time.Time) *EpisodeUpdate {
+	eu.mutation.SetPublishDate(t)
+	return eu
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillablePublishDate(t *time.Time) *EpisodeUpdate {
+	if t != nil {
+		eu.SetPublishDate(*t)
+	}
+	return eu
+}
+
 // SetEpisodeNumber sets the "episode_number" field.
 func (eu *EpisodeUpdate) SetEpisodeNumber(i int) *EpisodeUpdate {
 	eu.mutation.ResetEpisodeNumber()
@@ -69,37 +114,6 @@ func (eu *EpisodeUpdate) SetNillableAnimeSeason(i *int) *EpisodeUpdate {
 // AddAnimeSeason adds i to the "anime_season" field.
 func (eu *EpisodeUpdate) AddAnimeSeason(i int) *EpisodeUpdate {
 	eu.mutation.AddAnimeSeason(i)
-	return eu
-}
-
-// SetViewURL sets the "view_url" field.
-func (eu *EpisodeUpdate) SetViewURL(s string) *EpisodeUpdate {
-	eu.mutation.SetViewURL(s)
-	return eu
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (eu *EpisodeUpdate) SetDownloadURL(s string) *EpisodeUpdate {
-	eu.mutation.SetDownloadURL(s)
-	return eu
-}
-
-// SetFileName sets the "file_name" field.
-func (eu *EpisodeUpdate) SetFileName(s string) *EpisodeUpdate {
-	eu.mutation.SetFileName(s)
-	return eu
-}
-
-// SetFileSize sets the "file_size" field.
-func (eu *EpisodeUpdate) SetFileSize(i int) *EpisodeUpdate {
-	eu.mutation.ResetFileSize()
-	eu.mutation.SetFileSize(i)
-	return eu
-}
-
-// AddFileSize adds i to the "file_size" field.
-func (eu *EpisodeUpdate) AddFileSize(i int) *EpisodeUpdate {
-	eu.mutation.AddFileSize(i)
 	return eu
 }
 
@@ -160,20 +174,6 @@ func (eu *EpisodeUpdate) SetNillableAudioCodec(s *string) *EpisodeUpdate {
 // ClearAudioCodec clears the value of the "audio_codec" field.
 func (eu *EpisodeUpdate) ClearAudioCodec() *EpisodeUpdate {
 	eu.mutation.ClearAudioCodec()
-	return eu
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (eu *EpisodeUpdate) SetPublishDate(t time.Time) *EpisodeUpdate {
-	eu.mutation.SetPublishDate(t)
-	return eu
-}
-
-// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (eu *EpisodeUpdate) SetNillablePublishDate(t *time.Time) *EpisodeUpdate {
-	if t != nil {
-		eu.SetPublishDate(*t)
-	}
 	return eu
 }
 
@@ -253,16 +253,6 @@ func (eu *EpisodeUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EpisodeUpdate) check() error {
-	if v, ok := eu.mutation.EpisodeNumber(); ok {
-		if err := episode.EpisodeNumberValidator(v); err != nil {
-			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
-		}
-	}
-	if v, ok := eu.mutation.AnimeSeason(); ok {
-		if err := episode.AnimeSeasonValidator(v); err != nil {
-			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
-		}
-	}
 	if v, ok := eu.mutation.FileName(); ok {
 		if err := episode.FileNameValidator(v); err != nil {
 			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
@@ -271,6 +261,16 @@ func (eu *EpisodeUpdate) check() error {
 	if v, ok := eu.mutation.FileSize(); ok {
 		if err := episode.FileSizeValidator(v); err != nil {
 			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.EpisodeNumber(); ok {
+		if err := episode.EpisodeNumberValidator(v); err != nil {
+			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.AnimeSeason(); ok {
+		if err := episode.AnimeSeasonValidator(v); err != nil {
+			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
 	}
 	if _, ok := eu.mutation.TitleID(); eu.mutation.TitleCleared() && !ok {
@@ -291,18 +291,6 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := eu.mutation.EpisodeNumber(); ok {
-		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
-	}
-	if value, ok := eu.mutation.AddedEpisodeNumber(); ok {
-		_spec.AddField(episode.FieldEpisodeNumber, field.TypeInt, value)
-	}
-	if value, ok := eu.mutation.AnimeSeason(); ok {
-		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
-	}
-	if value, ok := eu.mutation.AddedAnimeSeason(); ok {
-		_spec.AddField(episode.FieldAnimeSeason, field.TypeInt, value)
-	}
 	if value, ok := eu.mutation.ViewURL(); ok {
 		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
 	}
@@ -317,6 +305,21 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.AddedFileSize(); ok {
 		_spec.AddField(episode.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.PublishDate(); ok {
+		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
+	}
+	if value, ok := eu.mutation.EpisodeNumber(); ok {
+		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedEpisodeNumber(); ok {
+		_spec.AddField(episode.FieldEpisodeNumber, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AnimeSeason(); ok {
+		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedAnimeSeason(); ok {
+		_spec.AddField(episode.FieldAnimeSeason, field.TypeInt, value)
 	}
 	if value, ok := eu.mutation.Resolution(); ok {
 		_spec.SetField(episode.FieldResolution, field.TypeString, value)
@@ -335,9 +338,6 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.AudioCodecCleared() {
 		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
-	}
-	if value, ok := eu.mutation.PublishDate(); ok {
-		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
 	}
 	if eu.mutation.TitleCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -417,6 +417,51 @@ type EpisodeUpdateOne struct {
 	mutation *EpisodeMutation
 }
 
+// SetViewURL sets the "view_url" field.
+func (euo *EpisodeUpdateOne) SetViewURL(s string) *EpisodeUpdateOne {
+	euo.mutation.SetViewURL(s)
+	return euo
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (euo *EpisodeUpdateOne) SetDownloadURL(s string) *EpisodeUpdateOne {
+	euo.mutation.SetDownloadURL(s)
+	return euo
+}
+
+// SetFileName sets the "file_name" field.
+func (euo *EpisodeUpdateOne) SetFileName(s string) *EpisodeUpdateOne {
+	euo.mutation.SetFileName(s)
+	return euo
+}
+
+// SetFileSize sets the "file_size" field.
+func (euo *EpisodeUpdateOne) SetFileSize(i int) *EpisodeUpdateOne {
+	euo.mutation.ResetFileSize()
+	euo.mutation.SetFileSize(i)
+	return euo
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (euo *EpisodeUpdateOne) AddFileSize(i int) *EpisodeUpdateOne {
+	euo.mutation.AddFileSize(i)
+	return euo
+}
+
+// SetPublishDate sets the "publish_date" field.
+func (euo *EpisodeUpdateOne) SetPublishDate(t time.Time) *EpisodeUpdateOne {
+	euo.mutation.SetPublishDate(t)
+	return euo
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillablePublishDate(t *time.Time) *EpisodeUpdateOne {
+	if t != nil {
+		euo.SetPublishDate(*t)
+	}
+	return euo
+}
+
 // SetEpisodeNumber sets the "episode_number" field.
 func (euo *EpisodeUpdateOne) SetEpisodeNumber(i int) *EpisodeUpdateOne {
 	euo.mutation.ResetEpisodeNumber()
@@ -456,37 +501,6 @@ func (euo *EpisodeUpdateOne) SetNillableAnimeSeason(i *int) *EpisodeUpdateOne {
 // AddAnimeSeason adds i to the "anime_season" field.
 func (euo *EpisodeUpdateOne) AddAnimeSeason(i int) *EpisodeUpdateOne {
 	euo.mutation.AddAnimeSeason(i)
-	return euo
-}
-
-// SetViewURL sets the "view_url" field.
-func (euo *EpisodeUpdateOne) SetViewURL(s string) *EpisodeUpdateOne {
-	euo.mutation.SetViewURL(s)
-	return euo
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (euo *EpisodeUpdateOne) SetDownloadURL(s string) *EpisodeUpdateOne {
-	euo.mutation.SetDownloadURL(s)
-	return euo
-}
-
-// SetFileName sets the "file_name" field.
-func (euo *EpisodeUpdateOne) SetFileName(s string) *EpisodeUpdateOne {
-	euo.mutation.SetFileName(s)
-	return euo
-}
-
-// SetFileSize sets the "file_size" field.
-func (euo *EpisodeUpdateOne) SetFileSize(i int) *EpisodeUpdateOne {
-	euo.mutation.ResetFileSize()
-	euo.mutation.SetFileSize(i)
-	return euo
-}
-
-// AddFileSize adds i to the "file_size" field.
-func (euo *EpisodeUpdateOne) AddFileSize(i int) *EpisodeUpdateOne {
-	euo.mutation.AddFileSize(i)
 	return euo
 }
 
@@ -547,20 +561,6 @@ func (euo *EpisodeUpdateOne) SetNillableAudioCodec(s *string) *EpisodeUpdateOne 
 // ClearAudioCodec clears the value of the "audio_codec" field.
 func (euo *EpisodeUpdateOne) ClearAudioCodec() *EpisodeUpdateOne {
 	euo.mutation.ClearAudioCodec()
-	return euo
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (euo *EpisodeUpdateOne) SetPublishDate(t time.Time) *EpisodeUpdateOne {
-	euo.mutation.SetPublishDate(t)
-	return euo
-}
-
-// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (euo *EpisodeUpdateOne) SetNillablePublishDate(t *time.Time) *EpisodeUpdateOne {
-	if t != nil {
-		euo.SetPublishDate(*t)
-	}
 	return euo
 }
 
@@ -653,16 +653,6 @@ func (euo *EpisodeUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EpisodeUpdateOne) check() error {
-	if v, ok := euo.mutation.EpisodeNumber(); ok {
-		if err := episode.EpisodeNumberValidator(v); err != nil {
-			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
-		}
-	}
-	if v, ok := euo.mutation.AnimeSeason(); ok {
-		if err := episode.AnimeSeasonValidator(v); err != nil {
-			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
-		}
-	}
 	if v, ok := euo.mutation.FileName(); ok {
 		if err := episode.FileNameValidator(v); err != nil {
 			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
@@ -671,6 +661,16 @@ func (euo *EpisodeUpdateOne) check() error {
 	if v, ok := euo.mutation.FileSize(); ok {
 		if err := episode.FileSizeValidator(v); err != nil {
 			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.EpisodeNumber(); ok {
+		if err := episode.EpisodeNumberValidator(v); err != nil {
+			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.AnimeSeason(); ok {
+		if err := episode.AnimeSeasonValidator(v); err != nil {
+			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
 	}
 	if _, ok := euo.mutation.TitleID(); euo.mutation.TitleCleared() && !ok {
@@ -708,18 +708,6 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 			}
 		}
 	}
-	if value, ok := euo.mutation.EpisodeNumber(); ok {
-		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
-	}
-	if value, ok := euo.mutation.AddedEpisodeNumber(); ok {
-		_spec.AddField(episode.FieldEpisodeNumber, field.TypeInt, value)
-	}
-	if value, ok := euo.mutation.AnimeSeason(); ok {
-		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
-	}
-	if value, ok := euo.mutation.AddedAnimeSeason(); ok {
-		_spec.AddField(episode.FieldAnimeSeason, field.TypeInt, value)
-	}
 	if value, ok := euo.mutation.ViewURL(); ok {
 		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
 	}
@@ -734,6 +722,21 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 	}
 	if value, ok := euo.mutation.AddedFileSize(); ok {
 		_spec.AddField(episode.FieldFileSize, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.PublishDate(); ok {
+		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
+	}
+	if value, ok := euo.mutation.EpisodeNumber(); ok {
+		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedEpisodeNumber(); ok {
+		_spec.AddField(episode.FieldEpisodeNumber, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AnimeSeason(); ok {
+		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedAnimeSeason(); ok {
+		_spec.AddField(episode.FieldAnimeSeason, field.TypeInt, value)
 	}
 	if value, ok := euo.mutation.Resolution(); ok {
 		_spec.SetField(episode.FieldResolution, field.TypeString, value)
@@ -752,9 +755,6 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 	}
 	if euo.mutation.AudioCodecCleared() {
 		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
-	}
-	if value, ok := euo.mutation.PublishDate(); ok {
-		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
 	}
 	if euo.mutation.TitleCleared() {
 		edge := &sqlgraph.EdgeSpec{

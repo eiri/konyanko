@@ -334,12 +334,12 @@ func (eq *EpisodeQuery) WithReleaseGroup(opts ...func(*ReleaseGroupQuery)) *Epis
 // Example:
 //
 //	var v []struct {
-//		EpisodeNumber int `json:"episode_number,omitempty"`
+//		ViewURL string `json:"view_url,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		GroupBy(episode.FieldEpisodeNumber).
+//		GroupBy(episode.FieldViewURL).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy {
@@ -357,11 +357,11 @@ func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy 
 // Example:
 //
 //	var v []struct {
-//		EpisodeNumber int `json:"episode_number,omitempty"`
+//		ViewURL string `json:"view_url,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		Select(episode.FieldEpisodeNumber).
+//		Select(episode.FieldViewURL).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) Select(fields ...string) *EpisodeSelect {
 	eq.ctx.Fields = append(eq.ctx.Fields, fields...)

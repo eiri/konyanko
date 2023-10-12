@@ -22,6 +22,44 @@ type EpisodeCreate struct {
 	hooks    []Hook
 }
 
+// SetViewURL sets the "view_url" field.
+func (ec *EpisodeCreate) SetViewURL(s string) *EpisodeCreate {
+	ec.mutation.SetViewURL(s)
+	return ec
+}
+
+// SetDownloadURL sets the "download_url" field.
+func (ec *EpisodeCreate) SetDownloadURL(s string) *EpisodeCreate {
+	ec.mutation.SetDownloadURL(s)
+	return ec
+}
+
+// SetFileName sets the "file_name" field.
+func (ec *EpisodeCreate) SetFileName(s string) *EpisodeCreate {
+	ec.mutation.SetFileName(s)
+	return ec
+}
+
+// SetFileSize sets the "file_size" field.
+func (ec *EpisodeCreate) SetFileSize(i int) *EpisodeCreate {
+	ec.mutation.SetFileSize(i)
+	return ec
+}
+
+// SetPublishDate sets the "publish_date" field.
+func (ec *EpisodeCreate) SetPublishDate(t time.Time) *EpisodeCreate {
+	ec.mutation.SetPublishDate(t)
+	return ec
+}
+
+// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillablePublishDate(t *time.Time) *EpisodeCreate {
+	if t != nil {
+		ec.SetPublishDate(*t)
+	}
+	return ec
+}
+
 // SetEpisodeNumber sets the "episode_number" field.
 func (ec *EpisodeCreate) SetEpisodeNumber(i int) *EpisodeCreate {
 	ec.mutation.SetEpisodeNumber(i)
@@ -47,30 +85,6 @@ func (ec *EpisodeCreate) SetNillableAnimeSeason(i *int) *EpisodeCreate {
 	if i != nil {
 		ec.SetAnimeSeason(*i)
 	}
-	return ec
-}
-
-// SetViewURL sets the "view_url" field.
-func (ec *EpisodeCreate) SetViewURL(s string) *EpisodeCreate {
-	ec.mutation.SetViewURL(s)
-	return ec
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (ec *EpisodeCreate) SetDownloadURL(s string) *EpisodeCreate {
-	ec.mutation.SetDownloadURL(s)
-	return ec
-}
-
-// SetFileName sets the "file_name" field.
-func (ec *EpisodeCreate) SetFileName(s string) *EpisodeCreate {
-	ec.mutation.SetFileName(s)
-	return ec
-}
-
-// SetFileSize sets the "file_size" field.
-func (ec *EpisodeCreate) SetFileSize(i int) *EpisodeCreate {
-	ec.mutation.SetFileSize(i)
 	return ec
 }
 
@@ -112,20 +126,6 @@ func (ec *EpisodeCreate) SetAudioCodec(s string) *EpisodeCreate {
 func (ec *EpisodeCreate) SetNillableAudioCodec(s *string) *EpisodeCreate {
 	if s != nil {
 		ec.SetAudioCodec(*s)
-	}
-	return ec
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (ec *EpisodeCreate) SetPublishDate(t time.Time) *EpisodeCreate {
-	ec.mutation.SetPublishDate(t)
-	return ec
-}
-
-// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (ec *EpisodeCreate) SetNillablePublishDate(t *time.Time) *EpisodeCreate {
-	if t != nil {
-		ec.SetPublishDate(*t)
 	}
 	return ec
 }
@@ -195,6 +195,10 @@ func (ec *EpisodeCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ec *EpisodeCreate) defaults() {
+	if _, ok := ec.mutation.PublishDate(); !ok {
+		v := episode.DefaultPublishDate()
+		ec.mutation.SetPublishDate(v)
+	}
 	if _, ok := ec.mutation.EpisodeNumber(); !ok {
 		v := episode.DefaultEpisodeNumber
 		ec.mutation.SetEpisodeNumber(v)
@@ -203,30 +207,10 @@ func (ec *EpisodeCreate) defaults() {
 		v := episode.DefaultAnimeSeason
 		ec.mutation.SetAnimeSeason(v)
 	}
-	if _, ok := ec.mutation.PublishDate(); !ok {
-		v := episode.DefaultPublishDate()
-		ec.mutation.SetPublishDate(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (ec *EpisodeCreate) check() error {
-	if _, ok := ec.mutation.EpisodeNumber(); !ok {
-		return &ValidationError{Name: "episode_number", err: errors.New(`ent: missing required field "Episode.episode_number"`)}
-	}
-	if v, ok := ec.mutation.EpisodeNumber(); ok {
-		if err := episode.EpisodeNumberValidator(v); err != nil {
-			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
-		}
-	}
-	if _, ok := ec.mutation.AnimeSeason(); !ok {
-		return &ValidationError{Name: "anime_season", err: errors.New(`ent: missing required field "Episode.anime_season"`)}
-	}
-	if v, ok := ec.mutation.AnimeSeason(); ok {
-		if err := episode.AnimeSeasonValidator(v); err != nil {
-			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
-		}
-	}
 	if _, ok := ec.mutation.ViewURL(); !ok {
 		return &ValidationError{Name: "view_url", err: errors.New(`ent: missing required field "Episode.view_url"`)}
 	}
@@ -251,6 +235,22 @@ func (ec *EpisodeCreate) check() error {
 	}
 	if _, ok := ec.mutation.PublishDate(); !ok {
 		return &ValidationError{Name: "publish_date", err: errors.New(`ent: missing required field "Episode.publish_date"`)}
+	}
+	if _, ok := ec.mutation.EpisodeNumber(); !ok {
+		return &ValidationError{Name: "episode_number", err: errors.New(`ent: missing required field "Episode.episode_number"`)}
+	}
+	if v, ok := ec.mutation.EpisodeNumber(); ok {
+		if err := episode.EpisodeNumberValidator(v); err != nil {
+			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.AnimeSeason(); !ok {
+		return &ValidationError{Name: "anime_season", err: errors.New(`ent: missing required field "Episode.anime_season"`)}
+	}
+	if v, ok := ec.mutation.AnimeSeason(); ok {
+		if err := episode.AnimeSeasonValidator(v); err != nil {
+			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
+		}
 	}
 	if _, ok := ec.mutation.TitleID(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required edge "Episode.title"`)}
@@ -281,14 +281,6 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_node = &Episode{config: ec.config}
 		_spec = sqlgraph.NewCreateSpec(episode.Table, sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt))
 	)
-	if value, ok := ec.mutation.EpisodeNumber(); ok {
-		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
-		_node.EpisodeNumber = value
-	}
-	if value, ok := ec.mutation.AnimeSeason(); ok {
-		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
-		_node.AnimeSeason = value
-	}
 	if value, ok := ec.mutation.ViewURL(); ok {
 		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
 		_node.ViewURL = value
@@ -305,6 +297,18 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
 		_node.FileSize = value
 	}
+	if value, ok := ec.mutation.PublishDate(); ok {
+		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
+		_node.PublishDate = value
+	}
+	if value, ok := ec.mutation.EpisodeNumber(); ok {
+		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
+		_node.EpisodeNumber = value
+	}
+	if value, ok := ec.mutation.AnimeSeason(); ok {
+		_spec.SetField(episode.FieldAnimeSeason, field.TypeInt, value)
+		_node.AnimeSeason = value
+	}
 	if value, ok := ec.mutation.Resolution(); ok {
 		_spec.SetField(episode.FieldResolution, field.TypeString, value)
 		_node.Resolution = value
@@ -316,10 +320,6 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.AudioCodec(); ok {
 		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
 		_node.AudioCodec = value
-	}
-	if value, ok := ec.mutation.PublishDate(); ok {
-		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
-		_node.PublishDate = value
 	}
 	if nodes := ec.mutation.TitleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
