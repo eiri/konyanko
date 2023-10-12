@@ -78,6 +78,11 @@ func (ac *AnimeCreate) check() error {
 	if _, ok := ac.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Anime.title"`)}
 	}
+	if v, ok := ac.mutation.Title(); ok {
+		if err := anime.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Anime.title": %w`, err)}
+		}
+	}
 	return nil
 }
 

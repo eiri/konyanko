@@ -78,6 +78,11 @@ func (rgc *ReleaseGroupCreate) check() error {
 	if _, ok := rgc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "ReleaseGroup.name"`)}
 	}
+	if v, ok := rgc.mutation.Name(); ok {
+		if err := releasegroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ReleaseGroup.name": %w`, err)}
+		}
+	}
 	return nil
 }
 

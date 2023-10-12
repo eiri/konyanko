@@ -102,7 +102,20 @@ func (rgu *ReleaseGroupUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (rgu *ReleaseGroupUpdate) check() error {
+	if v, ok := rgu.mutation.Name(); ok {
+		if err := releasegroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ReleaseGroup.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (rgu *ReleaseGroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := rgu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(releasegroup.Table, releasegroup.Columns, sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt))
 	if ps := rgu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -266,7 +279,20 @@ func (rguo *ReleaseGroupUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (rguo *ReleaseGroupUpdateOne) check() error {
+	if v, ok := rguo.mutation.Name(); ok {
+		if err := releasegroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ReleaseGroup.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (rguo *ReleaseGroupUpdateOne) sqlSave(ctx context.Context) (_node *ReleaseGroup, err error) {
+	if err := rguo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(releasegroup.Table, releasegroup.Columns, sqlgraph.NewFieldSpec(releasegroup.FieldID, field.TypeInt))
 	id, ok := rguo.mutation.ID()
 	if !ok {

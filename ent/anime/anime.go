@@ -43,6 +43,11 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+var (
+	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	TitleValidator func(string) error
+)
+
 // OrderOption defines the ordering options for the Anime queries.
 type OrderOption func(*sql.Selector)
 

@@ -102,7 +102,20 @@ func (au *AnimeUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (au *AnimeUpdate) check() error {
+	if v, ok := au.mutation.Title(); ok {
+		if err := anime.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Anime.title": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (au *AnimeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := au.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(anime.Table, anime.Columns, sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -266,7 +279,20 @@ func (auo *AnimeUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (auo *AnimeUpdateOne) check() error {
+	if v, ok := auo.mutation.Title(); ok {
+		if err := anime.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Anime.title": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (auo *AnimeUpdateOne) sqlSave(ctx context.Context) (_node *Anime, err error) {
+	if err := auo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(anime.Table, anime.Columns, sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt))
 	id, ok := auo.mutation.ID()
 	if !ok {

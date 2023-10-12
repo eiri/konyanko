@@ -14,7 +14,7 @@ type ReleaseGroup struct {
 // Fields of the ReleaseGroup.
 func (ReleaseGroup) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").Unique(),
+		field.String("name").NotEmpty().Unique(),
 	}
 }
 

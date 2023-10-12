@@ -5,8 +5,10 @@ package ent
 import (
 	"time"
 
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/releasegroup"
 	"github.com/eiri/konyanko/ent/schema"
 )
 
@@ -14,6 +16,12 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	animeFields := schema.Anime{}.Fields()
+	_ = animeFields
+	// animeDescTitle is the schema descriptor for title field.
+	animeDescTitle := animeFields[0].Descriptor()
+	// anime.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	anime.TitleValidator = animeDescTitle.Validators[0].(func(string) error)
 	episodeMixin := schema.Episode{}.Mixin()
 	episodeMixinFields0 := episodeMixin[0].Fields()
 	_ = episodeMixinFields0
@@ -60,4 +68,10 @@ func init() {
 	irregularDescPublishDate := irregularMixinFields0[4].Descriptor()
 	// irregular.DefaultPublishDate holds the default value on creation for the publish_date field.
 	irregular.DefaultPublishDate = irregularDescPublishDate.Default.(func() time.Time)
+	releasegroupFields := schema.ReleaseGroup{}.Fields()
+	_ = releasegroupFields
+	// releasegroupDescName is the schema descriptor for name field.
+	releasegroupDescName := releasegroupFields[0].Descriptor()
+	// releasegroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	releasegroup.NameValidator = releasegroupDescName.Validators[0].(func(string) error)
 }

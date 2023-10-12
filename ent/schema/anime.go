@@ -14,7 +14,7 @@ type Anime struct {
 // Fields of the Anime.
 func (Anime) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("title").Unique(),
+		field.String("title").NotEmpty().Unique(),
 	}
 }
 
