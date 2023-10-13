@@ -48,9 +48,7 @@ func importRSS(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	for _, item := range feed.Items {
-		ctx := context.Background()
-		_, err := CreateEpisode(ctx, client, item)
-		if err != nil {
+		if err := CreateEpisode(item); err != nil {
 			return err
 		}
 	}
@@ -58,10 +56,13 @@ func importRSS(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item) (*ent.Episode, error) {
+func CreateEpisode(item *syndfeed.Item) error {
+	ctx := context.Background()
+
 	if c, err := client.Episode.Query().Where(episode.ViewURL(item.Id)).Aggregate(ent.Count()).Int(ctx); c == 1 && err == nil {
 		log.Printf("Found %q, skip\n", item.Title)
-		return nil, nil
+		// should be const error EpisodeExists or something...
+		return nil
 	}
 
 	log.Printf("Adding %q\n", item.Title)
@@ -91,10 +92,11 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 				SetPublishDate(publishDate).
 				Save(ctx)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
-		return nil, nil
+		// FIXME! same as above, should be a predefined error
+		return nil
 	}
 
 	//FIXME!! obvsly needs transaction and anime/release_group cache
@@ -110,10 +112,10 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 			SetTitle(e.AnimeTitle).
 			Save(ctx)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	case err != nil:
-		return nil, err
+		return err
 	}
 
 	episode := client.Episode.
@@ -137,10 +139,10 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 				SetName(e.ReleaseGroup).
 				Save(ctx)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		case err != nil:
-			return nil, err
+			return err
 		}
 		episode = episode.SetReleaseGroup(releaseGroup)
 	}
@@ -170,5 +172,7 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 		episode = episode.SetAudioCodec(e.AudioTerm[0])
 	}
 
-	return episode.Save(ctx)
+	_, err = episode.Save(ctx)
+
+	return err
 }
