@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -20,11 +21,31 @@ import (
 
 var (
 	rssFile string
+	r       io.ReadCloser
 
 	importCmd = &cobra.Command{
 		Use:   "import",
 		Short: "Import all items from RSS feed in the database",
-		RunE:  importRSS,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			r, err = os.Open(rssFile)
+			return err
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			feed, err := syndfeed.ParseRSS(r)
+			if err != nil {
+				return err
+			}
+			for _, item := range feed.Items {
+				if err := CreateEpisode(item); err != nil {
+					return err
+				}
+			}
+			return nil
+		},
+		PostRun: func(cmd *cobra.Command, args []string) {
+			r.Close()
+		},
 	}
 )
 
@@ -33,27 +54,6 @@ func init() {
 	importCmd.MarkFlagFilename("file", ".xml")
 
 	rootCmd.AddCommand(importCmd)
-}
-
-func importRSS(cmd *cobra.Command, args []string) error {
-	// pre and past conditions
-	r, err := os.Open(rssFile)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-
-	feed, err := syndfeed.ParseRSS(r)
-	if err != nil {
-		return err
-	}
-	for _, item := range feed.Items {
-		if err := CreateEpisode(item); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func CreateEpisode(item *syndfeed.Item) error {
