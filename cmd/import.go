@@ -116,32 +116,34 @@ func CreateEpisode(ctx context.Context, client *ent.Client, item *syndfeed.Item)
 		return nil, err
 	}
 
-	releaseGroup, err := client.ReleaseGroup.
-		Query().
-		Where(releasegroup.Name(e.ReleaseGroup)).
-		Only(ctx)
-	switch {
-	case ent.IsNotFound(err):
-		releaseGroup, err = client.ReleaseGroup.
-			Create().
-			SetName(e.ReleaseGroup).
-			Save(ctx)
-		if err != nil {
-			return nil, err
-		}
-	case err != nil:
-		return nil, err
-	}
-
 	episode := client.Episode.
 		Create().
 		SetTitle(anime).
-		SetReleaseGroup(releaseGroup).
 		SetViewURL(viewURL).
 		SetDownloadURL(downloadURL).
 		SetFileName(fileName).
 		SetFileSize(fileSize).
 		SetPublishDate(publishDate)
+
+	if e.ReleaseGroup != "" {
+		releaseGroup, err := client.ReleaseGroup.
+			Query().
+			Where(releasegroup.Name(e.ReleaseGroup)).
+			Only(ctx)
+		switch {
+		case ent.IsNotFound(err):
+			releaseGroup, err = client.ReleaseGroup.
+				Create().
+				SetName(e.ReleaseGroup).
+				Save(ctx)
+			if err != nil {
+				return nil, err
+			}
+		case err != nil:
+			return nil, err
+		}
+		episode = episode.SetReleaseGroup(releaseGroup)
+	}
 
 	//FIXME! if we have AnimeSeason+AnimeSeasonPrefix but don't have EpisodeNumber assume this is a batch
 	if len(e.EpisodeNumber) > 0 {
