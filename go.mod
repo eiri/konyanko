@@ -7,6 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/nssteinbrenner/anitogo v0.0.0-20200907113149-eb04a0056b4a
+	github.com/spf13/cobra v1.7.0
 	github.com/zhengchun/syndfeed v0.0.0-20180313023127-b04d7ffab27d
 )
 
@@ -22,9 +23,8 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
-	github.com/spf13/cobra v1.7.0 // indirect
-	github.com/spf13/cobra-cli v1.3.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
