@@ -12,8 +12,8 @@ type Anime func(*sql.Selector)
 // Episode is the predicate function for episode builders.
 type Episode func(*sql.Selector)
 
-// Irregular is the predicate function for irregular builders.
-type Irregular func(*sql.Selector)
+// Item is the predicate function for item builders.
+type Item func(*sql.Selector)
 
 // ReleaseGroup is the predicate function for releasegroup builders.
 type ReleaseGroup func(*sql.Selector)

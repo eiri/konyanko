@@ -9,11 +9,12 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 )
 
-// Irregular is the model entity for the Irregular schema.
-type Irregular struct {
+// Item is the model entity for the Item schema.
+type Item struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -26,20 +27,45 @@ type Irregular struct {
 	// FileSize holds the value of the "file_size" field.
 	FileSize int `json:"file_size,omitempty"`
 	// PublishDate holds the value of the "publish_date" field.
-	PublishDate  time.Time `json:"publish_date,omitempty"`
+	PublishDate time.Time `json:"publish_date,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ItemQuery when eager-loading is set.
+	Edges        ItemEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
+// ItemEdges holds the relations/edges for other nodes in the graph.
+type ItemEdges struct {
+	// Episodes holds the value of the episodes edge.
+	Episodes *Episode `json:"episodes,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// EpisodesOrErr returns the Episodes value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ItemEdges) EpisodesOrErr() (*Episode, error) {
+	if e.loadedTypes[0] {
+		if e.Episodes == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: episode.Label}
+		}
+		return e.Episodes, nil
+	}
+	return nil, &NotLoadedError{edge: "episodes"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Irregular) scanValues(columns []string) ([]any, error) {
+func (*Item) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case irregular.FieldID, irregular.FieldFileSize:
+		case item.FieldID, item.FieldFileSize:
 			values[i] = new(sql.NullInt64)
-		case irregular.FieldViewURL, irregular.FieldDownloadURL, irregular.FieldFileName:
+		case item.FieldViewURL, item.FieldDownloadURL, item.FieldFileName:
 			values[i] = new(sql.NullString)
-		case irregular.FieldPublishDate:
+		case item.FieldPublishDate:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -49,44 +75,44 @@ func (*Irregular) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Irregular fields.
-func (i *Irregular) assignValues(columns []string, values []any) error {
+// to the Item fields.
+func (i *Item) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for j := range columns {
 		switch columns[j] {
-		case irregular.FieldID:
+		case item.FieldID:
 			value, ok := values[j].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			i.ID = int(value.Int64)
-		case irregular.FieldViewURL:
+		case item.FieldViewURL:
 			if value, ok := values[j].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field view_url", values[j])
 			} else if value.Valid {
 				i.ViewURL = value.String
 			}
-		case irregular.FieldDownloadURL:
+		case item.FieldDownloadURL:
 			if value, ok := values[j].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field download_url", values[j])
 			} else if value.Valid {
 				i.DownloadURL = value.String
 			}
-		case irregular.FieldFileName:
+		case item.FieldFileName:
 			if value, ok := values[j].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field file_name", values[j])
 			} else if value.Valid {
 				i.FileName = value.String
 			}
-		case irregular.FieldFileSize:
+		case item.FieldFileSize:
 			if value, ok := values[j].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field file_size", values[j])
 			} else if value.Valid {
 				i.FileSize = int(value.Int64)
 			}
-		case irregular.FieldPublishDate:
+		case item.FieldPublishDate:
 			if value, ok := values[j].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field publish_date", values[j])
 			} else if value.Valid {
@@ -99,34 +125,39 @@ func (i *Irregular) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Irregular.
+// Value returns the ent.Value that was dynamically selected and assigned to the Item.
 // This includes values selected through modifiers, order, etc.
-func (i *Irregular) Value(name string) (ent.Value, error) {
+func (i *Item) Value(name string) (ent.Value, error) {
 	return i.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this Irregular.
-// Note that you need to call Irregular.Unwrap() before calling this method if this Irregular
-// was returned from a transaction, and the transaction was committed or rolled back.
-func (i *Irregular) Update() *IrregularUpdateOne {
-	return NewIrregularClient(i.config).UpdateOne(i)
+// QueryEpisodes queries the "episodes" edge of the Item entity.
+func (i *Item) QueryEpisodes() *EpisodeQuery {
+	return NewItemClient(i.config).QueryEpisodes(i)
 }
 
-// Unwrap unwraps the Irregular entity that was returned from a transaction after it was closed,
+// Update returns a builder for updating this Item.
+// Note that you need to call Item.Unwrap() before calling this method if this Item
+// was returned from a transaction, and the transaction was committed or rolled back.
+func (i *Item) Update() *ItemUpdateOne {
+	return NewItemClient(i.config).UpdateOne(i)
+}
+
+// Unwrap unwraps the Item entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (i *Irregular) Unwrap() *Irregular {
+func (i *Item) Unwrap() *Item {
 	_tx, ok := i.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Irregular is not a transactional entity")
+		panic("ent: Item is not a transactional entity")
 	}
 	i.config.driver = _tx.drv
 	return i
 }
 
 // String implements the fmt.Stringer.
-func (i *Irregular) String() string {
+func (i *Item) String() string {
 	var builder strings.Builder
-	builder.WriteString("Irregular(")
+	builder.WriteString("Item(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", i.ID))
 	builder.WriteString("view_url=")
 	builder.WriteString(i.ViewURL)
@@ -146,5 +177,5 @@ func (i *Irregular) String() string {
 	return builder.String()
 }
 
-// Irregulars is a parsable slice of Irregular.
-type Irregulars []*Irregular
+// Items is a parsable slice of Item.
+type Items []*Item

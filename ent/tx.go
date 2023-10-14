@@ -16,8 +16,8 @@ type Tx struct {
 	Anime *AnimeClient
 	// Episode is the client for interacting with the Episode builders.
 	Episode *EpisodeClient
-	// Irregular is the client for interacting with the Irregular builders.
-	Irregular *IrregularClient
+	// Item is the client for interacting with the Item builders.
+	Item *ItemClient
 	// ReleaseGroup is the client for interacting with the ReleaseGroup builders.
 	ReleaseGroup *ReleaseGroupClient
 
@@ -153,7 +153,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Anime = NewAnimeClient(tx.config)
 	tx.Episode = NewEpisodeClient(tx.config)
-	tx.Irregular = NewIrregularClient(tx.config)
+	tx.Item = NewItemClient(tx.config)
 	tx.ReleaseGroup = NewReleaseGroupClient(tx.config)
 }
 

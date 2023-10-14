@@ -10,67 +10,87 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 )
 
-// IrregularCreate is the builder for creating a Irregular entity.
-type IrregularCreate struct {
+// ItemCreate is the builder for creating a Item entity.
+type ItemCreate struct {
 	config
-	mutation *IrregularMutation
+	mutation *ItemMutation
 	hooks    []Hook
 }
 
 // SetViewURL sets the "view_url" field.
-func (ic *IrregularCreate) SetViewURL(s string) *IrregularCreate {
+func (ic *ItemCreate) SetViewURL(s string) *ItemCreate {
 	ic.mutation.SetViewURL(s)
 	return ic
 }
 
 // SetDownloadURL sets the "download_url" field.
-func (ic *IrregularCreate) SetDownloadURL(s string) *IrregularCreate {
+func (ic *ItemCreate) SetDownloadURL(s string) *ItemCreate {
 	ic.mutation.SetDownloadURL(s)
 	return ic
 }
 
 // SetFileName sets the "file_name" field.
-func (ic *IrregularCreate) SetFileName(s string) *IrregularCreate {
+func (ic *ItemCreate) SetFileName(s string) *ItemCreate {
 	ic.mutation.SetFileName(s)
 	return ic
 }
 
 // SetFileSize sets the "file_size" field.
-func (ic *IrregularCreate) SetFileSize(i int) *IrregularCreate {
+func (ic *ItemCreate) SetFileSize(i int) *ItemCreate {
 	ic.mutation.SetFileSize(i)
 	return ic
 }
 
 // SetPublishDate sets the "publish_date" field.
-func (ic *IrregularCreate) SetPublishDate(t time.Time) *IrregularCreate {
+func (ic *ItemCreate) SetPublishDate(t time.Time) *ItemCreate {
 	ic.mutation.SetPublishDate(t)
 	return ic
 }
 
 // SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (ic *IrregularCreate) SetNillablePublishDate(t *time.Time) *IrregularCreate {
+func (ic *ItemCreate) SetNillablePublishDate(t *time.Time) *ItemCreate {
 	if t != nil {
 		ic.SetPublishDate(*t)
 	}
 	return ic
 }
 
-// Mutation returns the IrregularMutation object of the builder.
-func (ic *IrregularCreate) Mutation() *IrregularMutation {
+// SetEpisodesID sets the "episodes" edge to the Episode entity by ID.
+func (ic *ItemCreate) SetEpisodesID(id int) *ItemCreate {
+	ic.mutation.SetEpisodesID(id)
+	return ic
+}
+
+// SetNillableEpisodesID sets the "episodes" edge to the Episode entity by ID if the given value is not nil.
+func (ic *ItemCreate) SetNillableEpisodesID(id *int) *ItemCreate {
+	if id != nil {
+		ic = ic.SetEpisodesID(*id)
+	}
+	return ic
+}
+
+// SetEpisodes sets the "episodes" edge to the Episode entity.
+func (ic *ItemCreate) SetEpisodes(e *Episode) *ItemCreate {
+	return ic.SetEpisodesID(e.ID)
+}
+
+// Mutation returns the ItemMutation object of the builder.
+func (ic *ItemCreate) Mutation() *ItemMutation {
 	return ic.mutation
 }
 
-// Save creates the Irregular in the database.
-func (ic *IrregularCreate) Save(ctx context.Context) (*Irregular, error) {
+// Save creates the Item in the database.
+func (ic *ItemCreate) Save(ctx context.Context) (*Item, error) {
 	ic.defaults()
 	return withHooks(ctx, ic.sqlSave, ic.mutation, ic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ic *IrregularCreate) SaveX(ctx context.Context) *Irregular {
+func (ic *ItemCreate) SaveX(ctx context.Context) *Item {
 	v, err := ic.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -79,57 +99,57 @@ func (ic *IrregularCreate) SaveX(ctx context.Context) *Irregular {
 }
 
 // Exec executes the query.
-func (ic *IrregularCreate) Exec(ctx context.Context) error {
+func (ic *ItemCreate) Exec(ctx context.Context) error {
 	_, err := ic.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ic *IrregularCreate) ExecX(ctx context.Context) {
+func (ic *ItemCreate) ExecX(ctx context.Context) {
 	if err := ic.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ic *IrregularCreate) defaults() {
+func (ic *ItemCreate) defaults() {
 	if _, ok := ic.mutation.PublishDate(); !ok {
-		v := irregular.DefaultPublishDate()
+		v := item.DefaultPublishDate()
 		ic.mutation.SetPublishDate(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ic *IrregularCreate) check() error {
+func (ic *ItemCreate) check() error {
 	if _, ok := ic.mutation.ViewURL(); !ok {
-		return &ValidationError{Name: "view_url", err: errors.New(`ent: missing required field "Irregular.view_url"`)}
+		return &ValidationError{Name: "view_url", err: errors.New(`ent: missing required field "Item.view_url"`)}
 	}
 	if _, ok := ic.mutation.DownloadURL(); !ok {
-		return &ValidationError{Name: "download_url", err: errors.New(`ent: missing required field "Irregular.download_url"`)}
+		return &ValidationError{Name: "download_url", err: errors.New(`ent: missing required field "Item.download_url"`)}
 	}
 	if _, ok := ic.mutation.FileName(); !ok {
-		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Irregular.file_name"`)}
+		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Item.file_name"`)}
 	}
 	if v, ok := ic.mutation.FileName(); ok {
-		if err := irregular.FileNameValidator(v); err != nil {
-			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Irregular.file_name": %w`, err)}
+		if err := item.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Item.file_name": %w`, err)}
 		}
 	}
 	if _, ok := ic.mutation.FileSize(); !ok {
-		return &ValidationError{Name: "file_size", err: errors.New(`ent: missing required field "Irregular.file_size"`)}
+		return &ValidationError{Name: "file_size", err: errors.New(`ent: missing required field "Item.file_size"`)}
 	}
 	if v, ok := ic.mutation.FileSize(); ok {
-		if err := irregular.FileSizeValidator(v); err != nil {
-			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Irregular.file_size": %w`, err)}
+		if err := item.FileSizeValidator(v); err != nil {
+			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Item.file_size": %w`, err)}
 		}
 	}
 	if _, ok := ic.mutation.PublishDate(); !ok {
-		return &ValidationError{Name: "publish_date", err: errors.New(`ent: missing required field "Irregular.publish_date"`)}
+		return &ValidationError{Name: "publish_date", err: errors.New(`ent: missing required field "Item.publish_date"`)}
 	}
 	return nil
 }
 
-func (ic *IrregularCreate) sqlSave(ctx context.Context) (*Irregular, error) {
+func (ic *ItemCreate) sqlSave(ctx context.Context) (*Item, error) {
 	if err := ic.check(); err != nil {
 		return nil, err
 	}
@@ -147,55 +167,71 @@ func (ic *IrregularCreate) sqlSave(ctx context.Context) (*Irregular, error) {
 	return _node, nil
 }
 
-func (ic *IrregularCreate) createSpec() (*Irregular, *sqlgraph.CreateSpec) {
+func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Irregular{config: ic.config}
-		_spec = sqlgraph.NewCreateSpec(irregular.Table, sqlgraph.NewFieldSpec(irregular.FieldID, field.TypeInt))
+		_node = &Item{config: ic.config}
+		_spec = sqlgraph.NewCreateSpec(item.Table, sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt))
 	)
 	if value, ok := ic.mutation.ViewURL(); ok {
-		_spec.SetField(irregular.FieldViewURL, field.TypeString, value)
+		_spec.SetField(item.FieldViewURL, field.TypeString, value)
 		_node.ViewURL = value
 	}
 	if value, ok := ic.mutation.DownloadURL(); ok {
-		_spec.SetField(irregular.FieldDownloadURL, field.TypeString, value)
+		_spec.SetField(item.FieldDownloadURL, field.TypeString, value)
 		_node.DownloadURL = value
 	}
 	if value, ok := ic.mutation.FileName(); ok {
-		_spec.SetField(irregular.FieldFileName, field.TypeString, value)
+		_spec.SetField(item.FieldFileName, field.TypeString, value)
 		_node.FileName = value
 	}
 	if value, ok := ic.mutation.FileSize(); ok {
-		_spec.SetField(irregular.FieldFileSize, field.TypeInt, value)
+		_spec.SetField(item.FieldFileSize, field.TypeInt, value)
 		_node.FileSize = value
 	}
 	if value, ok := ic.mutation.PublishDate(); ok {
-		_spec.SetField(irregular.FieldPublishDate, field.TypeTime, value)
+		_spec.SetField(item.FieldPublishDate, field.TypeTime, value)
 		_node.PublishDate = value
+	}
+	if nodes := ic.mutation.EpisodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   item.EpisodesTable,
+			Columns: []string{item.EpisodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
 
-// IrregularCreateBulk is the builder for creating many Irregular entities in bulk.
-type IrregularCreateBulk struct {
+// ItemCreateBulk is the builder for creating many Item entities in bulk.
+type ItemCreateBulk struct {
 	config
 	err      error
-	builders []*IrregularCreate
+	builders []*ItemCreate
 }
 
-// Save creates the Irregular entities in the database.
-func (icb *IrregularCreateBulk) Save(ctx context.Context) ([]*Irregular, error) {
+// Save creates the Item entities in the database.
+func (icb *ItemCreateBulk) Save(ctx context.Context) ([]*Item, error) {
 	if icb.err != nil {
 		return nil, icb.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(icb.builders))
-	nodes := make([]*Irregular, len(icb.builders))
+	nodes := make([]*Item, len(icb.builders))
 	mutators := make([]Mutator, len(icb.builders))
 	for i := range icb.builders {
 		func(i int, root context.Context) {
 			builder := icb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*IrregularMutation)
+				mutation, ok := m.(*ItemMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -242,7 +278,7 @@ func (icb *IrregularCreateBulk) Save(ctx context.Context) ([]*Irregular, error) 
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (icb *IrregularCreateBulk) SaveX(ctx context.Context) []*Irregular {
+func (icb *ItemCreateBulk) SaveX(ctx context.Context) []*Item {
 	v, err := icb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -251,13 +287,13 @@ func (icb *IrregularCreateBulk) SaveX(ctx context.Context) []*Irregular {
 }
 
 // Exec executes the query.
-func (icb *IrregularCreateBulk) Exec(ctx context.Context) error {
+func (icb *ItemCreateBulk) Exec(ctx context.Context) error {
 	_, err := icb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (icb *IrregularCreateBulk) ExecX(ctx context.Context) {
+func (icb *ItemCreateBulk) ExecX(ctx context.Context) {
 	if err := icb.Exec(ctx); err != nil {
 		panic(err)
 	}

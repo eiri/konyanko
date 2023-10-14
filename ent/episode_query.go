@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/predicate"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
@@ -23,6 +24,7 @@ type EpisodeQuery struct {
 	order            []episode.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.Episode
+	withItem         *ItemQuery
 	withTitle        *AnimeQuery
 	withReleaseGroup *ReleaseGroupQuery
 	withFKs          bool
@@ -60,6 +62,28 @@ func (eq *EpisodeQuery) Unique(unique bool) *EpisodeQuery {
 func (eq *EpisodeQuery) Order(o ...episode.OrderOption) *EpisodeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
+}
+
+// QueryItem chains the current query on the "item" edge.
+func (eq *EpisodeQuery) QueryItem() *ItemQuery {
+	query := (&ItemClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(episode.Table, episode.FieldID, selector),
+			sqlgraph.To(item.Table, item.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, episode.ItemTable, episode.ItemColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryTitle chains the current query on the "title" edge.
@@ -298,12 +322,24 @@ func (eq *EpisodeQuery) Clone() *EpisodeQuery {
 		order:            append([]episode.OrderOption{}, eq.order...),
 		inters:           append([]Interceptor{}, eq.inters...),
 		predicates:       append([]predicate.Episode{}, eq.predicates...),
+		withItem:         eq.withItem.Clone(),
 		withTitle:        eq.withTitle.Clone(),
 		withReleaseGroup: eq.withReleaseGroup.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
 	}
+}
+
+// WithItem tells the query-builder to eager-load the nodes that are connected to
+// the "item" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EpisodeQuery) WithItem(opts ...func(*ItemQuery)) *EpisodeQuery {
+	query := (&ItemClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withItem = query
+	return eq
 }
 
 // WithTitle tells the query-builder to eager-load the nodes that are connected to
@@ -334,12 +370,12 @@ func (eq *EpisodeQuery) WithReleaseGroup(opts ...func(*ReleaseGroupQuery)) *Epis
 // Example:
 //
 //	var v []struct {
-//		ViewURL string `json:"view_url,omitempty"`
+//		EpisodeNumber int `json:"episode_number,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		GroupBy(episode.FieldViewURL).
+//		GroupBy(episode.FieldEpisodeNumber).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy {
@@ -357,11 +393,11 @@ func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy 
 // Example:
 //
 //	var v []struct {
-//		ViewURL string `json:"view_url,omitempty"`
+//		EpisodeNumber int `json:"episode_number,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		Select(episode.FieldViewURL).
+//		Select(episode.FieldEpisodeNumber).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) Select(fields ...string) *EpisodeSelect {
 	eq.ctx.Fields = append(eq.ctx.Fields, fields...)
@@ -407,12 +443,13 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 		nodes       = []*Episode{}
 		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			eq.withItem != nil,
 			eq.withTitle != nil,
 			eq.withReleaseGroup != nil,
 		}
 	)
-	if eq.withTitle != nil || eq.withReleaseGroup != nil {
+	if eq.withItem != nil || eq.withTitle != nil || eq.withReleaseGroup != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -436,6 +473,12 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := eq.withItem; query != nil {
+		if err := eq.loadItem(ctx, query, nodes, nil,
+			func(n *Episode, e *Item) { n.Edges.Item = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := eq.withTitle; query != nil {
 		if err := eq.loadTitle(ctx, query, nodes, nil,
 			func(n *Episode, e *Anime) { n.Edges.Title = e }); err != nil {
@@ -451,6 +494,38 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 	return nodes, nil
 }
 
+func (eq *EpisodeQuery) loadItem(ctx context.Context, query *ItemQuery, nodes []*Episode, init func(*Episode), assign func(*Episode, *Item)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Episode)
+	for i := range nodes {
+		if nodes[i].item_id == nil {
+			continue
+		}
+		fk := *nodes[i].item_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(item.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "item_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (eq *EpisodeQuery) loadTitle(ctx context.Context, query *AnimeQuery, nodes []*Episode, init func(*Episode), assign func(*Episode, *Anime)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Episode)

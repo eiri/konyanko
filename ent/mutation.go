@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/predicate"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
@@ -29,7 +29,7 @@ const (
 	// Node types.
 	TypeAnime        = "Anime"
 	TypeEpisode      = "Episode"
-	TypeIrregular    = "Irregular"
+	TypeItem         = "Item"
 	TypeReleaseGroup = "ReleaseGroup"
 )
 
@@ -458,12 +458,6 @@ type EpisodeMutation struct {
 	op                   Op
 	typ                  string
 	id                   *int
-	view_url             *string
-	download_url         *string
-	file_name            *string
-	file_size            *int
-	addfile_size         *int
-	publish_date         *time.Time
 	episode_number       *int
 	addepisode_number    *int
 	anime_season         *int
@@ -472,6 +466,8 @@ type EpisodeMutation struct {
 	video_codec          *string
 	audio_codec          *string
 	clearedFields        map[string]struct{}
+	item                 *int
+	cleareditem          bool
 	title                *int
 	clearedtitle         bool
 	release_group        *int
@@ -577,206 +573,6 @@ func (m *EpisodeMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetViewURL sets the "view_url" field.
-func (m *EpisodeMutation) SetViewURL(s string) {
-	m.view_url = &s
-}
-
-// ViewURL returns the value of the "view_url" field in the mutation.
-func (m *EpisodeMutation) ViewURL() (r string, exists bool) {
-	v := m.view_url
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldViewURL returns the old "view_url" field's value of the Episode entity.
-// If the Episode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldViewURL(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldViewURL is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldViewURL requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldViewURL: %w", err)
-	}
-	return oldValue.ViewURL, nil
-}
-
-// ResetViewURL resets all changes to the "view_url" field.
-func (m *EpisodeMutation) ResetViewURL() {
-	m.view_url = nil
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (m *EpisodeMutation) SetDownloadURL(s string) {
-	m.download_url = &s
-}
-
-// DownloadURL returns the value of the "download_url" field in the mutation.
-func (m *EpisodeMutation) DownloadURL() (r string, exists bool) {
-	v := m.download_url
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDownloadURL returns the old "download_url" field's value of the Episode entity.
-// If the Episode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldDownloadURL(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDownloadURL is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDownloadURL requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDownloadURL: %w", err)
-	}
-	return oldValue.DownloadURL, nil
-}
-
-// ResetDownloadURL resets all changes to the "download_url" field.
-func (m *EpisodeMutation) ResetDownloadURL() {
-	m.download_url = nil
-}
-
-// SetFileName sets the "file_name" field.
-func (m *EpisodeMutation) SetFileName(s string) {
-	m.file_name = &s
-}
-
-// FileName returns the value of the "file_name" field in the mutation.
-func (m *EpisodeMutation) FileName() (r string, exists bool) {
-	v := m.file_name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFileName returns the old "file_name" field's value of the Episode entity.
-// If the Episode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldFileName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFileName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFileName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFileName: %w", err)
-	}
-	return oldValue.FileName, nil
-}
-
-// ResetFileName resets all changes to the "file_name" field.
-func (m *EpisodeMutation) ResetFileName() {
-	m.file_name = nil
-}
-
-// SetFileSize sets the "file_size" field.
-func (m *EpisodeMutation) SetFileSize(i int) {
-	m.file_size = &i
-	m.addfile_size = nil
-}
-
-// FileSize returns the value of the "file_size" field in the mutation.
-func (m *EpisodeMutation) FileSize() (r int, exists bool) {
-	v := m.file_size
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFileSize returns the old "file_size" field's value of the Episode entity.
-// If the Episode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldFileSize(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFileSize is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFileSize requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFileSize: %w", err)
-	}
-	return oldValue.FileSize, nil
-}
-
-// AddFileSize adds i to the "file_size" field.
-func (m *EpisodeMutation) AddFileSize(i int) {
-	if m.addfile_size != nil {
-		*m.addfile_size += i
-	} else {
-		m.addfile_size = &i
-	}
-}
-
-// AddedFileSize returns the value that was added to the "file_size" field in this mutation.
-func (m *EpisodeMutation) AddedFileSize() (r int, exists bool) {
-	v := m.addfile_size
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetFileSize resets all changes to the "file_size" field.
-func (m *EpisodeMutation) ResetFileSize() {
-	m.file_size = nil
-	m.addfile_size = nil
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (m *EpisodeMutation) SetPublishDate(t time.Time) {
-	m.publish_date = &t
-}
-
-// PublishDate returns the value of the "publish_date" field in the mutation.
-func (m *EpisodeMutation) PublishDate() (r time.Time, exists bool) {
-	v := m.publish_date
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPublishDate returns the old "publish_date" field's value of the Episode entity.
-// If the Episode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldPublishDate(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPublishDate is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPublishDate requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPublishDate: %w", err)
-	}
-	return oldValue.PublishDate, nil
-}
-
-// ResetPublishDate resets all changes to the "publish_date" field.
-func (m *EpisodeMutation) ResetPublishDate() {
-	m.publish_date = nil
 }
 
 // SetEpisodeNumber sets the "episode_number" field.
@@ -1038,6 +834,45 @@ func (m *EpisodeMutation) ResetAudioCodec() {
 	delete(m.clearedFields, episode.FieldAudioCodec)
 }
 
+// SetItemID sets the "item" edge to the Item entity by id.
+func (m *EpisodeMutation) SetItemID(id int) {
+	m.item = &id
+}
+
+// ClearItem clears the "item" edge to the Item entity.
+func (m *EpisodeMutation) ClearItem() {
+	m.cleareditem = true
+}
+
+// ItemCleared reports if the "item" edge to the Item entity was cleared.
+func (m *EpisodeMutation) ItemCleared() bool {
+	return m.cleareditem
+}
+
+// ItemID returns the "item" edge ID in the mutation.
+func (m *EpisodeMutation) ItemID() (id int, exists bool) {
+	if m.item != nil {
+		return *m.item, true
+	}
+	return
+}
+
+// ItemIDs returns the "item" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ItemID instead. It exists only for internal usage by the builders.
+func (m *EpisodeMutation) ItemIDs() (ids []int) {
+	if id := m.item; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetItem resets all changes to the "item" edge.
+func (m *EpisodeMutation) ResetItem() {
+	m.item = nil
+	m.cleareditem = false
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by id.
 func (m *EpisodeMutation) SetTitleID(id int) {
 	m.title = &id
@@ -1150,22 +985,7 @@ func (m *EpisodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EpisodeMutation) Fields() []string {
-	fields := make([]string, 0, 10)
-	if m.view_url != nil {
-		fields = append(fields, episode.FieldViewURL)
-	}
-	if m.download_url != nil {
-		fields = append(fields, episode.FieldDownloadURL)
-	}
-	if m.file_name != nil {
-		fields = append(fields, episode.FieldFileName)
-	}
-	if m.file_size != nil {
-		fields = append(fields, episode.FieldFileSize)
-	}
-	if m.publish_date != nil {
-		fields = append(fields, episode.FieldPublishDate)
-	}
+	fields := make([]string, 0, 5)
 	if m.episode_number != nil {
 		fields = append(fields, episode.FieldEpisodeNumber)
 	}
@@ -1189,16 +1009,6 @@ func (m *EpisodeMutation) Fields() []string {
 // schema.
 func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case episode.FieldViewURL:
-		return m.ViewURL()
-	case episode.FieldDownloadURL:
-		return m.DownloadURL()
-	case episode.FieldFileName:
-		return m.FileName()
-	case episode.FieldFileSize:
-		return m.FileSize()
-	case episode.FieldPublishDate:
-		return m.PublishDate()
 	case episode.FieldEpisodeNumber:
 		return m.EpisodeNumber()
 	case episode.FieldAnimeSeason:
@@ -1218,16 +1028,6 @@ func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case episode.FieldViewURL:
-		return m.OldViewURL(ctx)
-	case episode.FieldDownloadURL:
-		return m.OldDownloadURL(ctx)
-	case episode.FieldFileName:
-		return m.OldFileName(ctx)
-	case episode.FieldFileSize:
-		return m.OldFileSize(ctx)
-	case episode.FieldPublishDate:
-		return m.OldPublishDate(ctx)
 	case episode.FieldEpisodeNumber:
 		return m.OldEpisodeNumber(ctx)
 	case episode.FieldAnimeSeason:
@@ -1247,41 +1047,6 @@ func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case episode.FieldViewURL:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetViewURL(v)
-		return nil
-	case episode.FieldDownloadURL:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDownloadURL(v)
-		return nil
-	case episode.FieldFileName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFileName(v)
-		return nil
-	case episode.FieldFileSize:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFileSize(v)
-		return nil
-	case episode.FieldPublishDate:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPublishDate(v)
-		return nil
 	case episode.FieldEpisodeNumber:
 		v, ok := value.(int)
 		if !ok {
@@ -1325,9 +1090,6 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EpisodeMutation) AddedFields() []string {
 	var fields []string
-	if m.addfile_size != nil {
-		fields = append(fields, episode.FieldFileSize)
-	}
 	if m.addepisode_number != nil {
 		fields = append(fields, episode.FieldEpisodeNumber)
 	}
@@ -1342,8 +1104,6 @@ func (m *EpisodeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EpisodeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case episode.FieldFileSize:
-		return m.AddedFileSize()
 	case episode.FieldEpisodeNumber:
 		return m.AddedEpisodeNumber()
 	case episode.FieldAnimeSeason:
@@ -1357,13 +1117,6 @@ func (m *EpisodeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EpisodeMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case episode.FieldFileSize:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddFileSize(v)
-		return nil
 	case episode.FieldEpisodeNumber:
 		v, ok := value.(int)
 		if !ok {
@@ -1426,21 +1179,6 @@ func (m *EpisodeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EpisodeMutation) ResetField(name string) error {
 	switch name {
-	case episode.FieldViewURL:
-		m.ResetViewURL()
-		return nil
-	case episode.FieldDownloadURL:
-		m.ResetDownloadURL()
-		return nil
-	case episode.FieldFileName:
-		m.ResetFileName()
-		return nil
-	case episode.FieldFileSize:
-		m.ResetFileSize()
-		return nil
-	case episode.FieldPublishDate:
-		m.ResetPublishDate()
-		return nil
 	case episode.FieldEpisodeNumber:
 		m.ResetEpisodeNumber()
 		return nil
@@ -1462,7 +1200,10 @@ func (m *EpisodeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EpisodeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.item != nil {
+		edges = append(edges, episode.EdgeItem)
+	}
 	if m.title != nil {
 		edges = append(edges, episode.EdgeTitle)
 	}
@@ -1476,6 +1217,10 @@ func (m *EpisodeMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *EpisodeMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case episode.EdgeItem:
+		if id := m.item; id != nil {
+			return []ent.Value{*id}
+		}
 	case episode.EdgeTitle:
 		if id := m.title; id != nil {
 			return []ent.Value{*id}
@@ -1490,7 +1235,7 @@ func (m *EpisodeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EpisodeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -1502,7 +1247,10 @@ func (m *EpisodeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EpisodeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.cleareditem {
+		edges = append(edges, episode.EdgeItem)
+	}
 	if m.clearedtitle {
 		edges = append(edges, episode.EdgeTitle)
 	}
@@ -1516,6 +1264,8 @@ func (m *EpisodeMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *EpisodeMutation) EdgeCleared(name string) bool {
 	switch name {
+	case episode.EdgeItem:
+		return m.cleareditem
 	case episode.EdgeTitle:
 		return m.clearedtitle
 	case episode.EdgeReleaseGroup:
@@ -1528,6 +1278,9 @@ func (m *EpisodeMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *EpisodeMutation) ClearEdge(name string) error {
 	switch name {
+	case episode.EdgeItem:
+		m.ClearItem()
+		return nil
 	case episode.EdgeTitle:
 		m.ClearTitle()
 		return nil
@@ -1542,6 +1295,9 @@ func (m *EpisodeMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *EpisodeMutation) ResetEdge(name string) error {
 	switch name {
+	case episode.EdgeItem:
+		m.ResetItem()
+		return nil
 	case episode.EdgeTitle:
 		m.ResetTitle()
 		return nil
@@ -1552,35 +1308,37 @@ func (m *EpisodeMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Episode edge %s", name)
 }
 
-// IrregularMutation represents an operation that mutates the Irregular nodes in the graph.
-type IrregularMutation struct {
+// ItemMutation represents an operation that mutates the Item nodes in the graph.
+type ItemMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	view_url      *string
-	download_url  *string
-	file_name     *string
-	file_size     *int
-	addfile_size  *int
-	publish_date  *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Irregular, error)
-	predicates    []predicate.Irregular
+	op              Op
+	typ             string
+	id              *int
+	view_url        *string
+	download_url    *string
+	file_name       *string
+	file_size       *int
+	addfile_size    *int
+	publish_date    *time.Time
+	clearedFields   map[string]struct{}
+	episodes        *int
+	clearedepisodes bool
+	done            bool
+	oldValue        func(context.Context) (*Item, error)
+	predicates      []predicate.Item
 }
 
-var _ ent.Mutation = (*IrregularMutation)(nil)
+var _ ent.Mutation = (*ItemMutation)(nil)
 
-// irregularOption allows management of the mutation configuration using functional options.
-type irregularOption func(*IrregularMutation)
+// itemOption allows management of the mutation configuration using functional options.
+type itemOption func(*ItemMutation)
 
-// newIrregularMutation creates new mutation for the Irregular entity.
-func newIrregularMutation(c config, op Op, opts ...irregularOption) *IrregularMutation {
-	m := &IrregularMutation{
+// newItemMutation creates new mutation for the Item entity.
+func newItemMutation(c config, op Op, opts ...itemOption) *ItemMutation {
+	m := &ItemMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeIrregular,
+		typ:           TypeItem,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -1589,20 +1347,20 @@ func newIrregularMutation(c config, op Op, opts ...irregularOption) *IrregularMu
 	return m
 }
 
-// withIrregularID sets the ID field of the mutation.
-func withIrregularID(id int) irregularOption {
-	return func(m *IrregularMutation) {
+// withItemID sets the ID field of the mutation.
+func withItemID(id int) itemOption {
+	return func(m *ItemMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Irregular
+			value *Item
 		)
-		m.oldValue = func(ctx context.Context) (*Irregular, error) {
+		m.oldValue = func(ctx context.Context) (*Item, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Irregular.Get(ctx, id)
+					value, err = m.Client().Item.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -1611,10 +1369,10 @@ func withIrregularID(id int) irregularOption {
 	}
 }
 
-// withIrregular sets the old Irregular of the mutation.
-func withIrregular(node *Irregular) irregularOption {
-	return func(m *IrregularMutation) {
-		m.oldValue = func(context.Context) (*Irregular, error) {
+// withItem sets the old Item of the mutation.
+func withItem(node *Item) itemOption {
+	return func(m *ItemMutation) {
+		m.oldValue = func(context.Context) (*Item, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -1623,7 +1381,7 @@ func withIrregular(node *Irregular) irregularOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m IrregularMutation) Client() *Client {
+func (m ItemMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -1631,7 +1389,7 @@ func (m IrregularMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m IrregularMutation) Tx() (*Tx, error) {
+func (m ItemMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -1642,7 +1400,7 @@ func (m IrregularMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *IrregularMutation) ID() (id int, exists bool) {
+func (m *ItemMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1653,7 +1411,7 @@ func (m *IrregularMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *IrregularMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *ItemMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -1662,19 +1420,19 @@ func (m *IrregularMutation) IDs(ctx context.Context) ([]int, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Irregular.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().Item.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetViewURL sets the "view_url" field.
-func (m *IrregularMutation) SetViewURL(s string) {
+func (m *ItemMutation) SetViewURL(s string) {
 	m.view_url = &s
 }
 
 // ViewURL returns the value of the "view_url" field in the mutation.
-func (m *IrregularMutation) ViewURL() (r string, exists bool) {
+func (m *ItemMutation) ViewURL() (r string, exists bool) {
 	v := m.view_url
 	if v == nil {
 		return
@@ -1682,10 +1440,10 @@ func (m *IrregularMutation) ViewURL() (r string, exists bool) {
 	return *v, true
 }
 
-// OldViewURL returns the old "view_url" field's value of the Irregular entity.
-// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// OldViewURL returns the old "view_url" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IrregularMutation) OldViewURL(ctx context.Context) (v string, err error) {
+func (m *ItemMutation) OldViewURL(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldViewURL is only allowed on UpdateOne operations")
 	}
@@ -1700,17 +1458,17 @@ func (m *IrregularMutation) OldViewURL(ctx context.Context) (v string, err error
 }
 
 // ResetViewURL resets all changes to the "view_url" field.
-func (m *IrregularMutation) ResetViewURL() {
+func (m *ItemMutation) ResetViewURL() {
 	m.view_url = nil
 }
 
 // SetDownloadURL sets the "download_url" field.
-func (m *IrregularMutation) SetDownloadURL(s string) {
+func (m *ItemMutation) SetDownloadURL(s string) {
 	m.download_url = &s
 }
 
 // DownloadURL returns the value of the "download_url" field in the mutation.
-func (m *IrregularMutation) DownloadURL() (r string, exists bool) {
+func (m *ItemMutation) DownloadURL() (r string, exists bool) {
 	v := m.download_url
 	if v == nil {
 		return
@@ -1718,10 +1476,10 @@ func (m *IrregularMutation) DownloadURL() (r string, exists bool) {
 	return *v, true
 }
 
-// OldDownloadURL returns the old "download_url" field's value of the Irregular entity.
-// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// OldDownloadURL returns the old "download_url" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IrregularMutation) OldDownloadURL(ctx context.Context) (v string, err error) {
+func (m *ItemMutation) OldDownloadURL(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDownloadURL is only allowed on UpdateOne operations")
 	}
@@ -1736,17 +1494,17 @@ func (m *IrregularMutation) OldDownloadURL(ctx context.Context) (v string, err e
 }
 
 // ResetDownloadURL resets all changes to the "download_url" field.
-func (m *IrregularMutation) ResetDownloadURL() {
+func (m *ItemMutation) ResetDownloadURL() {
 	m.download_url = nil
 }
 
 // SetFileName sets the "file_name" field.
-func (m *IrregularMutation) SetFileName(s string) {
+func (m *ItemMutation) SetFileName(s string) {
 	m.file_name = &s
 }
 
 // FileName returns the value of the "file_name" field in the mutation.
-func (m *IrregularMutation) FileName() (r string, exists bool) {
+func (m *ItemMutation) FileName() (r string, exists bool) {
 	v := m.file_name
 	if v == nil {
 		return
@@ -1754,10 +1512,10 @@ func (m *IrregularMutation) FileName() (r string, exists bool) {
 	return *v, true
 }
 
-// OldFileName returns the old "file_name" field's value of the Irregular entity.
-// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// OldFileName returns the old "file_name" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IrregularMutation) OldFileName(ctx context.Context) (v string, err error) {
+func (m *ItemMutation) OldFileName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldFileName is only allowed on UpdateOne operations")
 	}
@@ -1772,18 +1530,18 @@ func (m *IrregularMutation) OldFileName(ctx context.Context) (v string, err erro
 }
 
 // ResetFileName resets all changes to the "file_name" field.
-func (m *IrregularMutation) ResetFileName() {
+func (m *ItemMutation) ResetFileName() {
 	m.file_name = nil
 }
 
 // SetFileSize sets the "file_size" field.
-func (m *IrregularMutation) SetFileSize(i int) {
+func (m *ItemMutation) SetFileSize(i int) {
 	m.file_size = &i
 	m.addfile_size = nil
 }
 
 // FileSize returns the value of the "file_size" field in the mutation.
-func (m *IrregularMutation) FileSize() (r int, exists bool) {
+func (m *ItemMutation) FileSize() (r int, exists bool) {
 	v := m.file_size
 	if v == nil {
 		return
@@ -1791,10 +1549,10 @@ func (m *IrregularMutation) FileSize() (r int, exists bool) {
 	return *v, true
 }
 
-// OldFileSize returns the old "file_size" field's value of the Irregular entity.
-// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// OldFileSize returns the old "file_size" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IrregularMutation) OldFileSize(ctx context.Context) (v int, err error) {
+func (m *ItemMutation) OldFileSize(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldFileSize is only allowed on UpdateOne operations")
 	}
@@ -1809,7 +1567,7 @@ func (m *IrregularMutation) OldFileSize(ctx context.Context) (v int, err error) 
 }
 
 // AddFileSize adds i to the "file_size" field.
-func (m *IrregularMutation) AddFileSize(i int) {
+func (m *ItemMutation) AddFileSize(i int) {
 	if m.addfile_size != nil {
 		*m.addfile_size += i
 	} else {
@@ -1818,7 +1576,7 @@ func (m *IrregularMutation) AddFileSize(i int) {
 }
 
 // AddedFileSize returns the value that was added to the "file_size" field in this mutation.
-func (m *IrregularMutation) AddedFileSize() (r int, exists bool) {
+func (m *ItemMutation) AddedFileSize() (r int, exists bool) {
 	v := m.addfile_size
 	if v == nil {
 		return
@@ -1827,18 +1585,18 @@ func (m *IrregularMutation) AddedFileSize() (r int, exists bool) {
 }
 
 // ResetFileSize resets all changes to the "file_size" field.
-func (m *IrregularMutation) ResetFileSize() {
+func (m *ItemMutation) ResetFileSize() {
 	m.file_size = nil
 	m.addfile_size = nil
 }
 
 // SetPublishDate sets the "publish_date" field.
-func (m *IrregularMutation) SetPublishDate(t time.Time) {
+func (m *ItemMutation) SetPublishDate(t time.Time) {
 	m.publish_date = &t
 }
 
 // PublishDate returns the value of the "publish_date" field in the mutation.
-func (m *IrregularMutation) PublishDate() (r time.Time, exists bool) {
+func (m *ItemMutation) PublishDate() (r time.Time, exists bool) {
 	v := m.publish_date
 	if v == nil {
 		return
@@ -1846,10 +1604,10 @@ func (m *IrregularMutation) PublishDate() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldPublishDate returns the old "publish_date" field's value of the Irregular entity.
-// If the Irregular object wasn't provided to the builder, the object is fetched from the database.
+// OldPublishDate returns the old "publish_date" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IrregularMutation) OldPublishDate(ctx context.Context) (v time.Time, err error) {
+func (m *ItemMutation) OldPublishDate(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPublishDate is only allowed on UpdateOne operations")
 	}
@@ -1864,19 +1622,58 @@ func (m *IrregularMutation) OldPublishDate(ctx context.Context) (v time.Time, er
 }
 
 // ResetPublishDate resets all changes to the "publish_date" field.
-func (m *IrregularMutation) ResetPublishDate() {
+func (m *ItemMutation) ResetPublishDate() {
 	m.publish_date = nil
 }
 
-// Where appends a list predicates to the IrregularMutation builder.
-func (m *IrregularMutation) Where(ps ...predicate.Irregular) {
+// SetEpisodesID sets the "episodes" edge to the Episode entity by id.
+func (m *ItemMutation) SetEpisodesID(id int) {
+	m.episodes = &id
+}
+
+// ClearEpisodes clears the "episodes" edge to the Episode entity.
+func (m *ItemMutation) ClearEpisodes() {
+	m.clearedepisodes = true
+}
+
+// EpisodesCleared reports if the "episodes" edge to the Episode entity was cleared.
+func (m *ItemMutation) EpisodesCleared() bool {
+	return m.clearedepisodes
+}
+
+// EpisodesID returns the "episodes" edge ID in the mutation.
+func (m *ItemMutation) EpisodesID() (id int, exists bool) {
+	if m.episodes != nil {
+		return *m.episodes, true
+	}
+	return
+}
+
+// EpisodesIDs returns the "episodes" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EpisodesID instead. It exists only for internal usage by the builders.
+func (m *ItemMutation) EpisodesIDs() (ids []int) {
+	if id := m.episodes; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEpisodes resets all changes to the "episodes" edge.
+func (m *ItemMutation) ResetEpisodes() {
+	m.episodes = nil
+	m.clearedepisodes = false
+}
+
+// Where appends a list predicates to the ItemMutation builder.
+func (m *ItemMutation) Where(ps ...predicate.Item) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the IrregularMutation builder. Using this method,
+// WhereP appends storage-level predicates to the ItemMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *IrregularMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Irregular, len(ps))
+func (m *ItemMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Item, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -1884,39 +1681,39 @@ func (m *IrregularMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *IrregularMutation) Op() Op {
+func (m *ItemMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *IrregularMutation) SetOp(op Op) {
+func (m *ItemMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (Irregular).
-func (m *IrregularMutation) Type() string {
+// Type returns the node type of this mutation (Item).
+func (m *ItemMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *IrregularMutation) Fields() []string {
+func (m *ItemMutation) Fields() []string {
 	fields := make([]string, 0, 5)
 	if m.view_url != nil {
-		fields = append(fields, irregular.FieldViewURL)
+		fields = append(fields, item.FieldViewURL)
 	}
 	if m.download_url != nil {
-		fields = append(fields, irregular.FieldDownloadURL)
+		fields = append(fields, item.FieldDownloadURL)
 	}
 	if m.file_name != nil {
-		fields = append(fields, irregular.FieldFileName)
+		fields = append(fields, item.FieldFileName)
 	}
 	if m.file_size != nil {
-		fields = append(fields, irregular.FieldFileSize)
+		fields = append(fields, item.FieldFileSize)
 	}
 	if m.publish_date != nil {
-		fields = append(fields, irregular.FieldPublishDate)
+		fields = append(fields, item.FieldPublishDate)
 	}
 	return fields
 }
@@ -1924,17 +1721,17 @@ func (m *IrregularMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *IrregularMutation) Field(name string) (ent.Value, bool) {
+func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case irregular.FieldViewURL:
+	case item.FieldViewURL:
 		return m.ViewURL()
-	case irregular.FieldDownloadURL:
+	case item.FieldDownloadURL:
 		return m.DownloadURL()
-	case irregular.FieldFileName:
+	case item.FieldFileName:
 		return m.FileName()
-	case irregular.FieldFileSize:
+	case item.FieldFileSize:
 		return m.FileSize()
-	case irregular.FieldPublishDate:
+	case item.FieldPublishDate:
 		return m.PublishDate()
 	}
 	return nil, false
@@ -1943,56 +1740,56 @@ func (m *IrregularMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *IrregularMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case irregular.FieldViewURL:
+	case item.FieldViewURL:
 		return m.OldViewURL(ctx)
-	case irregular.FieldDownloadURL:
+	case item.FieldDownloadURL:
 		return m.OldDownloadURL(ctx)
-	case irregular.FieldFileName:
+	case item.FieldFileName:
 		return m.OldFileName(ctx)
-	case irregular.FieldFileSize:
+	case item.FieldFileSize:
 		return m.OldFileSize(ctx)
-	case irregular.FieldPublishDate:
+	case item.FieldPublishDate:
 		return m.OldPublishDate(ctx)
 	}
-	return nil, fmt.Errorf("unknown Irregular field %s", name)
+	return nil, fmt.Errorf("unknown Item field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *IrregularMutation) SetField(name string, value ent.Value) error {
+func (m *ItemMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case irregular.FieldViewURL:
+	case item.FieldViewURL:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetViewURL(v)
 		return nil
-	case irregular.FieldDownloadURL:
+	case item.FieldDownloadURL:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDownloadURL(v)
 		return nil
-	case irregular.FieldFileName:
+	case item.FieldFileName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFileName(v)
 		return nil
-	case irregular.FieldFileSize:
+	case item.FieldFileSize:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFileSize(v)
 		return nil
-	case irregular.FieldPublishDate:
+	case item.FieldPublishDate:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -2000,15 +1797,15 @@ func (m *IrregularMutation) SetField(name string, value ent.Value) error {
 		m.SetPublishDate(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Irregular field %s", name)
+	return fmt.Errorf("unknown Item field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *IrregularMutation) AddedFields() []string {
+func (m *ItemMutation) AddedFields() []string {
 	var fields []string
 	if m.addfile_size != nil {
-		fields = append(fields, irregular.FieldFileSize)
+		fields = append(fields, item.FieldFileSize)
 	}
 	return fields
 }
@@ -2016,9 +1813,9 @@ func (m *IrregularMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *IrregularMutation) AddedField(name string) (ent.Value, bool) {
+func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case irregular.FieldFileSize:
+	case item.FieldFileSize:
 		return m.AddedFileSize()
 	}
 	return nil, false
@@ -2027,9 +1824,9 @@ func (m *IrregularMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *IrregularMutation) AddField(name string, value ent.Value) error {
+func (m *ItemMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case irregular.FieldFileSize:
+	case item.FieldFileSize:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -2037,97 +1834,123 @@ func (m *IrregularMutation) AddField(name string, value ent.Value) error {
 		m.AddFileSize(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Irregular numeric field %s", name)
+	return fmt.Errorf("unknown Item numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *IrregularMutation) ClearedFields() []string {
+func (m *ItemMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *IrregularMutation) FieldCleared(name string) bool {
+func (m *ItemMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *IrregularMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Irregular nullable field %s", name)
+func (m *ItemMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Item nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *IrregularMutation) ResetField(name string) error {
+func (m *ItemMutation) ResetField(name string) error {
 	switch name {
-	case irregular.FieldViewURL:
+	case item.FieldViewURL:
 		m.ResetViewURL()
 		return nil
-	case irregular.FieldDownloadURL:
+	case item.FieldDownloadURL:
 		m.ResetDownloadURL()
 		return nil
-	case irregular.FieldFileName:
+	case item.FieldFileName:
 		m.ResetFileName()
 		return nil
-	case irregular.FieldFileSize:
+	case item.FieldFileSize:
 		m.ResetFileSize()
 		return nil
-	case irregular.FieldPublishDate:
+	case item.FieldPublishDate:
 		m.ResetPublishDate()
 		return nil
 	}
-	return fmt.Errorf("unknown Irregular field %s", name)
+	return fmt.Errorf("unknown Item field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *IrregularMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+func (m *ItemMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.episodes != nil {
+		edges = append(edges, item.EdgeEpisodes)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *IrregularMutation) AddedIDs(name string) []ent.Value {
+func (m *ItemMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case item.EdgeEpisodes:
+		if id := m.episodes; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *IrregularMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+func (m *ItemMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *IrregularMutation) RemovedIDs(name string) []ent.Value {
+func (m *ItemMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *IrregularMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+func (m *ItemMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedepisodes {
+		edges = append(edges, item.EdgeEpisodes)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *IrregularMutation) EdgeCleared(name string) bool {
+func (m *ItemMutation) EdgeCleared(name string) bool {
+	switch name {
+	case item.EdgeEpisodes:
+		return m.clearedepisodes
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *IrregularMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Irregular unique edge %s", name)
+func (m *ItemMutation) ClearEdge(name string) error {
+	switch name {
+	case item.EdgeEpisodes:
+		m.ClearEpisodes()
+		return nil
+	}
+	return fmt.Errorf("unknown Item unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *IrregularMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Irregular edge %s", name)
+func (m *ItemMutation) ResetEdge(name string) error {
+	switch name {
+	case item.EdgeEpisodes:
+		m.ResetEpisodes()
+		return nil
+	}
+	return fmt.Errorf("unknown Item edge %s", name)
 }
 
 // ReleaseGroupMutation represents an operation that mutates the ReleaseGroup nodes in the graph.

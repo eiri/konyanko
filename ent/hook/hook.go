@@ -33,16 +33,16 @@ func (f EpisodeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EpisodeMutation", m)
 }
 
-// The IrregularFunc type is an adapter to allow the use of ordinary
-// function as Irregular mutator.
-type IrregularFunc func(context.Context, *ent.IrregularMutation) (ent.Value, error)
+// The ItemFunc type is an adapter to allow the use of ordinary
+// function as Item mutator.
+type ItemFunc func(context.Context, *ent.ItemMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f IrregularFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.IrregularMutation); ok {
+func (f ItemFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ItemMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.IrregularMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ItemMutation", m)
 }
 
 // The ReleaseGroupFunc type is an adapter to allow the use of ordinary

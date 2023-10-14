@@ -3,8 +3,6 @@
 package episode
 
 import (
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/eiri/konyanko/ent/predicate"
@@ -55,31 +53,6 @@ func IDLTE(id int) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldID, id))
 }
 
-// ViewURL applies equality check predicate on the "view_url" field. It's identical to ViewURLEQ.
-func ViewURL(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldViewURL, v))
-}
-
-// DownloadURL applies equality check predicate on the "download_url" field. It's identical to DownloadURLEQ.
-func DownloadURL(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldDownloadURL, v))
-}
-
-// FileName applies equality check predicate on the "file_name" field. It's identical to FileNameEQ.
-func FileName(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldFileName, v))
-}
-
-// FileSize applies equality check predicate on the "file_size" field. It's identical to FileSizeEQ.
-func FileSize(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldFileSize, v))
-}
-
-// PublishDate applies equality check predicate on the "publish_date" field. It's identical to PublishDateEQ.
-func PublishDate(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
-}
-
 // EpisodeNumber applies equality check predicate on the "episode_number" field. It's identical to EpisodeNumberEQ.
 func EpisodeNumber(v int) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldEpisodeNumber, v))
@@ -103,281 +76,6 @@ func VideoCodec(v string) predicate.Episode {
 // AudioCodec applies equality check predicate on the "audio_codec" field. It's identical to AudioCodecEQ.
 func AudioCodec(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldAudioCodec, v))
-}
-
-// ViewURLEQ applies the EQ predicate on the "view_url" field.
-func ViewURLEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldViewURL, v))
-}
-
-// ViewURLNEQ applies the NEQ predicate on the "view_url" field.
-func ViewURLNEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldViewURL, v))
-}
-
-// ViewURLIn applies the In predicate on the "view_url" field.
-func ViewURLIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldViewURL, vs...))
-}
-
-// ViewURLNotIn applies the NotIn predicate on the "view_url" field.
-func ViewURLNotIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldViewURL, vs...))
-}
-
-// ViewURLGT applies the GT predicate on the "view_url" field.
-func ViewURLGT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldViewURL, v))
-}
-
-// ViewURLGTE applies the GTE predicate on the "view_url" field.
-func ViewURLGTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldViewURL, v))
-}
-
-// ViewURLLT applies the LT predicate on the "view_url" field.
-func ViewURLLT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldViewURL, v))
-}
-
-// ViewURLLTE applies the LTE predicate on the "view_url" field.
-func ViewURLLTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldViewURL, v))
-}
-
-// ViewURLContains applies the Contains predicate on the "view_url" field.
-func ViewURLContains(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContains(FieldViewURL, v))
-}
-
-// ViewURLHasPrefix applies the HasPrefix predicate on the "view_url" field.
-func ViewURLHasPrefix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasPrefix(FieldViewURL, v))
-}
-
-// ViewURLHasSuffix applies the HasSuffix predicate on the "view_url" field.
-func ViewURLHasSuffix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasSuffix(FieldViewURL, v))
-}
-
-// ViewURLEqualFold applies the EqualFold predicate on the "view_url" field.
-func ViewURLEqualFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEqualFold(FieldViewURL, v))
-}
-
-// ViewURLContainsFold applies the ContainsFold predicate on the "view_url" field.
-func ViewURLContainsFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContainsFold(FieldViewURL, v))
-}
-
-// DownloadURLEQ applies the EQ predicate on the "download_url" field.
-func DownloadURLEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldDownloadURL, v))
-}
-
-// DownloadURLNEQ applies the NEQ predicate on the "download_url" field.
-func DownloadURLNEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldDownloadURL, v))
-}
-
-// DownloadURLIn applies the In predicate on the "download_url" field.
-func DownloadURLIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldDownloadURL, vs...))
-}
-
-// DownloadURLNotIn applies the NotIn predicate on the "download_url" field.
-func DownloadURLNotIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldDownloadURL, vs...))
-}
-
-// DownloadURLGT applies the GT predicate on the "download_url" field.
-func DownloadURLGT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldDownloadURL, v))
-}
-
-// DownloadURLGTE applies the GTE predicate on the "download_url" field.
-func DownloadURLGTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldDownloadURL, v))
-}
-
-// DownloadURLLT applies the LT predicate on the "download_url" field.
-func DownloadURLLT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldDownloadURL, v))
-}
-
-// DownloadURLLTE applies the LTE predicate on the "download_url" field.
-func DownloadURLLTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldDownloadURL, v))
-}
-
-// DownloadURLContains applies the Contains predicate on the "download_url" field.
-func DownloadURLContains(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContains(FieldDownloadURL, v))
-}
-
-// DownloadURLHasPrefix applies the HasPrefix predicate on the "download_url" field.
-func DownloadURLHasPrefix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasPrefix(FieldDownloadURL, v))
-}
-
-// DownloadURLHasSuffix applies the HasSuffix predicate on the "download_url" field.
-func DownloadURLHasSuffix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasSuffix(FieldDownloadURL, v))
-}
-
-// DownloadURLEqualFold applies the EqualFold predicate on the "download_url" field.
-func DownloadURLEqualFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEqualFold(FieldDownloadURL, v))
-}
-
-// DownloadURLContainsFold applies the ContainsFold predicate on the "download_url" field.
-func DownloadURLContainsFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContainsFold(FieldDownloadURL, v))
-}
-
-// FileNameEQ applies the EQ predicate on the "file_name" field.
-func FileNameEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldFileName, v))
-}
-
-// FileNameNEQ applies the NEQ predicate on the "file_name" field.
-func FileNameNEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldFileName, v))
-}
-
-// FileNameIn applies the In predicate on the "file_name" field.
-func FileNameIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldFileName, vs...))
-}
-
-// FileNameNotIn applies the NotIn predicate on the "file_name" field.
-func FileNameNotIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldFileName, vs...))
-}
-
-// FileNameGT applies the GT predicate on the "file_name" field.
-func FileNameGT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldFileName, v))
-}
-
-// FileNameGTE applies the GTE predicate on the "file_name" field.
-func FileNameGTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldFileName, v))
-}
-
-// FileNameLT applies the LT predicate on the "file_name" field.
-func FileNameLT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldFileName, v))
-}
-
-// FileNameLTE applies the LTE predicate on the "file_name" field.
-func FileNameLTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldFileName, v))
-}
-
-// FileNameContains applies the Contains predicate on the "file_name" field.
-func FileNameContains(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContains(FieldFileName, v))
-}
-
-// FileNameHasPrefix applies the HasPrefix predicate on the "file_name" field.
-func FileNameHasPrefix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasPrefix(FieldFileName, v))
-}
-
-// FileNameHasSuffix applies the HasSuffix predicate on the "file_name" field.
-func FileNameHasSuffix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasSuffix(FieldFileName, v))
-}
-
-// FileNameEqualFold applies the EqualFold predicate on the "file_name" field.
-func FileNameEqualFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEqualFold(FieldFileName, v))
-}
-
-// FileNameContainsFold applies the ContainsFold predicate on the "file_name" field.
-func FileNameContainsFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContainsFold(FieldFileName, v))
-}
-
-// FileSizeEQ applies the EQ predicate on the "file_size" field.
-func FileSizeEQ(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldFileSize, v))
-}
-
-// FileSizeNEQ applies the NEQ predicate on the "file_size" field.
-func FileSizeNEQ(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldFileSize, v))
-}
-
-// FileSizeIn applies the In predicate on the "file_size" field.
-func FileSizeIn(vs ...int) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldFileSize, vs...))
-}
-
-// FileSizeNotIn applies the NotIn predicate on the "file_size" field.
-func FileSizeNotIn(vs ...int) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldFileSize, vs...))
-}
-
-// FileSizeGT applies the GT predicate on the "file_size" field.
-func FileSizeGT(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldFileSize, v))
-}
-
-// FileSizeGTE applies the GTE predicate on the "file_size" field.
-func FileSizeGTE(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldFileSize, v))
-}
-
-// FileSizeLT applies the LT predicate on the "file_size" field.
-func FileSizeLT(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldFileSize, v))
-}
-
-// FileSizeLTE applies the LTE predicate on the "file_size" field.
-func FileSizeLTE(v int) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldFileSize, v))
-}
-
-// PublishDateEQ applies the EQ predicate on the "publish_date" field.
-func PublishDateEQ(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldPublishDate, v))
-}
-
-// PublishDateNEQ applies the NEQ predicate on the "publish_date" field.
-func PublishDateNEQ(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldPublishDate, v))
-}
-
-// PublishDateIn applies the In predicate on the "publish_date" field.
-func PublishDateIn(vs ...time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldPublishDate, vs...))
-}
-
-// PublishDateNotIn applies the NotIn predicate on the "publish_date" field.
-func PublishDateNotIn(vs ...time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldPublishDate, vs...))
-}
-
-// PublishDateGT applies the GT predicate on the "publish_date" field.
-func PublishDateGT(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldPublishDate, v))
-}
-
-// PublishDateGTE applies the GTE predicate on the "publish_date" field.
-func PublishDateGTE(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldPublishDate, v))
-}
-
-// PublishDateLT applies the LT predicate on the "publish_date" field.
-func PublishDateLT(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldPublishDate, v))
-}
-
-// PublishDateLTE applies the LTE predicate on the "publish_date" field.
-func PublishDateLTE(v time.Time) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldPublishDate, v))
 }
 
 // EpisodeNumberEQ applies the EQ predicate on the "episode_number" field.
@@ -683,6 +381,29 @@ func AudioCodecEqualFold(v string) predicate.Episode {
 // AudioCodecContainsFold applies the ContainsFold predicate on the "audio_codec" field.
 func AudioCodecContainsFold(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldContainsFold(FieldAudioCodec, v))
+}
+
+// HasItem applies the HasEdge predicate on the "item" edge.
+func HasItem() predicate.Episode {
+	return predicate.Episode(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, ItemTable, ItemColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasItemWith applies the HasEdge predicate on the "item" edge with a given conditions (other predicates).
+func HasItemWith(preds ...predicate.Item) predicate.Episode {
+	return predicate.Episode(func(s *sql.Selector) {
+		step := newItemStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasTitle applies the HasEdge predicate on the "title" edge.

@@ -12,13 +12,6 @@ type Episode struct {
 	ent.Schema
 }
 
-// Mixin of the Episode.
-func (Episode) Mixin() []ent.Mixin {
-	return []ent.Mixin{
-		ItemMixin{},
-	}
-}
-
 // Fields of the Episode.
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
@@ -33,6 +26,7 @@ func (Episode) Fields() []ent.Field {
 // Edges of the Episode.
 func (Episode) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("item", Item.Type).Ref("episodes").Unique().Required(),
 		edge.From("title", Anime.Type).Ref("episodes").Unique().Required(),
 		edge.From("release_group", ReleaseGroup.Type).Ref("episodes").Unique(),
 	}

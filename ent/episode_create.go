@@ -6,12 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
@@ -20,44 +20,6 @@ type EpisodeCreate struct {
 	config
 	mutation *EpisodeMutation
 	hooks    []Hook
-}
-
-// SetViewURL sets the "view_url" field.
-func (ec *EpisodeCreate) SetViewURL(s string) *EpisodeCreate {
-	ec.mutation.SetViewURL(s)
-	return ec
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (ec *EpisodeCreate) SetDownloadURL(s string) *EpisodeCreate {
-	ec.mutation.SetDownloadURL(s)
-	return ec
-}
-
-// SetFileName sets the "file_name" field.
-func (ec *EpisodeCreate) SetFileName(s string) *EpisodeCreate {
-	ec.mutation.SetFileName(s)
-	return ec
-}
-
-// SetFileSize sets the "file_size" field.
-func (ec *EpisodeCreate) SetFileSize(i int) *EpisodeCreate {
-	ec.mutation.SetFileSize(i)
-	return ec
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (ec *EpisodeCreate) SetPublishDate(t time.Time) *EpisodeCreate {
-	ec.mutation.SetPublishDate(t)
-	return ec
-}
-
-// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (ec *EpisodeCreate) SetNillablePublishDate(t *time.Time) *EpisodeCreate {
-	if t != nil {
-		ec.SetPublishDate(*t)
-	}
-	return ec
 }
 
 // SetEpisodeNumber sets the "episode_number" field.
@@ -130,6 +92,17 @@ func (ec *EpisodeCreate) SetNillableAudioCodec(s *string) *EpisodeCreate {
 	return ec
 }
 
+// SetItemID sets the "item" edge to the Item entity by ID.
+func (ec *EpisodeCreate) SetItemID(id int) *EpisodeCreate {
+	ec.mutation.SetItemID(id)
+	return ec
+}
+
+// SetItem sets the "item" edge to the Item entity.
+func (ec *EpisodeCreate) SetItem(i *Item) *EpisodeCreate {
+	return ec.SetItemID(i.ID)
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by ID.
 func (ec *EpisodeCreate) SetTitleID(id int) *EpisodeCreate {
 	ec.mutation.SetTitleID(id)
@@ -195,10 +168,6 @@ func (ec *EpisodeCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ec *EpisodeCreate) defaults() {
-	if _, ok := ec.mutation.PublishDate(); !ok {
-		v := episode.DefaultPublishDate()
-		ec.mutation.SetPublishDate(v)
-	}
 	if _, ok := ec.mutation.EpisodeNumber(); !ok {
 		v := episode.DefaultEpisodeNumber
 		ec.mutation.SetEpisodeNumber(v)
@@ -211,31 +180,6 @@ func (ec *EpisodeCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ec *EpisodeCreate) check() error {
-	if _, ok := ec.mutation.ViewURL(); !ok {
-		return &ValidationError{Name: "view_url", err: errors.New(`ent: missing required field "Episode.view_url"`)}
-	}
-	if _, ok := ec.mutation.DownloadURL(); !ok {
-		return &ValidationError{Name: "download_url", err: errors.New(`ent: missing required field "Episode.download_url"`)}
-	}
-	if _, ok := ec.mutation.FileName(); !ok {
-		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Episode.file_name"`)}
-	}
-	if v, ok := ec.mutation.FileName(); ok {
-		if err := episode.FileNameValidator(v); err != nil {
-			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
-		}
-	}
-	if _, ok := ec.mutation.FileSize(); !ok {
-		return &ValidationError{Name: "file_size", err: errors.New(`ent: missing required field "Episode.file_size"`)}
-	}
-	if v, ok := ec.mutation.FileSize(); ok {
-		if err := episode.FileSizeValidator(v); err != nil {
-			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
-		}
-	}
-	if _, ok := ec.mutation.PublishDate(); !ok {
-		return &ValidationError{Name: "publish_date", err: errors.New(`ent: missing required field "Episode.publish_date"`)}
-	}
 	if _, ok := ec.mutation.EpisodeNumber(); !ok {
 		return &ValidationError{Name: "episode_number", err: errors.New(`ent: missing required field "Episode.episode_number"`)}
 	}
@@ -251,6 +195,9 @@ func (ec *EpisodeCreate) check() error {
 		if err := episode.AnimeSeasonValidator(v); err != nil {
 			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
+	}
+	if _, ok := ec.mutation.ItemID(); !ok {
+		return &ValidationError{Name: "item", err: errors.New(`ent: missing required edge "Episode.item"`)}
 	}
 	if _, ok := ec.mutation.TitleID(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required edge "Episode.title"`)}
@@ -281,26 +228,6 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_node = &Episode{config: ec.config}
 		_spec = sqlgraph.NewCreateSpec(episode.Table, sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt))
 	)
-	if value, ok := ec.mutation.ViewURL(); ok {
-		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
-		_node.ViewURL = value
-	}
-	if value, ok := ec.mutation.DownloadURL(); ok {
-		_spec.SetField(episode.FieldDownloadURL, field.TypeString, value)
-		_node.DownloadURL = value
-	}
-	if value, ok := ec.mutation.FileName(); ok {
-		_spec.SetField(episode.FieldFileName, field.TypeString, value)
-		_node.FileName = value
-	}
-	if value, ok := ec.mutation.FileSize(); ok {
-		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
-		_node.FileSize = value
-	}
-	if value, ok := ec.mutation.PublishDate(); ok {
-		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
-		_node.PublishDate = value
-	}
 	if value, ok := ec.mutation.EpisodeNumber(); ok {
 		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
 		_node.EpisodeNumber = value
@@ -320,6 +247,23 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.AudioCodec(); ok {
 		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
 		_node.AudioCodec = value
+	}
+	if nodes := ec.mutation.ItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   episode.ItemTable,
+			Columns: []string{episode.ItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.item_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.TitleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

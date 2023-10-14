@@ -3,8 +3,6 @@
 package episode
 
 import (
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -14,16 +12,6 @@ const (
 	Label = "episode"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldViewURL holds the string denoting the view_url field in the database.
-	FieldViewURL = "view_url"
-	// FieldDownloadURL holds the string denoting the download_url field in the database.
-	FieldDownloadURL = "download_url"
-	// FieldFileName holds the string denoting the file_name field in the database.
-	FieldFileName = "file_name"
-	// FieldFileSize holds the string denoting the file_size field in the database.
-	FieldFileSize = "file_size"
-	// FieldPublishDate holds the string denoting the publish_date field in the database.
-	FieldPublishDate = "publish_date"
 	// FieldEpisodeNumber holds the string denoting the episode_number field in the database.
 	FieldEpisodeNumber = "episode_number"
 	// FieldAnimeSeason holds the string denoting the anime_season field in the database.
@@ -34,12 +22,21 @@ const (
 	FieldVideoCodec = "video_codec"
 	// FieldAudioCodec holds the string denoting the audio_codec field in the database.
 	FieldAudioCodec = "audio_codec"
+	// EdgeItem holds the string denoting the item edge name in mutations.
+	EdgeItem = "item"
 	// EdgeTitle holds the string denoting the title edge name in mutations.
 	EdgeTitle = "title"
 	// EdgeReleaseGroup holds the string denoting the release_group edge name in mutations.
 	EdgeReleaseGroup = "release_group"
 	// Table holds the table name of the episode in the database.
 	Table = "episodes"
+	// ItemTable is the table that holds the item relation/edge.
+	ItemTable = "episodes"
+	// ItemInverseTable is the table name for the Item entity.
+	// It exists in this package in order to avoid circular dependency with the "item" package.
+	ItemInverseTable = "items"
+	// ItemColumn is the table column denoting the item relation/edge.
+	ItemColumn = "item_id"
 	// TitleTable is the table that holds the title relation/edge.
 	TitleTable = "episodes"
 	// TitleInverseTable is the table name for the Anime entity.
@@ -59,11 +56,6 @@ const (
 // Columns holds all SQL columns for episode fields.
 var Columns = []string{
 	FieldID,
-	FieldViewURL,
-	FieldDownloadURL,
-	FieldFileName,
-	FieldFileSize,
-	FieldPublishDate,
 	FieldEpisodeNumber,
 	FieldAnimeSeason,
 	FieldResolution,
@@ -75,6 +67,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"anime_id",
+	"item_id",
 	"release_group_id",
 }
 
@@ -94,12 +87,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	FileNameValidator func(string) error
-	// FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
-	FileSizeValidator func(int) error
-	// DefaultPublishDate holds the default value on creation for the "publish_date" field.
-	DefaultPublishDate func() time.Time
 	// DefaultEpisodeNumber holds the default value on creation for the "episode_number" field.
 	DefaultEpisodeNumber int
 	// EpisodeNumberValidator is a validator for the "episode_number" field. It is called by the builders before save.
@@ -116,31 +103,6 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
-}
-
-// ByViewURL orders the results by the view_url field.
-func ByViewURL(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldViewURL, opts...).ToFunc()
-}
-
-// ByDownloadURL orders the results by the download_url field.
-func ByDownloadURL(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDownloadURL, opts...).ToFunc()
-}
-
-// ByFileName orders the results by the file_name field.
-func ByFileName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFileName, opts...).ToFunc()
-}
-
-// ByFileSize orders the results by the file_size field.
-func ByFileSize(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFileSize, opts...).ToFunc()
-}
-
-// ByPublishDate orders the results by the publish_date field.
-func ByPublishDate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPublishDate, opts...).ToFunc()
 }
 
 // ByEpisodeNumber orders the results by the episode_number field.
@@ -168,6 +130,13 @@ func ByAudioCodec(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAudioCodec, opts...).ToFunc()
 }
 
+// ByItemField orders the results by item field.
+func ByItemField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newItemStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByTitleField orders the results by title field.
 func ByTitleField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -180,6 +149,13 @@ func ByReleaseGroupField(field string, opts ...sql.OrderTermOption) OrderOption 
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newReleaseGroupStep(), sql.OrderByField(field, opts...))
 	}
+}
+func newItemStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ItemInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, ItemTable, ItemColumn),
+	)
 }
 func newTitleStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

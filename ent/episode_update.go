@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/predicate"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
@@ -27,51 +27,6 @@ type EpisodeUpdate struct {
 // Where appends a list predicates to the EpisodeUpdate builder.
 func (eu *EpisodeUpdate) Where(ps ...predicate.Episode) *EpisodeUpdate {
 	eu.mutation.Where(ps...)
-	return eu
-}
-
-// SetViewURL sets the "view_url" field.
-func (eu *EpisodeUpdate) SetViewURL(s string) *EpisodeUpdate {
-	eu.mutation.SetViewURL(s)
-	return eu
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (eu *EpisodeUpdate) SetDownloadURL(s string) *EpisodeUpdate {
-	eu.mutation.SetDownloadURL(s)
-	return eu
-}
-
-// SetFileName sets the "file_name" field.
-func (eu *EpisodeUpdate) SetFileName(s string) *EpisodeUpdate {
-	eu.mutation.SetFileName(s)
-	return eu
-}
-
-// SetFileSize sets the "file_size" field.
-func (eu *EpisodeUpdate) SetFileSize(i int) *EpisodeUpdate {
-	eu.mutation.ResetFileSize()
-	eu.mutation.SetFileSize(i)
-	return eu
-}
-
-// AddFileSize adds i to the "file_size" field.
-func (eu *EpisodeUpdate) AddFileSize(i int) *EpisodeUpdate {
-	eu.mutation.AddFileSize(i)
-	return eu
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (eu *EpisodeUpdate) SetPublishDate(t time.Time) *EpisodeUpdate {
-	eu.mutation.SetPublishDate(t)
-	return eu
-}
-
-// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (eu *EpisodeUpdate) SetNillablePublishDate(t *time.Time) *EpisodeUpdate {
-	if t != nil {
-		eu.SetPublishDate(*t)
-	}
 	return eu
 }
 
@@ -177,6 +132,17 @@ func (eu *EpisodeUpdate) ClearAudioCodec() *EpisodeUpdate {
 	return eu
 }
 
+// SetItemID sets the "item" edge to the Item entity by ID.
+func (eu *EpisodeUpdate) SetItemID(id int) *EpisodeUpdate {
+	eu.mutation.SetItemID(id)
+	return eu
+}
+
+// SetItem sets the "item" edge to the Item entity.
+func (eu *EpisodeUpdate) SetItem(i *Item) *EpisodeUpdate {
+	return eu.SetItemID(i.ID)
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by ID.
 func (eu *EpisodeUpdate) SetTitleID(id int) *EpisodeUpdate {
 	eu.mutation.SetTitleID(id)
@@ -210,6 +176,12 @@ func (eu *EpisodeUpdate) SetReleaseGroup(r *ReleaseGroup) *EpisodeUpdate {
 // Mutation returns the EpisodeMutation object of the builder.
 func (eu *EpisodeUpdate) Mutation() *EpisodeMutation {
 	return eu.mutation
+}
+
+// ClearItem clears the "item" edge to the Item entity.
+func (eu *EpisodeUpdate) ClearItem() *EpisodeUpdate {
+	eu.mutation.ClearItem()
+	return eu
 }
 
 // ClearTitle clears the "title" edge to the Anime entity.
@@ -253,16 +225,6 @@ func (eu *EpisodeUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EpisodeUpdate) check() error {
-	if v, ok := eu.mutation.FileName(); ok {
-		if err := episode.FileNameValidator(v); err != nil {
-			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
-		}
-	}
-	if v, ok := eu.mutation.FileSize(); ok {
-		if err := episode.FileSizeValidator(v); err != nil {
-			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
-		}
-	}
 	if v, ok := eu.mutation.EpisodeNumber(); ok {
 		if err := episode.EpisodeNumberValidator(v); err != nil {
 			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
@@ -272,6 +234,9 @@ func (eu *EpisodeUpdate) check() error {
 		if err := episode.AnimeSeasonValidator(v); err != nil {
 			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
+	}
+	if _, ok := eu.mutation.ItemID(); eu.mutation.ItemCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Episode.item"`)
 	}
 	if _, ok := eu.mutation.TitleID(); eu.mutation.TitleCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Episode.title"`)
@@ -290,24 +255,6 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := eu.mutation.ViewURL(); ok {
-		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
-	}
-	if value, ok := eu.mutation.DownloadURL(); ok {
-		_spec.SetField(episode.FieldDownloadURL, field.TypeString, value)
-	}
-	if value, ok := eu.mutation.FileName(); ok {
-		_spec.SetField(episode.FieldFileName, field.TypeString, value)
-	}
-	if value, ok := eu.mutation.FileSize(); ok {
-		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
-	}
-	if value, ok := eu.mutation.AddedFileSize(); ok {
-		_spec.AddField(episode.FieldFileSize, field.TypeInt, value)
-	}
-	if value, ok := eu.mutation.PublishDate(); ok {
-		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
 	}
 	if value, ok := eu.mutation.EpisodeNumber(); ok {
 		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
@@ -338,6 +285,35 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.AudioCodecCleared() {
 		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
+	}
+	if eu.mutation.ItemCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   episode.ItemTable,
+			Columns: []string{episode.ItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.ItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   episode.ItemTable,
+			Columns: []string{episode.ItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if eu.mutation.TitleCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -415,51 +391,6 @@ type EpisodeUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *EpisodeMutation
-}
-
-// SetViewURL sets the "view_url" field.
-func (euo *EpisodeUpdateOne) SetViewURL(s string) *EpisodeUpdateOne {
-	euo.mutation.SetViewURL(s)
-	return euo
-}
-
-// SetDownloadURL sets the "download_url" field.
-func (euo *EpisodeUpdateOne) SetDownloadURL(s string) *EpisodeUpdateOne {
-	euo.mutation.SetDownloadURL(s)
-	return euo
-}
-
-// SetFileName sets the "file_name" field.
-func (euo *EpisodeUpdateOne) SetFileName(s string) *EpisodeUpdateOne {
-	euo.mutation.SetFileName(s)
-	return euo
-}
-
-// SetFileSize sets the "file_size" field.
-func (euo *EpisodeUpdateOne) SetFileSize(i int) *EpisodeUpdateOne {
-	euo.mutation.ResetFileSize()
-	euo.mutation.SetFileSize(i)
-	return euo
-}
-
-// AddFileSize adds i to the "file_size" field.
-func (euo *EpisodeUpdateOne) AddFileSize(i int) *EpisodeUpdateOne {
-	euo.mutation.AddFileSize(i)
-	return euo
-}
-
-// SetPublishDate sets the "publish_date" field.
-func (euo *EpisodeUpdateOne) SetPublishDate(t time.Time) *EpisodeUpdateOne {
-	euo.mutation.SetPublishDate(t)
-	return euo
-}
-
-// SetNillablePublishDate sets the "publish_date" field if the given value is not nil.
-func (euo *EpisodeUpdateOne) SetNillablePublishDate(t *time.Time) *EpisodeUpdateOne {
-	if t != nil {
-		euo.SetPublishDate(*t)
-	}
-	return euo
 }
 
 // SetEpisodeNumber sets the "episode_number" field.
@@ -564,6 +495,17 @@ func (euo *EpisodeUpdateOne) ClearAudioCodec() *EpisodeUpdateOne {
 	return euo
 }
 
+// SetItemID sets the "item" edge to the Item entity by ID.
+func (euo *EpisodeUpdateOne) SetItemID(id int) *EpisodeUpdateOne {
+	euo.mutation.SetItemID(id)
+	return euo
+}
+
+// SetItem sets the "item" edge to the Item entity.
+func (euo *EpisodeUpdateOne) SetItem(i *Item) *EpisodeUpdateOne {
+	return euo.SetItemID(i.ID)
+}
+
 // SetTitleID sets the "title" edge to the Anime entity by ID.
 func (euo *EpisodeUpdateOne) SetTitleID(id int) *EpisodeUpdateOne {
 	euo.mutation.SetTitleID(id)
@@ -597,6 +539,12 @@ func (euo *EpisodeUpdateOne) SetReleaseGroup(r *ReleaseGroup) *EpisodeUpdateOne 
 // Mutation returns the EpisodeMutation object of the builder.
 func (euo *EpisodeUpdateOne) Mutation() *EpisodeMutation {
 	return euo.mutation
+}
+
+// ClearItem clears the "item" edge to the Item entity.
+func (euo *EpisodeUpdateOne) ClearItem() *EpisodeUpdateOne {
+	euo.mutation.ClearItem()
+	return euo
 }
 
 // ClearTitle clears the "title" edge to the Anime entity.
@@ -653,16 +601,6 @@ func (euo *EpisodeUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EpisodeUpdateOne) check() error {
-	if v, ok := euo.mutation.FileName(); ok {
-		if err := episode.FileNameValidator(v); err != nil {
-			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Episode.file_name": %w`, err)}
-		}
-	}
-	if v, ok := euo.mutation.FileSize(); ok {
-		if err := episode.FileSizeValidator(v); err != nil {
-			return &ValidationError{Name: "file_size", err: fmt.Errorf(`ent: validator failed for field "Episode.file_size": %w`, err)}
-		}
-	}
 	if v, ok := euo.mutation.EpisodeNumber(); ok {
 		if err := episode.EpisodeNumberValidator(v); err != nil {
 			return &ValidationError{Name: "episode_number", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_number": %w`, err)}
@@ -672,6 +610,9 @@ func (euo *EpisodeUpdateOne) check() error {
 		if err := episode.AnimeSeasonValidator(v); err != nil {
 			return &ValidationError{Name: "anime_season", err: fmt.Errorf(`ent: validator failed for field "Episode.anime_season": %w`, err)}
 		}
+	}
+	if _, ok := euo.mutation.ItemID(); euo.mutation.ItemCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Episode.item"`)
 	}
 	if _, ok := euo.mutation.TitleID(); euo.mutation.TitleCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Episode.title"`)
@@ -708,24 +649,6 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 			}
 		}
 	}
-	if value, ok := euo.mutation.ViewURL(); ok {
-		_spec.SetField(episode.FieldViewURL, field.TypeString, value)
-	}
-	if value, ok := euo.mutation.DownloadURL(); ok {
-		_spec.SetField(episode.FieldDownloadURL, field.TypeString, value)
-	}
-	if value, ok := euo.mutation.FileName(); ok {
-		_spec.SetField(episode.FieldFileName, field.TypeString, value)
-	}
-	if value, ok := euo.mutation.FileSize(); ok {
-		_spec.SetField(episode.FieldFileSize, field.TypeInt, value)
-	}
-	if value, ok := euo.mutation.AddedFileSize(); ok {
-		_spec.AddField(episode.FieldFileSize, field.TypeInt, value)
-	}
-	if value, ok := euo.mutation.PublishDate(); ok {
-		_spec.SetField(episode.FieldPublishDate, field.TypeTime, value)
-	}
 	if value, ok := euo.mutation.EpisodeNumber(); ok {
 		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
 	}
@@ -755,6 +678,35 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 	}
 	if euo.mutation.AudioCodecCleared() {
 		_spec.ClearField(episode.FieldAudioCodec, field.TypeString)
+	}
+	if euo.mutation.ItemCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   episode.ItemTable,
+			Columns: []string{episode.ItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.ItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   episode.ItemTable,
+			Columns: []string{episode.ItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if euo.mutation.TitleCleared() {
 		edge := &sqlgraph.EdgeSpec{

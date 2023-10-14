@@ -9,8 +9,7 @@ import (
 
 	"github.com/eiri/konyanko/ent"
 	"github.com/eiri/konyanko/ent/anime"
-	"github.com/eiri/konyanko/ent/episode"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/releasegroup"
 
 	"github.com/dustin/go-humanize"
@@ -56,45 +55,44 @@ func init() {
 	rootCmd.AddCommand(importCmd)
 }
 
-func CreateEpisode(item *syndfeed.Item) error {
+func CreateEpisode(i *syndfeed.Item) error {
 	ctx := context.Background()
 
-	if c, err := client.Episode.Query().Where(episode.ViewURL(item.Id)).Aggregate(ent.Count()).Int(ctx); c == 1 && err == nil {
-		log.Printf("Found %q, skip\n", item.Title)
+	if c, err := client.Item.Query().Where(item.ViewURL(i.Id)).Aggregate(ent.Count()).Int(ctx); c == 1 && err == nil {
+		log.Printf("Found %q, skip\n", i.Title)
 		// should be const error EpisodeExists or something...
 		return nil
 	}
 
-	log.Printf("Adding %q\n", item.Title)
+	log.Printf("Adding %q\n", i.Title)
 
-	fileName := item.Title
+	viewURL := i.Id
+	downloadURL := i.Links[0].URL
+	fileName := i.Title
 	fileSize := 0
-	for _, ext := range item.ElementExtensions {
+	for _, ext := range i.ElementExtensions {
 		if ext.Name == "size" {
 			fs, _ := humanize.ParseBytes(ext.Value)
 			fileSize = int(fs)
 			break
 		}
 	}
-	viewURL := item.Id
-	downloadURL := item.Links[0].URL
-	publishDate := item.PublishDate
+	publishDate := i.PublishDate
 
-	e := anitogo.Parse(item.Title, anitogo.DefaultOptions)
+	item, err := client.Item.
+		Create().
+		SetViewURL(viewURL).
+		SetDownloadURL(downloadURL).
+		SetFileName(fileName).
+		SetFileSize(fileSize).
+		SetPublishDate(publishDate).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+
+	e := anitogo.Parse(item.FileName, anitogo.DefaultOptions)
 	if e.AnimeTitle == "" {
-		if c, err := client.Irregular.Query().Where(irregular.ViewURL(item.Id)).Aggregate(ent.Count()).Int(ctx); c == 0 && err == nil {
-			_, err := client.Irregular.
-				Create().
-				SetViewURL(viewURL).
-				SetDownloadURL(downloadURL).
-				SetFileName(fileName).
-				SetFileSize(fileSize).
-				SetPublishDate(publishDate).
-				Save(ctx)
-			if err != nil {
-				return err
-			}
-		}
 		// FIXME! same as above, should be a predefined error
 		return nil
 	}
@@ -120,12 +118,8 @@ func CreateEpisode(item *syndfeed.Item) error {
 
 	episode := client.Episode.
 		Create().
-		SetTitle(anime).
-		SetViewURL(viewURL).
-		SetDownloadURL(downloadURL).
-		SetFileName(fileName).
-		SetFileSize(fileSize).
-		SetPublishDate(publishDate)
+		SetItem(item).
+		SetTitle(anime)
 
 	if e.ReleaseGroup != "" {
 		releaseGroup, err := client.ReleaseGroup.

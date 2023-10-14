@@ -50,4 +50,4 @@ describe:
 
 .PHONY: generate
 generate:
-	go generate ./ent
+	go generate ./ent/...

@@ -5,12 +5,12 @@ package ent
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/releasegroup"
 )
 
@@ -19,16 +19,6 @@ type Episode struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// ViewURL holds the value of the "view_url" field.
-	ViewURL string `json:"view_url,omitempty"`
-	// DownloadURL holds the value of the "download_url" field.
-	DownloadURL string `json:"download_url,omitempty"`
-	// FileName holds the value of the "file_name" field.
-	FileName string `json:"file_name,omitempty"`
-	// FileSize holds the value of the "file_size" field.
-	FileSize int `json:"file_size,omitempty"`
-	// PublishDate holds the value of the "publish_date" field.
-	PublishDate time.Time `json:"publish_date,omitempty"`
 	// EpisodeNumber holds the value of the "episode_number" field.
 	EpisodeNumber int `json:"episode_number,omitempty"`
 	// AnimeSeason holds the value of the "anime_season" field.
@@ -43,25 +33,41 @@ type Episode struct {
 	// The values are being populated by the EpisodeQuery when eager-loading is set.
 	Edges            EpisodeEdges `json:"edges"`
 	anime_id         *int
+	item_id          *int
 	release_group_id *int
 	selectValues     sql.SelectValues
 }
 
 // EpisodeEdges holds the relations/edges for other nodes in the graph.
 type EpisodeEdges struct {
+	// Item holds the value of the item edge.
+	Item *Item `json:"item,omitempty"`
 	// Title holds the value of the title edge.
 	Title *Anime `json:"title,omitempty"`
 	// ReleaseGroup holds the value of the release_group edge.
 	ReleaseGroup *ReleaseGroup `json:"release_group,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// ItemOrErr returns the Item value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EpisodeEdges) ItemOrErr() (*Item, error) {
+	if e.loadedTypes[0] {
+		if e.Item == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: item.Label}
+		}
+		return e.Item, nil
+	}
+	return nil, &NotLoadedError{edge: "item"}
 }
 
 // TitleOrErr returns the Title value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EpisodeEdges) TitleOrErr() (*Anime, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Title == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: anime.Label}
@@ -74,7 +80,7 @@ func (e EpisodeEdges) TitleOrErr() (*Anime, error) {
 // ReleaseGroupOrErr returns the ReleaseGroup value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EpisodeEdges) ReleaseGroupOrErr() (*ReleaseGroup, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.ReleaseGroup == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: releasegroup.Label}
@@ -89,15 +95,15 @@ func (*Episode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case episode.FieldID, episode.FieldFileSize, episode.FieldEpisodeNumber, episode.FieldAnimeSeason:
+		case episode.FieldID, episode.FieldEpisodeNumber, episode.FieldAnimeSeason:
 			values[i] = new(sql.NullInt64)
-		case episode.FieldViewURL, episode.FieldDownloadURL, episode.FieldFileName, episode.FieldResolution, episode.FieldVideoCodec, episode.FieldAudioCodec:
+		case episode.FieldResolution, episode.FieldVideoCodec, episode.FieldAudioCodec:
 			values[i] = new(sql.NullString)
-		case episode.FieldPublishDate:
-			values[i] = new(sql.NullTime)
 		case episode.ForeignKeys[0]: // anime_id
 			values[i] = new(sql.NullInt64)
-		case episode.ForeignKeys[1]: // release_group_id
+		case episode.ForeignKeys[1]: // item_id
+			values[i] = new(sql.NullInt64)
+		case episode.ForeignKeys[2]: // release_group_id
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -120,36 +126,6 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			e.ID = int(value.Int64)
-		case episode.FieldViewURL:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field view_url", values[i])
-			} else if value.Valid {
-				e.ViewURL = value.String
-			}
-		case episode.FieldDownloadURL:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field download_url", values[i])
-			} else if value.Valid {
-				e.DownloadURL = value.String
-			}
-		case episode.FieldFileName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field file_name", values[i])
-			} else if value.Valid {
-				e.FileName = value.String
-			}
-		case episode.FieldFileSize:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field file_size", values[i])
-			} else if value.Valid {
-				e.FileSize = int(value.Int64)
-			}
-		case episode.FieldPublishDate:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field publish_date", values[i])
-			} else if value.Valid {
-				e.PublishDate = value.Time
-			}
 		case episode.FieldEpisodeNumber:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field episode_number", values[i])
@@ -189,6 +165,13 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 			}
 		case episode.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field item_id", value)
+			} else if value.Valid {
+				e.item_id = new(int)
+				*e.item_id = int(value.Int64)
+			}
+		case episode.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field release_group_id", value)
 			} else if value.Valid {
 				e.release_group_id = new(int)
@@ -205,6 +188,11 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (e *Episode) Value(name string) (ent.Value, error) {
 	return e.selectValues.Get(name)
+}
+
+// QueryItem queries the "item" edge of the Episode entity.
+func (e *Episode) QueryItem() *ItemQuery {
+	return NewEpisodeClient(e.config).QueryItem(e)
 }
 
 // QueryTitle queries the "title" edge of the Episode entity.
@@ -240,21 +228,6 @@ func (e *Episode) String() string {
 	var builder strings.Builder
 	builder.WriteString("Episode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", e.ID))
-	builder.WriteString("view_url=")
-	builder.WriteString(e.ViewURL)
-	builder.WriteString(", ")
-	builder.WriteString("download_url=")
-	builder.WriteString(e.DownloadURL)
-	builder.WriteString(", ")
-	builder.WriteString("file_name=")
-	builder.WriteString(e.FileName)
-	builder.WriteString(", ")
-	builder.WriteString("file_size=")
-	builder.WriteString(fmt.Sprintf("%v", e.FileSize))
-	builder.WriteString(", ")
-	builder.WriteString("publish_date=")
-	builder.WriteString(e.PublishDate.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("episode_number=")
 	builder.WriteString(fmt.Sprintf("%v", e.EpisodeNumber))
 	builder.WriteString(", ")

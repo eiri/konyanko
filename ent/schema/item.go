@@ -4,21 +4,37 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/mixin"
+	"entgo.io/ent/schema/index"
 )
 
-// ItemMixin implements the ent.Mixin for sharing common feed item's attributes
-type ItemMixin struct {
-	mixin.Schema
+// Item holds the schema definition for the Item entity.
+type Item struct {
+	ent.Schema
 }
 
-func (ItemMixin) Fields() []ent.Field {
+// Fields of the Item.
+func (Item) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("view_url").Unique(),
 		field.String("download_url").Unique(),
 		field.String("file_name").NotEmpty(),
 		field.Int("file_size").Positive(),
 		field.Time("publish_date").Default(time.Now),
+	}
+}
+
+// Edges of the Item.
+func (Item) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("episodes", Episode.Type).StorageKey(edge.Column("item_id")).Unique(),
+	}
+}
+
+// Indices of the Item.
+func (Item) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("view_url"),
 	}
 }

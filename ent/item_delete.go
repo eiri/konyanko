@@ -8,30 +8,30 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/predicate"
 )
 
-// IrregularDelete is the builder for deleting a Irregular entity.
-type IrregularDelete struct {
+// ItemDelete is the builder for deleting a Item entity.
+type ItemDelete struct {
 	config
 	hooks    []Hook
-	mutation *IrregularMutation
+	mutation *ItemMutation
 }
 
-// Where appends a list predicates to the IrregularDelete builder.
-func (id *IrregularDelete) Where(ps ...predicate.Irregular) *IrregularDelete {
+// Where appends a list predicates to the ItemDelete builder.
+func (id *ItemDelete) Where(ps ...predicate.Item) *ItemDelete {
 	id.mutation.Where(ps...)
 	return id
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (id *IrregularDelete) Exec(ctx context.Context) (int, error) {
+func (id *ItemDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, id.sqlExec, id.mutation, id.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (id *IrregularDelete) ExecX(ctx context.Context) int {
+func (id *ItemDelete) ExecX(ctx context.Context) int {
 	n, err := id.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (id *IrregularDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (id *IrregularDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(irregular.Table, sqlgraph.NewFieldSpec(irregular.FieldID, field.TypeInt))
+func (id *ItemDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(item.Table, sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt))
 	if ps := id.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (id *IrregularDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// IrregularDeleteOne is the builder for deleting a single Irregular entity.
-type IrregularDeleteOne struct {
-	id *IrregularDelete
+// ItemDeleteOne is the builder for deleting a single Item entity.
+type ItemDeleteOne struct {
+	id *ItemDelete
 }
 
-// Where appends a list predicates to the IrregularDelete builder.
-func (ido *IrregularDeleteOne) Where(ps ...predicate.Irregular) *IrregularDeleteOne {
+// Where appends a list predicates to the ItemDelete builder.
+func (ido *ItemDeleteOne) Where(ps ...predicate.Item) *ItemDeleteOne {
 	ido.id.mutation.Where(ps...)
 	return ido
 }
 
 // Exec executes the deletion query.
-func (ido *IrregularDeleteOne) Exec(ctx context.Context) error {
+func (ido *ItemDeleteOne) Exec(ctx context.Context) error {
 	n, err := ido.id.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{irregular.Label}
+		return &NotFoundError{item.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ido *IrregularDeleteOne) ExecX(ctx context.Context) {
+func (ido *ItemDeleteOne) ExecX(ctx context.Context) {
 	if err := ido.Exec(ctx); err != nil {
 		panic(err)
 	}

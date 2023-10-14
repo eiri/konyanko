@@ -15,6 +15,7 @@ var listCmd = &cobra.Command{
 		ctx := context.Background()
 		episodes, err := client.Episode.
 			Query().
+			WithItem().
 			WithTitle().
 			WithReleaseGroup().
 			All(ctx)

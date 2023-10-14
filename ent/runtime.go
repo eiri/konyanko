@@ -7,7 +7,7 @@ import (
 
 	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/releasegroup"
 	"github.com/eiri/konyanko/ent/schema"
 )
@@ -22,23 +22,8 @@ func init() {
 	animeDescTitle := animeFields[0].Descriptor()
 	// anime.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	anime.TitleValidator = animeDescTitle.Validators[0].(func(string) error)
-	episodeMixin := schema.Episode{}.Mixin()
-	episodeMixinFields0 := episodeMixin[0].Fields()
-	_ = episodeMixinFields0
 	episodeFields := schema.Episode{}.Fields()
 	_ = episodeFields
-	// episodeDescFileName is the schema descriptor for file_name field.
-	episodeDescFileName := episodeMixinFields0[2].Descriptor()
-	// episode.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	episode.FileNameValidator = episodeDescFileName.Validators[0].(func(string) error)
-	// episodeDescFileSize is the schema descriptor for file_size field.
-	episodeDescFileSize := episodeMixinFields0[3].Descriptor()
-	// episode.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
-	episode.FileSizeValidator = episodeDescFileSize.Validators[0].(func(int) error)
-	// episodeDescPublishDate is the schema descriptor for publish_date field.
-	episodeDescPublishDate := episodeMixinFields0[4].Descriptor()
-	// episode.DefaultPublishDate holds the default value on creation for the publish_date field.
-	episode.DefaultPublishDate = episodeDescPublishDate.Default.(func() time.Time)
 	// episodeDescEpisodeNumber is the schema descriptor for episode_number field.
 	episodeDescEpisodeNumber := episodeFields[0].Descriptor()
 	// episode.DefaultEpisodeNumber holds the default value on creation for the episode_number field.
@@ -51,23 +36,20 @@ func init() {
 	episode.DefaultAnimeSeason = episodeDescAnimeSeason.Default.(int)
 	// episode.AnimeSeasonValidator is a validator for the "anime_season" field. It is called by the builders before save.
 	episode.AnimeSeasonValidator = episodeDescAnimeSeason.Validators[0].(func(int) error)
-	irregularMixin := schema.Irregular{}.Mixin()
-	irregularMixinFields0 := irregularMixin[0].Fields()
-	_ = irregularMixinFields0
-	irregularFields := schema.Irregular{}.Fields()
-	_ = irregularFields
-	// irregularDescFileName is the schema descriptor for file_name field.
-	irregularDescFileName := irregularMixinFields0[2].Descriptor()
-	// irregular.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	irregular.FileNameValidator = irregularDescFileName.Validators[0].(func(string) error)
-	// irregularDescFileSize is the schema descriptor for file_size field.
-	irregularDescFileSize := irregularMixinFields0[3].Descriptor()
-	// irregular.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
-	irregular.FileSizeValidator = irregularDescFileSize.Validators[0].(func(int) error)
-	// irregularDescPublishDate is the schema descriptor for publish_date field.
-	irregularDescPublishDate := irregularMixinFields0[4].Descriptor()
-	// irregular.DefaultPublishDate holds the default value on creation for the publish_date field.
-	irregular.DefaultPublishDate = irregularDescPublishDate.Default.(func() time.Time)
+	itemFields := schema.Item{}.Fields()
+	_ = itemFields
+	// itemDescFileName is the schema descriptor for file_name field.
+	itemDescFileName := itemFields[2].Descriptor()
+	// item.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	item.FileNameValidator = itemDescFileName.Validators[0].(func(string) error)
+	// itemDescFileSize is the schema descriptor for file_size field.
+	itemDescFileSize := itemFields[3].Descriptor()
+	// item.FileSizeValidator is a validator for the "file_size" field. It is called by the builders before save.
+	item.FileSizeValidator = itemDescFileSize.Validators[0].(func(int) error)
+	// itemDescPublishDate is the schema descriptor for publish_date field.
+	itemDescPublishDate := itemFields[4].Descriptor()
+	// item.DefaultPublishDate holds the default value on creation for the publish_date field.
+	item.DefaultPublishDate = itemDescPublishDate.Default.(func() time.Time)
 	releasegroupFields := schema.ReleaseGroup{}.Fields()
 	_ = releasegroupFields
 	// releasegroupDescName is the schema descriptor for name field.

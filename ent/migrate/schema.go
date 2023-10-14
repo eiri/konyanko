@@ -22,17 +22,13 @@ var (
 	// EpisodesColumns holds the columns for the "episodes" table.
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "view_url", Type: field.TypeString, Unique: true},
-		{Name: "download_url", Type: field.TypeString, Unique: true},
-		{Name: "file_name", Type: field.TypeString},
-		{Name: "file_size", Type: field.TypeInt},
-		{Name: "publish_date", Type: field.TypeTime},
 		{Name: "episode_number", Type: field.TypeInt, Default: 0},
 		{Name: "anime_season", Type: field.TypeInt, Default: 1},
 		{Name: "resolution", Type: field.TypeString, Nullable: true},
 		{Name: "video_codec", Type: field.TypeString, Nullable: true},
 		{Name: "audio_codec", Type: field.TypeString, Nullable: true},
 		{Name: "anime_id", Type: field.TypeInt},
+		{Name: "item_id", Type: field.TypeInt, Unique: true},
 		{Name: "release_group_id", Type: field.TypeInt, Nullable: true},
 	}
 	// EpisodesTable holds the schema information for the "episodes" table.
@@ -43,13 +39,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "episodes_animes_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[11]},
+				Columns:    []*schema.Column{EpisodesColumns[6]},
 				RefColumns: []*schema.Column{AnimesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
+				Symbol:     "episodes_items_episodes",
+				Columns:    []*schema.Column{EpisodesColumns[7]},
+				RefColumns: []*schema.Column{ItemsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
 				Symbol:     "episodes_release_groups_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[12]},
+				Columns:    []*schema.Column{EpisodesColumns[8]},
 				RefColumns: []*schema.Column{ReleaseGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -58,12 +60,12 @@ var (
 			{
 				Name:    "episode_resolution",
 				Unique:  false,
-				Columns: []*schema.Column{EpisodesColumns[8]},
+				Columns: []*schema.Column{EpisodesColumns[3]},
 			},
 		},
 	}
-	// IrregularsColumns holds the columns for the "irregulars" table.
-	IrregularsColumns = []*schema.Column{
+	// ItemsColumns holds the columns for the "items" table.
+	ItemsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "view_url", Type: field.TypeString, Unique: true},
 		{Name: "download_url", Type: field.TypeString, Unique: true},
@@ -71,16 +73,16 @@ var (
 		{Name: "file_size", Type: field.TypeInt},
 		{Name: "publish_date", Type: field.TypeTime},
 	}
-	// IrregularsTable holds the schema information for the "irregulars" table.
-	IrregularsTable = &schema.Table{
-		Name:       "irregulars",
-		Columns:    IrregularsColumns,
-		PrimaryKey: []*schema.Column{IrregularsColumns[0]},
+	// ItemsTable holds the schema information for the "items" table.
+	ItemsTable = &schema.Table{
+		Name:       "items",
+		Columns:    ItemsColumns,
+		PrimaryKey: []*schema.Column{ItemsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "irregular_view_url",
+				Name:    "item_view_url",
 				Unique:  false,
-				Columns: []*schema.Column{IrregularsColumns[1]},
+				Columns: []*schema.Column{ItemsColumns[1]},
 			},
 		},
 	}
@@ -99,12 +101,13 @@ var (
 	Tables = []*schema.Table{
 		AnimesTable,
 		EpisodesTable,
-		IrregularsTable,
+		ItemsTable,
 		ReleaseGroupsTable,
 	}
 )
 
 func init() {
 	EpisodesTable.ForeignKeys[0].RefTable = AnimesTable
-	EpisodesTable.ForeignKeys[1].RefTable = ReleaseGroupsTable
+	EpisodesTable.ForeignKeys[1].RefTable = ItemsTable
+	EpisodesTable.ForeignKeys[2].RefTable = ReleaseGroupsTable
 }

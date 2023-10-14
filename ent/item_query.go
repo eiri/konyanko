@@ -4,74 +4,99 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/eiri/konyanko/ent/irregular"
+	"github.com/eiri/konyanko/ent/episode"
+	"github.com/eiri/konyanko/ent/item"
 	"github.com/eiri/konyanko/ent/predicate"
 )
 
-// IrregularQuery is the builder for querying Irregular entities.
-type IrregularQuery struct {
+// ItemQuery is the builder for querying Item entities.
+type ItemQuery struct {
 	config
-	ctx        *QueryContext
-	order      []irregular.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Irregular
+	ctx          *QueryContext
+	order        []item.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.Item
+	withEpisodes *EpisodeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the IrregularQuery builder.
-func (iq *IrregularQuery) Where(ps ...predicate.Irregular) *IrregularQuery {
+// Where adds a new predicate for the ItemQuery builder.
+func (iq *ItemQuery) Where(ps ...predicate.Item) *ItemQuery {
 	iq.predicates = append(iq.predicates, ps...)
 	return iq
 }
 
 // Limit the number of records to be returned by this query.
-func (iq *IrregularQuery) Limit(limit int) *IrregularQuery {
+func (iq *ItemQuery) Limit(limit int) *ItemQuery {
 	iq.ctx.Limit = &limit
 	return iq
 }
 
 // Offset to start from.
-func (iq *IrregularQuery) Offset(offset int) *IrregularQuery {
+func (iq *ItemQuery) Offset(offset int) *ItemQuery {
 	iq.ctx.Offset = &offset
 	return iq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (iq *IrregularQuery) Unique(unique bool) *IrregularQuery {
+func (iq *ItemQuery) Unique(unique bool) *ItemQuery {
 	iq.ctx.Unique = &unique
 	return iq
 }
 
 // Order specifies how the records should be ordered.
-func (iq *IrregularQuery) Order(o ...irregular.OrderOption) *IrregularQuery {
+func (iq *ItemQuery) Order(o ...item.OrderOption) *ItemQuery {
 	iq.order = append(iq.order, o...)
 	return iq
 }
 
-// First returns the first Irregular entity from the query.
-// Returns a *NotFoundError when no Irregular was found.
-func (iq *IrregularQuery) First(ctx context.Context) (*Irregular, error) {
+// QueryEpisodes chains the current query on the "episodes" edge.
+func (iq *ItemQuery) QueryEpisodes() *EpisodeQuery {
+	query := (&EpisodeClient{config: iq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, selector),
+			sqlgraph.To(episode.Table, episode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, item.EpisodesTable, item.EpisodesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// First returns the first Item entity from the query.
+// Returns a *NotFoundError when no Item was found.
+func (iq *ItemQuery) First(ctx context.Context) (*Item, error) {
 	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{irregular.Label}
+		return nil, &NotFoundError{item.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (iq *IrregularQuery) FirstX(ctx context.Context) *Irregular {
+func (iq *ItemQuery) FirstX(ctx context.Context) *Item {
 	node, err := iq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -79,22 +104,22 @@ func (iq *IrregularQuery) FirstX(ctx context.Context) *Irregular {
 	return node
 }
 
-// FirstID returns the first Irregular ID from the query.
-// Returns a *NotFoundError when no Irregular ID was found.
-func (iq *IrregularQuery) FirstID(ctx context.Context) (id int, err error) {
+// FirstID returns the first Item ID from the query.
+// Returns a *NotFoundError when no Item ID was found.
+func (iq *ItemQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{irregular.Label}
+		err = &NotFoundError{item.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (iq *IrregularQuery) FirstIDX(ctx context.Context) int {
+func (iq *ItemQuery) FirstIDX(ctx context.Context) int {
 	id, err := iq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -102,10 +127,10 @@ func (iq *IrregularQuery) FirstIDX(ctx context.Context) int {
 	return id
 }
 
-// Only returns a single Irregular entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Irregular entity is found.
-// Returns a *NotFoundError when no Irregular entities are found.
-func (iq *IrregularQuery) Only(ctx context.Context) (*Irregular, error) {
+// Only returns a single Item entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Item entity is found.
+// Returns a *NotFoundError when no Item entities are found.
+func (iq *ItemQuery) Only(ctx context.Context) (*Item, error) {
 	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, "Only"))
 	if err != nil {
 		return nil, err
@@ -114,14 +139,14 @@ func (iq *IrregularQuery) Only(ctx context.Context) (*Irregular, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{irregular.Label}
+		return nil, &NotFoundError{item.Label}
 	default:
-		return nil, &NotSingularError{irregular.Label}
+		return nil, &NotSingularError{item.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (iq *IrregularQuery) OnlyX(ctx context.Context) *Irregular {
+func (iq *ItemQuery) OnlyX(ctx context.Context) *Item {
 	node, err := iq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -129,10 +154,10 @@ func (iq *IrregularQuery) OnlyX(ctx context.Context) *Irregular {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Irregular ID in the query.
-// Returns a *NotSingularError when more than one Irregular ID is found.
+// OnlyID is like Only, but returns the only Item ID in the query.
+// Returns a *NotSingularError when more than one Item ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (iq *IrregularQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (iq *ItemQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, "OnlyID")); err != nil {
 		return
@@ -141,15 +166,15 @@ func (iq *IrregularQuery) OnlyID(ctx context.Context) (id int, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{irregular.Label}
+		err = &NotFoundError{item.Label}
 	default:
-		err = &NotSingularError{irregular.Label}
+		err = &NotSingularError{item.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (iq *IrregularQuery) OnlyIDX(ctx context.Context) int {
+func (iq *ItemQuery) OnlyIDX(ctx context.Context) int {
 	id, err := iq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -157,18 +182,18 @@ func (iq *IrregularQuery) OnlyIDX(ctx context.Context) int {
 	return id
 }
 
-// All executes the query and returns a list of Irregulars.
-func (iq *IrregularQuery) All(ctx context.Context) ([]*Irregular, error) {
+// All executes the query and returns a list of Items.
+func (iq *ItemQuery) All(ctx context.Context) ([]*Item, error) {
 	ctx = setContextOp(ctx, iq.ctx, "All")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Irregular, *IrregularQuery]()
-	return withInterceptors[[]*Irregular](ctx, iq, qr, iq.inters)
+	qr := querierAll[[]*Item, *ItemQuery]()
+	return withInterceptors[[]*Item](ctx, iq, qr, iq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (iq *IrregularQuery) AllX(ctx context.Context) []*Irregular {
+func (iq *ItemQuery) AllX(ctx context.Context) []*Item {
 	nodes, err := iq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -176,20 +201,20 @@ func (iq *IrregularQuery) AllX(ctx context.Context) []*Irregular {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Irregular IDs.
-func (iq *IrregularQuery) IDs(ctx context.Context) (ids []int, err error) {
+// IDs executes the query and returns a list of Item IDs.
+func (iq *ItemQuery) IDs(ctx context.Context) (ids []int, err error) {
 	if iq.ctx.Unique == nil && iq.path != nil {
 		iq.Unique(true)
 	}
 	ctx = setContextOp(ctx, iq.ctx, "IDs")
-	if err = iq.Select(irregular.FieldID).Scan(ctx, &ids); err != nil {
+	if err = iq.Select(item.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (iq *IrregularQuery) IDsX(ctx context.Context) []int {
+func (iq *ItemQuery) IDsX(ctx context.Context) []int {
 	ids, err := iq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -198,16 +223,16 @@ func (iq *IrregularQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (iq *IrregularQuery) Count(ctx context.Context) (int, error) {
+func (iq *ItemQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, iq.ctx, "Count")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, iq, querierCount[*IrregularQuery](), iq.inters)
+	return withInterceptors[int](ctx, iq, querierCount[*ItemQuery](), iq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (iq *IrregularQuery) CountX(ctx context.Context) int {
+func (iq *ItemQuery) CountX(ctx context.Context) int {
 	count, err := iq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -216,7 +241,7 @@ func (iq *IrregularQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (iq *IrregularQuery) Exist(ctx context.Context) (bool, error) {
+func (iq *ItemQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, iq.ctx, "Exist")
 	switch _, err := iq.FirstID(ctx); {
 	case IsNotFound(err):
@@ -229,7 +254,7 @@ func (iq *IrregularQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (iq *IrregularQuery) ExistX(ctx context.Context) bool {
+func (iq *ItemQuery) ExistX(ctx context.Context) bool {
 	exist, err := iq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -237,22 +262,34 @@ func (iq *IrregularQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the IrregularQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the ItemQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (iq *IrregularQuery) Clone() *IrregularQuery {
+func (iq *ItemQuery) Clone() *ItemQuery {
 	if iq == nil {
 		return nil
 	}
-	return &IrregularQuery{
-		config:     iq.config,
-		ctx:        iq.ctx.Clone(),
-		order:      append([]irregular.OrderOption{}, iq.order...),
-		inters:     append([]Interceptor{}, iq.inters...),
-		predicates: append([]predicate.Irregular{}, iq.predicates...),
+	return &ItemQuery{
+		config:       iq.config,
+		ctx:          iq.ctx.Clone(),
+		order:        append([]item.OrderOption{}, iq.order...),
+		inters:       append([]Interceptor{}, iq.inters...),
+		predicates:   append([]predicate.Item{}, iq.predicates...),
+		withEpisodes: iq.withEpisodes.Clone(),
 		// clone intermediate query.
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
+}
+
+// WithEpisodes tells the query-builder to eager-load the nodes that are connected to
+// the "episodes" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *ItemQuery) WithEpisodes(opts ...func(*EpisodeQuery)) *ItemQuery {
+	query := (&EpisodeClient{config: iq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withEpisodes = query
+	return iq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -265,15 +302,15 @@ func (iq *IrregularQuery) Clone() *IrregularQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Irregular.Query().
-//		GroupBy(irregular.FieldViewURL).
+//	client.Item.Query().
+//		GroupBy(item.FieldViewURL).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (iq *IrregularQuery) GroupBy(field string, fields ...string) *IrregularGroupBy {
+func (iq *ItemQuery) GroupBy(field string, fields ...string) *ItemGroupBy {
 	iq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &IrregularGroupBy{build: iq}
+	grbuild := &ItemGroupBy{build: iq}
 	grbuild.flds = &iq.ctx.Fields
-	grbuild.label = irregular.Label
+	grbuild.label = item.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -287,23 +324,23 @@ func (iq *IrregularQuery) GroupBy(field string, fields ...string) *IrregularGrou
 //		ViewURL string `json:"view_url,omitempty"`
 //	}
 //
-//	client.Irregular.Query().
-//		Select(irregular.FieldViewURL).
+//	client.Item.Query().
+//		Select(item.FieldViewURL).
 //		Scan(ctx, &v)
-func (iq *IrregularQuery) Select(fields ...string) *IrregularSelect {
+func (iq *ItemQuery) Select(fields ...string) *ItemSelect {
 	iq.ctx.Fields = append(iq.ctx.Fields, fields...)
-	sbuild := &IrregularSelect{IrregularQuery: iq}
-	sbuild.label = irregular.Label
+	sbuild := &ItemSelect{ItemQuery: iq}
+	sbuild.label = item.Label
 	sbuild.flds, sbuild.scan = &iq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a IrregularSelect configured with the given aggregations.
-func (iq *IrregularQuery) Aggregate(fns ...AggregateFunc) *IrregularSelect {
+// Aggregate returns a ItemSelect configured with the given aggregations.
+func (iq *ItemQuery) Aggregate(fns ...AggregateFunc) *ItemSelect {
 	return iq.Select().Aggregate(fns...)
 }
 
-func (iq *IrregularQuery) prepareQuery(ctx context.Context) error {
+func (iq *ItemQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range iq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -315,7 +352,7 @@ func (iq *IrregularQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range iq.ctx.Fields {
-		if !irregular.ValidColumn(f) {
+		if !item.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -329,17 +366,21 @@ func (iq *IrregularQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (iq *IrregularQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Irregular, error) {
+func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, error) {
 	var (
-		nodes = []*Irregular{}
-		_spec = iq.querySpec()
+		nodes       = []*Item{}
+		_spec       = iq.querySpec()
+		loadedTypes = [1]bool{
+			iq.withEpisodes != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Irregular).scanValues(nil, columns)
+		return (*Item).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Irregular{config: iq.config}
+		node := &Item{config: iq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,10 +392,45 @@ func (iq *IrregularQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ir
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := iq.withEpisodes; query != nil {
+		if err := iq.loadEpisodes(ctx, query, nodes, nil,
+			func(n *Item, e *Episode) { n.Edges.Episodes = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
-func (iq *IrregularQuery) sqlCount(ctx context.Context) (int, error) {
+func (iq *ItemQuery) loadEpisodes(ctx context.Context, query *EpisodeQuery, nodes []*Item, init func(*Item), assign func(*Item, *Episode)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Item)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	query.withFKs = true
+	query.Where(predicate.Episode(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(item.EpisodesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.item_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "item_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "item_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+
+func (iq *ItemQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := iq.querySpec()
 	_spec.Node.Columns = iq.ctx.Fields
 	if len(iq.ctx.Fields) > 0 {
@@ -363,8 +439,8 @@ func (iq *IrregularQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
 }
 
-func (iq *IrregularQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(irregular.Table, irregular.Columns, sqlgraph.NewFieldSpec(irregular.FieldID, field.TypeInt))
+func (iq *ItemQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(item.Table, item.Columns, sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt))
 	_spec.From = iq.sql
 	if unique := iq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -373,9 +449,9 @@ func (iq *IrregularQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := iq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, irregular.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, item.FieldID)
 		for i := range fields {
-			if fields[i] != irregular.FieldID {
+			if fields[i] != item.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -403,12 +479,12 @@ func (iq *IrregularQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (iq *IrregularQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (iq *ItemQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(iq.driver.Dialect())
-	t1 := builder.Table(irregular.Table)
+	t1 := builder.Table(item.Table)
 	columns := iq.ctx.Fields
 	if len(columns) == 0 {
-		columns = irregular.Columns
+		columns = item.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if iq.sql != nil {
@@ -435,28 +511,28 @@ func (iq *IrregularQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// IrregularGroupBy is the group-by builder for Irregular entities.
-type IrregularGroupBy struct {
+// ItemGroupBy is the group-by builder for Item entities.
+type ItemGroupBy struct {
 	selector
-	build *IrregularQuery
+	build *ItemQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (igb *IrregularGroupBy) Aggregate(fns ...AggregateFunc) *IrregularGroupBy {
+func (igb *ItemGroupBy) Aggregate(fns ...AggregateFunc) *ItemGroupBy {
 	igb.fns = append(igb.fns, fns...)
 	return igb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (igb *IrregularGroupBy) Scan(ctx context.Context, v any) error {
+func (igb *ItemGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, igb.build.ctx, "GroupBy")
 	if err := igb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*IrregularQuery, *IrregularGroupBy](ctx, igb.build, igb, igb.build.inters, v)
+	return scanWithInterceptors[*ItemQuery, *ItemGroupBy](ctx, igb.build, igb, igb.build.inters, v)
 }
 
-func (igb *IrregularGroupBy) sqlScan(ctx context.Context, root *IrregularQuery, v any) error {
+func (igb *ItemGroupBy) sqlScan(ctx context.Context, root *ItemQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(igb.fns))
 	for _, fn := range igb.fns {
@@ -483,28 +559,28 @@ func (igb *IrregularGroupBy) sqlScan(ctx context.Context, root *IrregularQuery, 
 	return sql.ScanSlice(rows, v)
 }
 
-// IrregularSelect is the builder for selecting fields of Irregular entities.
-type IrregularSelect struct {
-	*IrregularQuery
+// ItemSelect is the builder for selecting fields of Item entities.
+type ItemSelect struct {
+	*ItemQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (is *IrregularSelect) Aggregate(fns ...AggregateFunc) *IrregularSelect {
+func (is *ItemSelect) Aggregate(fns ...AggregateFunc) *ItemSelect {
 	is.fns = append(is.fns, fns...)
 	return is
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (is *IrregularSelect) Scan(ctx context.Context, v any) error {
+func (is *ItemSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, is.ctx, "Select")
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*IrregularQuery, *IrregularSelect](ctx, is.IrregularQuery, is, is.inters, v)
+	return scanWithInterceptors[*ItemQuery, *ItemSelect](ctx, is.ItemQuery, is, is.inters, v)
 }
 
-func (is *IrregularSelect) sqlScan(ctx context.Context, root *IrregularQuery, v any) error {
+func (is *ItemSelect) sqlScan(ctx context.Context, root *ItemQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(is.fns))
 	for _, fn := range is.fns {
