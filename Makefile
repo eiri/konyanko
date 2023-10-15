@@ -33,6 +33,10 @@ list: $(PROJECT)
 gron-list:
 	$(MAKE) list 2>&1 | tail -n +1 | jq -cs . | gron
 
+.PHONY: server
+server: $(PROJECT)
+	./$< $@
+
 .PHONY: schema
 schema: ENTITY := Episode
 schema:

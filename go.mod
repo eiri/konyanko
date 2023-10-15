@@ -20,8 +20,6 @@ require (
 
 require (
 	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935 // indirect
-	ariga.io/ogent v0.0.0-20230621041143-ed3e5d4da458 // indirect
-	entgo.io/contrib v0.4.5 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.3.18 // indirect
 	github.com/antchfx/xpath v1.2.4 // indirect
