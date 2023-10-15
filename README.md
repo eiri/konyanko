@@ -55,7 +55,7 @@ erDiagram
 
 ## OpenAPI specs
 
-<a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/eiri/konyanko/main/ent/openapi.json" target="_blank">OpenAPI schema, opens in swagger editor</a>
+[OpenAPI schema](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/eiri/konyanko/main/ent/openapi.json)
 
 ## Dev runflow
 
