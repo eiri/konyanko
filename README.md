@@ -55,7 +55,7 @@ erDiagram
 
 ## OpenAPI specs
 
-[openapi.json](https://petstore.swagger.io/?url=https://github.com/eiri/konyanko/blob/main/ent/openapi.json)
+[openapi.json](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/eiri/konyanko/main/ent/openapi.json){:target="_blank"}
 
 ## Dev runflow
 
