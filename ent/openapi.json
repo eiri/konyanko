@@ -1,0 +1,2150 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Ent Schema API",
+    "description": "This is an auto generated API description made out of an Ent schema definition",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/animes": {
+      "get": {
+        "tags": [
+          "Anime"
+        ],
+        "summary": "List Animes",
+        "description": "List Animes.",
+        "operationId": "listAnime",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result Anime list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnimeList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Anime"
+        ],
+        "summary": "Create a new Anime",
+        "description": "Creates a new Anime and persists it to storage.",
+        "operationId": "createAnime",
+        "requestBody": {
+          "description": "Anime to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "episodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Anime created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimeCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/animes/{id}": {
+      "get": {
+        "tags": [
+          "Anime"
+        ],
+        "summary": "Find a Anime by ID",
+        "description": "Finds the Anime with the requested ID and returns it.",
+        "operationId": "readAnime",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Anime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Anime with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimeRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Anime"
+        ],
+        "summary": "Deletes a Anime by ID",
+        "description": "Deletes the Anime with the requested ID.",
+        "operationId": "deleteAnime",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Anime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Anime with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Anime"
+        ],
+        "summary": "Updates a Anime",
+        "description": "Updates a Anime and persists changes to storage.",
+        "operationId": "updateAnime",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Anime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Anime properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "episodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Anime updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimeUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/animes/{id}/episodes": {
+      "get": {
+        "tags": [
+          "Anime"
+        ],
+        "summary": "List attached Episodes",
+        "description": "List attached Episodes.",
+        "operationId": "listAnimeEpisodes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Anime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result Animes list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Anime_EpisodesList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes": {
+      "get": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "List Episodes",
+        "description": "List Episodes.",
+        "operationId": "listEpisode",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result Episode list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EpisodeList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Create a new Episode",
+        "description": "Creates a new Episode and persists it to storage.",
+        "operationId": "createEpisode",
+        "requestBody": {
+          "description": "Episode to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "episode_number": {
+                    "type": "integer"
+                  },
+                  "anime_season": {
+                    "type": "integer"
+                  },
+                  "resolution": {
+                    "type": "string"
+                  },
+                  "video_codec": {
+                    "type": "string"
+                  },
+                  "audio_codec": {
+                    "type": "string"
+                  },
+                  "item": {
+                    "type": "integer"
+                  },
+                  "title": {
+                    "type": "integer"
+                  },
+                  "release_group": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "episode_number",
+                  "anime_season",
+                  "item",
+                  "title"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Episode created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes/{id}": {
+      "get": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Find a Episode by ID",
+        "description": "Finds the Episode with the requested ID and returns it.",
+        "operationId": "readEpisode",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Episode",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Episode with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Deletes a Episode by ID",
+        "description": "Deletes the Episode with the requested ID.",
+        "operationId": "deleteEpisode",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Episode",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Episode with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Updates a Episode",
+        "description": "Updates a Episode and persists changes to storage.",
+        "operationId": "updateEpisode",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Episode",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Episode properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "episode_number": {
+                    "type": "integer"
+                  },
+                  "anime_season": {
+                    "type": "integer"
+                  },
+                  "resolution": {
+                    "type": "string"
+                  },
+                  "video_codec": {
+                    "type": "string"
+                  },
+                  "audio_codec": {
+                    "type": "string"
+                  },
+                  "item": {
+                    "type": "integer"
+                  },
+                  "title": {
+                    "type": "integer"
+                  },
+                  "release_group": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Episode updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes/{id}/item": {
+      "get": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Find the attached Item",
+        "description": "Find the attached Item of the Episode with the given ID",
+        "operationId": "readEpisodeItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Episode",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item attached to Episode with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode_ItemRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes/{id}/release-group": {
+      "get": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Find the attached ReleaseGroup",
+        "description": "Find the attached ReleaseGroup of the Episode with the given ID",
+        "operationId": "readEpisodeReleaseGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Episode",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ReleaseGroup attached to Episode with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode_ReleaseGroupRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes/{id}/title": {
+      "get": {
+        "tags": [
+          "Episode"
+        ],
+        "summary": "Find the attached Anime",
+        "description": "Find the attached Anime of the Episode with the given ID",
+        "operationId": "readEpisodeTitle",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Episode",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Anime attached to Episode with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode_TitleRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/items": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "List Items",
+        "description": "List Items.",
+        "operationId": "listItem",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result Item list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "Create a new Item",
+        "description": "Creates a new Item and persists it to storage.",
+        "operationId": "createItem",
+        "requestBody": {
+          "description": "Item to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "view_url": {
+                    "type": "string"
+                  },
+                  "download_url": {
+                    "type": "string"
+                  },
+                  "file_name": {
+                    "type": "string"
+                  },
+                  "file_size": {
+                    "type": "integer"
+                  },
+                  "publish_date": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "episodes": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "view_url",
+                  "download_url",
+                  "file_name",
+                  "file_size",
+                  "publish_date"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Item created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "Find a Item by ID",
+        "description": "Finds the Item with the requested ID and returns it.",
+        "operationId": "readItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "Deletes a Item by ID",
+        "description": "Deletes the Item with the requested ID.",
+        "operationId": "deleteItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "Updates a Item",
+        "description": "Updates a Item and persists changes to storage.",
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Item properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "view_url": {
+                    "type": "string"
+                  },
+                  "download_url": {
+                    "type": "string"
+                  },
+                  "file_name": {
+                    "type": "string"
+                  },
+                  "file_size": {
+                    "type": "integer"
+                  },
+                  "publish_date": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "episodes": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Item updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/items/{id}/episodes": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "Find the attached Episode",
+        "description": "Find the attached Episode of the Item with the given ID",
+        "operationId": "readItemEpisodes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Episode attached to Item with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item_EpisodesRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/release-groups": {
+      "get": {
+        "tags": [
+          "ReleaseGroup"
+        ],
+        "summary": "List ReleaseGroups",
+        "description": "List ReleaseGroups.",
+        "operationId": "listReleaseGroup",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result ReleaseGroup list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReleaseGroupList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ReleaseGroup"
+        ],
+        "summary": "Create a new ReleaseGroup",
+        "description": "Creates a new ReleaseGroup and persists it to storage.",
+        "operationId": "createReleaseGroup",
+        "requestBody": {
+          "description": "ReleaseGroup to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "episodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ReleaseGroup created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseGroupCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/release-groups/{id}": {
+      "get": {
+        "tags": [
+          "ReleaseGroup"
+        ],
+        "summary": "Find a ReleaseGroup by ID",
+        "description": "Finds the ReleaseGroup with the requested ID and returns it.",
+        "operationId": "readReleaseGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ReleaseGroup",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ReleaseGroup with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseGroupRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ReleaseGroup"
+        ],
+        "summary": "Deletes a ReleaseGroup by ID",
+        "description": "Deletes the ReleaseGroup with the requested ID.",
+        "operationId": "deleteReleaseGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ReleaseGroup",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "ReleaseGroup with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "ReleaseGroup"
+        ],
+        "summary": "Updates a ReleaseGroup",
+        "description": "Updates a ReleaseGroup and persists changes to storage.",
+        "operationId": "updateReleaseGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ReleaseGroup",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "ReleaseGroup properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "episodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ReleaseGroup updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseGroupUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/release-groups/{id}/episodes": {
+      "get": {
+        "tags": [
+          "ReleaseGroup"
+        ],
+        "summary": "List attached Episodes",
+        "description": "List attached Episodes.",
+        "operationId": "listReleaseGroupEpisodes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the ReleaseGroup",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result ReleaseGroups list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReleaseGroup_EpisodesList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Anime": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "episodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "AnimeCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "AnimeList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "AnimeRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "AnimeUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "Anime_EpisodesList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      },
+      "Episode": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          },
+          "item": {
+            "$ref": "#/components/schemas/Item"
+          },
+          "title": {
+            "$ref": "#/components/schemas/Anime"
+          },
+          "release_group": {
+            "$ref": "#/components/schemas/ReleaseGroup"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season",
+          "item",
+          "title"
+        ]
+      },
+      "EpisodeCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      },
+      "EpisodeList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      },
+      "EpisodeRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      },
+      "EpisodeUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      },
+      "Episode_ItemRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "view_url": {
+            "type": "string"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "file_size": {
+            "type": "integer"
+          },
+          "publish_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "view_url",
+          "download_url",
+          "file_name",
+          "file_size",
+          "publish_date"
+        ]
+      },
+      "Episode_ReleaseGroupRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Episode_TitleRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "view_url": {
+            "type": "string"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "file_size": {
+            "type": "integer"
+          },
+          "publish_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "episodes": {
+            "$ref": "#/components/schemas/Episode"
+          }
+        },
+        "required": [
+          "id",
+          "view_url",
+          "download_url",
+          "file_name",
+          "file_size",
+          "publish_date"
+        ]
+      },
+      "ItemCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "view_url": {
+            "type": "string"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "file_size": {
+            "type": "integer"
+          },
+          "publish_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "view_url",
+          "download_url",
+          "file_name",
+          "file_size",
+          "publish_date"
+        ]
+      },
+      "ItemList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "view_url": {
+            "type": "string"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "file_size": {
+            "type": "integer"
+          },
+          "publish_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "view_url",
+          "download_url",
+          "file_name",
+          "file_size",
+          "publish_date"
+        ]
+      },
+      "ItemRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "view_url": {
+            "type": "string"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "file_size": {
+            "type": "integer"
+          },
+          "publish_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "view_url",
+          "download_url",
+          "file_name",
+          "file_size",
+          "publish_date"
+        ]
+      },
+      "ItemUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "view_url": {
+            "type": "string"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "file_size": {
+            "type": "integer"
+          },
+          "publish_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "view_url",
+          "download_url",
+          "file_name",
+          "file_size",
+          "publish_date"
+        ]
+      },
+      "Item_EpisodesRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      },
+      "ReleaseGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "episodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ReleaseGroupCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ReleaseGroupList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ReleaseGroupRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ReleaseGroupUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ReleaseGroup_EpisodesList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "episode_number": {
+            "type": "integer"
+          },
+          "anime_season": {
+            "type": "integer"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "video_codec": {
+            "type": "string"
+          },
+          "audio_codec": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "episode_number",
+          "anime_season"
+        ]
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "invalid input, data invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "errors": {}
+              },
+              "required": [
+                "code",
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "insufficient permissions",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "errors": {}
+              },
+              "required": [
+                "code",
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "errors": {}
+              },
+              "required": [
+                "code",
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "conflicting resources",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "errors": {}
+              },
+              "required": [
+                "code",
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "unexpected error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "errors": {}
+              },
+              "required": [
+                "code",
+                "status"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

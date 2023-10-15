@@ -8,7 +8,7 @@ A nyaa.si aggregator.
 - [x] RSS reader-exporter
 - [x] Anime name parser
 - [x] Iterative cycles of two above till completed
-- [ ] Openapi specs from ent schema
+- [x] Openapi specs from ent schema
 - [ ] Server in go and client in js from openapi specs
 - [ ] API server
 - [ ] Vue UI
@@ -19,39 +19,43 @@ A nyaa.si aggregator.
 
 ## Schema
 
-Anime
+```mermaid
 ---
-- title:str
+title: Konyanko schema
+---
+erDiagram
+    Anime ||--o{ Episode : edge
+    Anime {
+        int    id
+        string title
+    }
+    ReleaseGroup ||--o{ Episode : edge
+    ReleaseGroup {
+        int    id
+        string name
+    }
+    Episode ||--|| Item : edge
+    Episode {
+        int id
+        int episode_number
+        int anime_season
+        string resolution
+        string video_codec
+        string audio_codec
+    }
+    Item {
+        int id
+        string view_url
+        string download_url
+        string file_name
+        int file_size
+        datetime publish_date
+    }
+```
 
-ReleaseGroup
----
-- name:str
+## OpenAPI specs
 
-Episode
----
-- anime_id:id
-- number:int
-- view_url:str
-- download_url:str
-- release_group_id:id
-- file_name:str
-- file_size:int
-- resolution:string
-- video_codec:string
-- audio_codec:string
-
-Irregular
----
-- view_url:str
-- download_url:str
-- file_name:str
-- file_size:int
-
-Preferred
----
-- anime_id:id
-- release_group_id:id
-- resolution:string
+[openapi.json](https://petstore.swagger.io/?url=https://github.com/eiri/konyanko/blob/main/ent/openapi.json)
 
 ## Dev runflow
 
