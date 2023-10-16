@@ -1506,8 +1506,10 @@ func (s *EpisodeItemRead) encodeFields(e *jx.Encoder) {
 		e.Int(s.FileSize)
 	}
 	{
-		e.FieldStart("publish_date")
-		json.EncodeDateTime(e, s.PublishDate)
+		if s.PublishDate.Set {
+			e.FieldStart("publish_date")
+			s.PublishDate.Encode(e, json.EncodeDateTime)
+		}
 	}
 }
 
@@ -1590,11 +1592,9 @@ func (s *EpisodeItemRead) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"file_size\"")
 			}
 		case "publish_date":
-			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := json.DecodeDateTime(d)
-				s.PublishDate = v
-				if err != nil {
+				s.PublishDate.Reset()
+				if err := s.PublishDate.Decode(d, json.DecodeDateTime); err != nil {
 					return err
 				}
 				return nil
@@ -1611,7 +1611,7 @@ func (s *EpisodeItemRead) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00111111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2456,8 +2456,10 @@ func (s *ItemCreate) encodeFields(e *jx.Encoder) {
 		e.Int(s.FileSize)
 	}
 	{
-		e.FieldStart("publish_date")
-		json.EncodeDateTime(e, s.PublishDate)
+		if s.PublishDate.Set {
+			e.FieldStart("publish_date")
+			s.PublishDate.Encode(e, json.EncodeDateTime)
+		}
 	}
 }
 
@@ -2540,11 +2542,9 @@ func (s *ItemCreate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"file_size\"")
 			}
 		case "publish_date":
-			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := json.DecodeDateTime(d)
-				s.PublishDate = v
-				if err != nil {
+				s.PublishDate.Reset()
+				if err := s.PublishDate.Decode(d, json.DecodeDateTime); err != nil {
 					return err
 				}
 				return nil
@@ -2561,7 +2561,7 @@ func (s *ItemCreate) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00111111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2818,8 +2818,10 @@ func (s *ItemList) encodeFields(e *jx.Encoder) {
 		e.Int(s.FileSize)
 	}
 	{
-		e.FieldStart("publish_date")
-		json.EncodeDateTime(e, s.PublishDate)
+		if s.PublishDate.Set {
+			e.FieldStart("publish_date")
+			s.PublishDate.Encode(e, json.EncodeDateTime)
+		}
 	}
 }
 
@@ -2902,11 +2904,9 @@ func (s *ItemList) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"file_size\"")
 			}
 		case "publish_date":
-			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := json.DecodeDateTime(d)
-				s.PublishDate = v
-				if err != nil {
+				s.PublishDate.Reset()
+				if err := s.PublishDate.Decode(d, json.DecodeDateTime); err != nil {
 					return err
 				}
 				return nil
@@ -2923,7 +2923,7 @@ func (s *ItemList) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00111111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2999,8 +2999,10 @@ func (s *ItemRead) encodeFields(e *jx.Encoder) {
 		e.Int(s.FileSize)
 	}
 	{
-		e.FieldStart("publish_date")
-		json.EncodeDateTime(e, s.PublishDate)
+		if s.PublishDate.Set {
+			e.FieldStart("publish_date")
+			s.PublishDate.Encode(e, json.EncodeDateTime)
+		}
 	}
 }
 
@@ -3083,11 +3085,9 @@ func (s *ItemRead) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"file_size\"")
 			}
 		case "publish_date":
-			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := json.DecodeDateTime(d)
-				s.PublishDate = v
-				if err != nil {
+				s.PublishDate.Reset()
+				if err := s.PublishDate.Decode(d, json.DecodeDateTime); err != nil {
 					return err
 				}
 				return nil
@@ -3104,7 +3104,7 @@ func (s *ItemRead) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00111111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -3180,8 +3180,10 @@ func (s *ItemUpdate) encodeFields(e *jx.Encoder) {
 		e.Int(s.FileSize)
 	}
 	{
-		e.FieldStart("publish_date")
-		json.EncodeDateTime(e, s.PublishDate)
+		if s.PublishDate.Set {
+			e.FieldStart("publish_date")
+			s.PublishDate.Encode(e, json.EncodeDateTime)
+		}
 	}
 }
 
@@ -3264,11 +3266,9 @@ func (s *ItemUpdate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"file_size\"")
 			}
 		case "publish_date":
-			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := json.DecodeDateTime(d)
-				s.PublishDate = v
-				if err != nil {
+				s.PublishDate.Reset()
+				if err := s.PublishDate.Decode(d, json.DecodeDateTime); err != nil {
 					return err
 				}
 				return nil
@@ -3285,7 +3285,7 @@ func (s *ItemUpdate) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00111111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

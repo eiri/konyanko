@@ -286,7 +286,10 @@ func NewEpisodeItemRead(e *ent.Item) *EpisodeItemRead {
 	ret.DownloadURL = e.DownloadURL
 	ret.FileName = e.FileName
 	ret.FileSize = e.FileSize
-	ret.PublishDate = e.PublishDate
+	ret.PublishDate = OptDateTime{}
+	if e.PublishDate != nil {
+		ret.PublishDate.SetTo(*e.PublishDate)
+	}
 	return &ret
 }
 
@@ -374,7 +377,10 @@ func NewItemCreate(e *ent.Item) *ItemCreate {
 	ret.DownloadURL = e.DownloadURL
 	ret.FileName = e.FileName
 	ret.FileSize = e.FileSize
-	ret.PublishDate = e.PublishDate
+	ret.PublishDate = OptDateTime{}
+	if e.PublishDate != nil {
+		ret.PublishDate.SetTo(*e.PublishDate)
+	}
 	return &ret
 }
 
@@ -406,7 +412,10 @@ func NewItemList(e *ent.Item) *ItemList {
 	ret.DownloadURL = e.DownloadURL
 	ret.FileName = e.FileName
 	ret.FileSize = e.FileSize
-	ret.PublishDate = e.PublishDate
+	ret.PublishDate = OptDateTime{}
+	if e.PublishDate != nil {
+		ret.PublishDate.SetTo(*e.PublishDate)
+	}
 	return &ret
 }
 
@@ -438,7 +447,10 @@ func NewItemRead(e *ent.Item) *ItemRead {
 	ret.DownloadURL = e.DownloadURL
 	ret.FileName = e.FileName
 	ret.FileSize = e.FileSize
-	ret.PublishDate = e.PublishDate
+	ret.PublishDate = OptDateTime{}
+	if e.PublishDate != nil {
+		ret.PublishDate.SetTo(*e.PublishDate)
+	}
 	return &ret
 }
 
@@ -470,7 +482,10 @@ func NewItemUpdate(e *ent.Item) *ItemUpdate {
 	ret.DownloadURL = e.DownloadURL
 	ret.FileName = e.FileName
 	ret.FileSize = e.FileSize
-	ret.PublishDate = e.PublishDate
+	ret.PublishDate = OptDateTime{}
+	if e.PublishDate != nil {
+		ret.PublishDate.SetTo(*e.PublishDate)
+	}
 	return &ret
 }
 

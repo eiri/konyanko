@@ -190,7 +190,7 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := ic.mutation.PublishDate(); ok {
 		_spec.SetField(item.FieldPublishDate, field.TypeTime, value)
-		_node.PublishDate = value
+		_node.PublishDate = &value
 	}
 	if nodes := ic.mutation.EpisodesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

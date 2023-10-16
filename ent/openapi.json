@@ -1694,8 +1694,7 @@
           "view_url",
           "download_url",
           "file_name",
-          "file_size",
-          "publish_date"
+          "file_size"
         ]
       },
       "Episode_ReleaseGroupRead": {
@@ -1759,8 +1758,7 @@
           "view_url",
           "download_url",
           "file_name",
-          "file_size",
-          "publish_date"
+          "file_size"
         ]
       },
       "ItemCreate": {
@@ -1791,8 +1789,7 @@
           "view_url",
           "download_url",
           "file_name",
-          "file_size",
-          "publish_date"
+          "file_size"
         ]
       },
       "ItemList": {
@@ -1823,8 +1820,7 @@
           "view_url",
           "download_url",
           "file_name",
-          "file_size",
-          "publish_date"
+          "file_size"
         ]
       },
       "ItemRead": {
@@ -1855,8 +1851,7 @@
           "view_url",
           "download_url",
           "file_name",
-          "file_size",
-          "publish_date"
+          "file_size"
         ]
       },
       "ItemUpdate": {
@@ -1887,8 +1882,7 @@
           "view_url",
           "download_url",
           "file_name",
-          "file_size",
-          "publish_date"
+          "file_size"
         ]
       },
       "Item_EpisodesRead": {

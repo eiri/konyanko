@@ -27,7 +27,7 @@ type Item struct {
 	// FileSize holds the value of the "file_size" field.
 	FileSize int `json:"file_size,omitempty"`
 	// PublishDate holds the value of the "publish_date" field.
-	PublishDate time.Time `json:"publish_date,omitempty"`
+	PublishDate *time.Time `json:"publish_date,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ItemQuery when eager-loading is set.
 	Edges        ItemEdges `json:"edges"`
@@ -116,7 +116,8 @@ func (i *Item) assignValues(columns []string, values []any) error {
 			if value, ok := values[j].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field publish_date", values[j])
 			} else if value.Valid {
-				i.PublishDate = value.Time
+				i.PublishDate = new(time.Time)
+				*i.PublishDate = value.Time
 			}
 		default:
 			i.selectValues.Set(columns[j], values[j])
@@ -171,8 +172,10 @@ func (i *Item) String() string {
 	builder.WriteString("file_size=")
 	builder.WriteString(fmt.Sprintf("%v", i.FileSize))
 	builder.WriteString(", ")
-	builder.WriteString("publish_date=")
-	builder.WriteString(i.PublishDate.Format(time.ANSIC))
+	if v := i.PublishDate; v != nil {
+		builder.WriteString("publish_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

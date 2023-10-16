@@ -1607,7 +1607,7 @@ func (m *ItemMutation) PublishDate() (r time.Time, exists bool) {
 // OldPublishDate returns the old "publish_date" field's value of the Item entity.
 // If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ItemMutation) OldPublishDate(ctx context.Context) (v time.Time, err error) {
+func (m *ItemMutation) OldPublishDate(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPublishDate is only allowed on UpdateOne operations")
 	}

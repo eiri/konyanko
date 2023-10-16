@@ -492,12 +492,12 @@ func (*EpisodeCreate) createEpisodeRes() {}
 
 // Ref: #/components/schemas/Episode_ItemRead
 type EpisodeItemRead struct {
-	ID          int       `json:"id"`
-	ViewURL     string    `json:"view_url"`
-	DownloadURL string    `json:"download_url"`
-	FileName    string    `json:"file_name"`
-	FileSize    int       `json:"file_size"`
-	PublishDate time.Time `json:"publish_date"`
+	ID          int         `json:"id"`
+	ViewURL     string      `json:"view_url"`
+	DownloadURL string      `json:"download_url"`
+	FileName    string      `json:"file_name"`
+	FileSize    int         `json:"file_size"`
+	PublishDate OptDateTime `json:"publish_date"`
 }
 
 // GetID returns the value of ID.
@@ -526,7 +526,7 @@ func (s *EpisodeItemRead) GetFileSize() int {
 }
 
 // GetPublishDate returns the value of PublishDate.
-func (s *EpisodeItemRead) GetPublishDate() time.Time {
+func (s *EpisodeItemRead) GetPublishDate() OptDateTime {
 	return s.PublishDate
 }
 
@@ -556,7 +556,7 @@ func (s *EpisodeItemRead) SetFileSize(val int) {
 }
 
 // SetPublishDate sets the value of PublishDate.
-func (s *EpisodeItemRead) SetPublishDate(val time.Time) {
+func (s *EpisodeItemRead) SetPublishDate(val OptDateTime) {
 	s.PublishDate = val
 }
 
@@ -834,12 +834,12 @@ func (*EpisodeUpdate) updateEpisodeRes() {}
 
 // Ref: #/components/schemas/ItemCreate
 type ItemCreate struct {
-	ID          int       `json:"id"`
-	ViewURL     string    `json:"view_url"`
-	DownloadURL string    `json:"download_url"`
-	FileName    string    `json:"file_name"`
-	FileSize    int       `json:"file_size"`
-	PublishDate time.Time `json:"publish_date"`
+	ID          int         `json:"id"`
+	ViewURL     string      `json:"view_url"`
+	DownloadURL string      `json:"download_url"`
+	FileName    string      `json:"file_name"`
+	FileSize    int         `json:"file_size"`
+	PublishDate OptDateTime `json:"publish_date"`
 }
 
 // GetID returns the value of ID.
@@ -868,7 +868,7 @@ func (s *ItemCreate) GetFileSize() int {
 }
 
 // GetPublishDate returns the value of PublishDate.
-func (s *ItemCreate) GetPublishDate() time.Time {
+func (s *ItemCreate) GetPublishDate() OptDateTime {
 	return s.PublishDate
 }
 
@@ -898,7 +898,7 @@ func (s *ItemCreate) SetFileSize(val int) {
 }
 
 // SetPublishDate sets the value of PublishDate.
-func (s *ItemCreate) SetPublishDate(val time.Time) {
+func (s *ItemCreate) SetPublishDate(val OptDateTime) {
 	s.PublishDate = val
 }
 
@@ -978,12 +978,12 @@ func (*ItemEpisodesRead) readItemEpisodesRes() {}
 
 // Ref: #/components/schemas/ItemList
 type ItemList struct {
-	ID          int       `json:"id"`
-	ViewURL     string    `json:"view_url"`
-	DownloadURL string    `json:"download_url"`
-	FileName    string    `json:"file_name"`
-	FileSize    int       `json:"file_size"`
-	PublishDate time.Time `json:"publish_date"`
+	ID          int         `json:"id"`
+	ViewURL     string      `json:"view_url"`
+	DownloadURL string      `json:"download_url"`
+	FileName    string      `json:"file_name"`
+	FileSize    int         `json:"file_size"`
+	PublishDate OptDateTime `json:"publish_date"`
 }
 
 // GetID returns the value of ID.
@@ -1012,7 +1012,7 @@ func (s *ItemList) GetFileSize() int {
 }
 
 // GetPublishDate returns the value of PublishDate.
-func (s *ItemList) GetPublishDate() time.Time {
+func (s *ItemList) GetPublishDate() OptDateTime {
 	return s.PublishDate
 }
 
@@ -1042,18 +1042,18 @@ func (s *ItemList) SetFileSize(val int) {
 }
 
 // SetPublishDate sets the value of PublishDate.
-func (s *ItemList) SetPublishDate(val time.Time) {
+func (s *ItemList) SetPublishDate(val OptDateTime) {
 	s.PublishDate = val
 }
 
 // Ref: #/components/schemas/ItemRead
 type ItemRead struct {
-	ID          int       `json:"id"`
-	ViewURL     string    `json:"view_url"`
-	DownloadURL string    `json:"download_url"`
-	FileName    string    `json:"file_name"`
-	FileSize    int       `json:"file_size"`
-	PublishDate time.Time `json:"publish_date"`
+	ID          int         `json:"id"`
+	ViewURL     string      `json:"view_url"`
+	DownloadURL string      `json:"download_url"`
+	FileName    string      `json:"file_name"`
+	FileSize    int         `json:"file_size"`
+	PublishDate OptDateTime `json:"publish_date"`
 }
 
 // GetID returns the value of ID.
@@ -1082,7 +1082,7 @@ func (s *ItemRead) GetFileSize() int {
 }
 
 // GetPublishDate returns the value of PublishDate.
-func (s *ItemRead) GetPublishDate() time.Time {
+func (s *ItemRead) GetPublishDate() OptDateTime {
 	return s.PublishDate
 }
 
@@ -1112,7 +1112,7 @@ func (s *ItemRead) SetFileSize(val int) {
 }
 
 // SetPublishDate sets the value of PublishDate.
-func (s *ItemRead) SetPublishDate(val time.Time) {
+func (s *ItemRead) SetPublishDate(val OptDateTime) {
 	s.PublishDate = val
 }
 
@@ -1120,12 +1120,12 @@ func (*ItemRead) readItemRes() {}
 
 // Ref: #/components/schemas/ItemUpdate
 type ItemUpdate struct {
-	ID          int       `json:"id"`
-	ViewURL     string    `json:"view_url"`
-	DownloadURL string    `json:"download_url"`
-	FileName    string    `json:"file_name"`
-	FileSize    int       `json:"file_size"`
-	PublishDate time.Time `json:"publish_date"`
+	ID          int         `json:"id"`
+	ViewURL     string      `json:"view_url"`
+	DownloadURL string      `json:"download_url"`
+	FileName    string      `json:"file_name"`
+	FileSize    int         `json:"file_size"`
+	PublishDate OptDateTime `json:"publish_date"`
 }
 
 // GetID returns the value of ID.
@@ -1154,7 +1154,7 @@ func (s *ItemUpdate) GetFileSize() int {
 }
 
 // GetPublishDate returns the value of PublishDate.
-func (s *ItemUpdate) GetPublishDate() time.Time {
+func (s *ItemUpdate) GetPublishDate() OptDateTime {
 	return s.PublishDate
 }
 
@@ -1184,7 +1184,7 @@ func (s *ItemUpdate) SetFileSize(val int) {
 }
 
 // SetPublishDate sets the value of PublishDate.
-func (s *ItemUpdate) SetPublishDate(val time.Time) {
+func (s *ItemUpdate) SetPublishDate(val OptDateTime) {
 	s.PublishDate = val
 }
 
