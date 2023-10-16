@@ -25,13 +25,21 @@ nyaa.xml:
 import: $(PROJECT) nyaa.xml
 	./$< $@ -f $(word 2,$^)
 
-.PHONY: list
-list: $(PROJECT)
-	@./$< $@
+.PHONY: list-titles
+list-titles: $(PROJECT)
+	@./$< list titles
+
+.PHONY: list-anime
+list-anime: $(PROJECT)
+	@./$< list anime
 
 .PHONY: gron-list
 gron-list:
-	$(MAKE) list 2>&1 | tail -n +1 | jq -cs . | gron
+	$(MAKE) list anime 2>&1 | tail -n +1 | jq -cs . | gron
+
+.PHONY: list-irregular
+list-irregular: $(PROJECT)
+	@./$< list irregular
 
 .PHONY: server
 server: $(PROJECT)
@@ -43,10 +51,10 @@ schema:
 	go run -mod=mod entgo.io/ent/cmd/ent new $(ENTITY)
 
 .PHONY: cli-command
-cli-command: COMMAND := migrate
+cli-command: COMMAND := queries
 cli-command:
-# 	go run -mod=mod github.com/spf13/cobra-cli add $(COMMAND) -p 'readCmd'
-	go run -mod=mod github.com/spf13/cobra-cli add $(COMMAND)
+	go run -mod=mod github.com/spf13/cobra-cli add $(COMMAND) -p 'listCmd'
+# 	go run -mod=mod github.com/spf13/cobra-cli add $(COMMAND)
 
 .PHONY: describe
 describe:
