@@ -19,11 +19,11 @@ import (
 // ItemQuery is the builder for querying Item entities.
 type ItemQuery struct {
 	config
-	ctx          *QueryContext
-	order        []item.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.Item
-	withEpisodes *EpisodeQuery
+	ctx         *QueryContext
+	order       []item.OrderOption
+	inters      []Interceptor
+	predicates  []predicate.Item
+	withEpisode *EpisodeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,8 +60,8 @@ func (iq *ItemQuery) Order(o ...item.OrderOption) *ItemQuery {
 	return iq
 }
 
-// QueryEpisodes chains the current query on the "episodes" edge.
-func (iq *ItemQuery) QueryEpisodes() *EpisodeQuery {
+// QueryEpisode chains the current query on the "episode" edge.
+func (iq *ItemQuery) QueryEpisode() *EpisodeQuery {
 	query := (&EpisodeClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
@@ -74,7 +74,7 @@ func (iq *ItemQuery) QueryEpisodes() *EpisodeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(item.Table, item.FieldID, selector),
 			sqlgraph.To(episode.Table, episode.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, item.EpisodesTable, item.EpisodesColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, item.EpisodeTable, item.EpisodeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,26 +269,26 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 		return nil
 	}
 	return &ItemQuery{
-		config:       iq.config,
-		ctx:          iq.ctx.Clone(),
-		order:        append([]item.OrderOption{}, iq.order...),
-		inters:       append([]Interceptor{}, iq.inters...),
-		predicates:   append([]predicate.Item{}, iq.predicates...),
-		withEpisodes: iq.withEpisodes.Clone(),
+		config:      iq.config,
+		ctx:         iq.ctx.Clone(),
+		order:       append([]item.OrderOption{}, iq.order...),
+		inters:      append([]Interceptor{}, iq.inters...),
+		predicates:  append([]predicate.Item{}, iq.predicates...),
+		withEpisode: iq.withEpisode.Clone(),
 		// clone intermediate query.
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
 }
 
-// WithEpisodes tells the query-builder to eager-load the nodes that are connected to
-// the "episodes" edge. The optional arguments are used to configure the query builder of the edge.
-func (iq *ItemQuery) WithEpisodes(opts ...func(*EpisodeQuery)) *ItemQuery {
+// WithEpisode tells the query-builder to eager-load the nodes that are connected to
+// the "episode" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *ItemQuery) WithEpisode(opts ...func(*EpisodeQuery)) *ItemQuery {
 	query := (&EpisodeClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	iq.withEpisodes = query
+	iq.withEpisode = query
 	return iq
 }
 
@@ -371,7 +371,7 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		nodes       = []*Item{}
 		_spec       = iq.querySpec()
 		loadedTypes = [1]bool{
-			iq.withEpisodes != nil,
+			iq.withEpisode != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -392,16 +392,16 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := iq.withEpisodes; query != nil {
-		if err := iq.loadEpisodes(ctx, query, nodes, nil,
-			func(n *Item, e *Episode) { n.Edges.Episodes = e }); err != nil {
+	if query := iq.withEpisode; query != nil {
+		if err := iq.loadEpisode(ctx, query, nodes, nil,
+			func(n *Item, e *Episode) { n.Edges.Episode = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (iq *ItemQuery) loadEpisodes(ctx context.Context, query *EpisodeQuery, nodes []*Item, init func(*Item), assign func(*Item, *Episode)) error {
+func (iq *ItemQuery) loadEpisode(ctx context.Context, query *EpisodeQuery, nodes []*Item, init func(*Item), assign func(*Item, *Episode)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Item)
 	for i := range nodes {
@@ -410,7 +410,7 @@ func (iq *ItemQuery) loadEpisodes(ctx context.Context, query *EpisodeQuery, node
 	}
 	query.withFKs = true
 	query.Where(predicate.Episode(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(item.EpisodesColumn), fks...))
+		s.Where(sql.InValues(s.C(item.EpisodeColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

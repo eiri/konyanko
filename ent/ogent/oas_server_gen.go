@@ -128,12 +128,12 @@ type Handler interface {
 	//
 	// GET /items/{id}
 	ReadItem(ctx context.Context, params ReadItemParams) (ReadItemRes, error)
-	// ReadItemEpisodes implements readItemEpisodes operation.
+	// ReadItemEpisode implements readItemEpisode operation.
 	//
 	// Find the attached Episode of the Item with the given ID.
 	//
-	// GET /items/{id}/episodes
-	ReadItemEpisodes(ctx context.Context, params ReadItemEpisodesParams) (ReadItemEpisodesRes, error)
+	// GET /items/{id}/episode
+	ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error)
 	// ReadReleaseGroup implements readReleaseGroup operation.
 	//
 	// Finds the ReleaseGroup with the requested ID and returns it.

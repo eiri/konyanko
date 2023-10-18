@@ -74,23 +74,23 @@ func (iu *ItemUpdate) SetNillablePublishDate(t *time.Time) *ItemUpdate {
 	return iu
 }
 
-// SetEpisodesID sets the "episodes" edge to the Episode entity by ID.
-func (iu *ItemUpdate) SetEpisodesID(id int) *ItemUpdate {
-	iu.mutation.SetEpisodesID(id)
+// SetEpisodeID sets the "episode" edge to the Episode entity by ID.
+func (iu *ItemUpdate) SetEpisodeID(id int) *ItemUpdate {
+	iu.mutation.SetEpisodeID(id)
 	return iu
 }
 
-// SetNillableEpisodesID sets the "episodes" edge to the Episode entity by ID if the given value is not nil.
-func (iu *ItemUpdate) SetNillableEpisodesID(id *int) *ItemUpdate {
+// SetNillableEpisodeID sets the "episode" edge to the Episode entity by ID if the given value is not nil.
+func (iu *ItemUpdate) SetNillableEpisodeID(id *int) *ItemUpdate {
 	if id != nil {
-		iu = iu.SetEpisodesID(*id)
+		iu = iu.SetEpisodeID(*id)
 	}
 	return iu
 }
 
-// SetEpisodes sets the "episodes" edge to the Episode entity.
-func (iu *ItemUpdate) SetEpisodes(e *Episode) *ItemUpdate {
-	return iu.SetEpisodesID(e.ID)
+// SetEpisode sets the "episode" edge to the Episode entity.
+func (iu *ItemUpdate) SetEpisode(e *Episode) *ItemUpdate {
+	return iu.SetEpisodeID(e.ID)
 }
 
 // Mutation returns the ItemMutation object of the builder.
@@ -98,9 +98,9 @@ func (iu *ItemUpdate) Mutation() *ItemMutation {
 	return iu.mutation
 }
 
-// ClearEpisodes clears the "episodes" edge to the Episode entity.
-func (iu *ItemUpdate) ClearEpisodes() *ItemUpdate {
-	iu.mutation.ClearEpisodes()
+// ClearEpisode clears the "episode" edge to the Episode entity.
+func (iu *ItemUpdate) ClearEpisode() *ItemUpdate {
+	iu.mutation.ClearEpisode()
 	return iu
 }
 
@@ -176,12 +176,12 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := iu.mutation.PublishDate(); ok {
 		_spec.SetField(item.FieldPublishDate, field.TypeTime, value)
 	}
-	if iu.mutation.EpisodesCleared() {
+	if iu.mutation.EpisodeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   item.EpisodesTable,
-			Columns: []string{item.EpisodesColumn},
+			Table:   item.EpisodeTable,
+			Columns: []string{item.EpisodeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt),
@@ -189,12 +189,12 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.EpisodesIDs(); len(nodes) > 0 {
+	if nodes := iu.mutation.EpisodeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   item.EpisodesTable,
-			Columns: []string{item.EpisodesColumn},
+			Table:   item.EpisodeTable,
+			Columns: []string{item.EpisodeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt),
@@ -270,23 +270,23 @@ func (iuo *ItemUpdateOne) SetNillablePublishDate(t *time.Time) *ItemUpdateOne {
 	return iuo
 }
 
-// SetEpisodesID sets the "episodes" edge to the Episode entity by ID.
-func (iuo *ItemUpdateOne) SetEpisodesID(id int) *ItemUpdateOne {
-	iuo.mutation.SetEpisodesID(id)
+// SetEpisodeID sets the "episode" edge to the Episode entity by ID.
+func (iuo *ItemUpdateOne) SetEpisodeID(id int) *ItemUpdateOne {
+	iuo.mutation.SetEpisodeID(id)
 	return iuo
 }
 
-// SetNillableEpisodesID sets the "episodes" edge to the Episode entity by ID if the given value is not nil.
-func (iuo *ItemUpdateOne) SetNillableEpisodesID(id *int) *ItemUpdateOne {
+// SetNillableEpisodeID sets the "episode" edge to the Episode entity by ID if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableEpisodeID(id *int) *ItemUpdateOne {
 	if id != nil {
-		iuo = iuo.SetEpisodesID(*id)
+		iuo = iuo.SetEpisodeID(*id)
 	}
 	return iuo
 }
 
-// SetEpisodes sets the "episodes" edge to the Episode entity.
-func (iuo *ItemUpdateOne) SetEpisodes(e *Episode) *ItemUpdateOne {
-	return iuo.SetEpisodesID(e.ID)
+// SetEpisode sets the "episode" edge to the Episode entity.
+func (iuo *ItemUpdateOne) SetEpisode(e *Episode) *ItemUpdateOne {
+	return iuo.SetEpisodeID(e.ID)
 }
 
 // Mutation returns the ItemMutation object of the builder.
@@ -294,9 +294,9 @@ func (iuo *ItemUpdateOne) Mutation() *ItemMutation {
 	return iuo.mutation
 }
 
-// ClearEpisodes clears the "episodes" edge to the Episode entity.
-func (iuo *ItemUpdateOne) ClearEpisodes() *ItemUpdateOne {
-	iuo.mutation.ClearEpisodes()
+// ClearEpisode clears the "episode" edge to the Episode entity.
+func (iuo *ItemUpdateOne) ClearEpisode() *ItemUpdateOne {
+	iuo.mutation.ClearEpisode()
 	return iuo
 }
 
@@ -402,12 +402,12 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 	if value, ok := iuo.mutation.PublishDate(); ok {
 		_spec.SetField(item.FieldPublishDate, field.TypeTime, value)
 	}
-	if iuo.mutation.EpisodesCleared() {
+	if iuo.mutation.EpisodeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   item.EpisodesTable,
-			Columns: []string{item.EpisodesColumn},
+			Table:   item.EpisodeTable,
+			Columns: []string{item.EpisodeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt),
@@ -415,12 +415,12 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.EpisodesIDs(); len(nodes) > 0 {
+	if nodes := iuo.mutation.EpisodeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   item.EpisodesTable,
-			Columns: []string{item.EpisodesColumn},
+			Table:   item.EpisodeTable,
+			Columns: []string{item.EpisodeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt),

@@ -507,11 +507,11 @@ func (i *ItemUpdate) Elem() ItemUpdate {
 	return *i
 }
 
-func NewItemEpisodesRead(e *ent.Episode) *ItemEpisodesRead {
+func NewItemEpisodeRead(e *ent.Episode) *ItemEpisodeRead {
 	if e == nil {
 		return nil
 	}
-	var ret ItemEpisodesRead
+	var ret ItemEpisodeRead
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
@@ -521,20 +521,20 @@ func NewItemEpisodesRead(e *ent.Episode) *ItemEpisodesRead {
 	return &ret
 }
 
-func NewItemEpisodesReads(es []*ent.Episode) []ItemEpisodesRead {
+func NewItemEpisodeReads(es []*ent.Episode) []ItemEpisodeRead {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]ItemEpisodesRead, len(es))
+	r := make([]ItemEpisodeRead, len(es))
 	for i, e := range es {
-		r[i] = NewItemEpisodesRead(e).Elem()
+		r[i] = NewItemEpisodeRead(e).Elem()
 	}
 	return r
 }
 
-func (e *ItemEpisodesRead) Elem() ItemEpisodesRead {
+func (e *ItemEpisodeRead) Elem() ItemEpisodeRead {
 	if e == nil {
-		return ItemEpisodesRead{}
+		return ItemEpisodeRead{}
 	}
 	return *e
 }

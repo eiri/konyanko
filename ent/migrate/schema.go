@@ -44,7 +44,7 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "episodes_items_episodes",
+				Symbol:     "episodes_items_episode",
 				Columns:    []*schema.Column{EpisodesColumns[7]},
 				RefColumns: []*schema.Column{ItemsColumns[0]},
 				OnDelete:   schema.NoAction,

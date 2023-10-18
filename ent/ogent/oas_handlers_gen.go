@@ -2172,20 +2172,20 @@ func (s *Server) handleReadItemRequest(args [1]string, argsEscaped bool, w http.
 	}
 }
 
-// handleReadItemEpisodesRequest handles readItemEpisodes operation.
+// handleReadItemEpisodeRequest handles readItemEpisode operation.
 //
 // Find the attached Episode of the Item with the given ID.
 //
-// GET /items/{id}/episodes
-func (s *Server) handleReadItemEpisodesRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// GET /items/{id}/episode
+func (s *Server) handleReadItemEpisodeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readItemEpisodes"),
+		otelogen.OperationID("readItemEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items/{id}/episodes"),
+		semconv.HTTPRouteKey.String("/items/{id}/episode"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadItemEpisodes",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadItemEpisode",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -2210,11 +2210,11 @@ func (s *Server) handleReadItemEpisodesRequest(args [1]string, argsEscaped bool,
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadItemEpisodes",
-			ID:   "readItemEpisodes",
+			Name: "ReadItemEpisode",
+			ID:   "readItemEpisode",
 		}
 	)
-	params, err := decodeReadItemEpisodesParams(args, argsEscaped, r)
+	params, err := decodeReadItemEpisodeParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -2225,13 +2225,13 @@ func (s *Server) handleReadItemEpisodesRequest(args [1]string, argsEscaped bool,
 		return
 	}
 
-	var response ReadItemEpisodesRes
+	var response ReadItemEpisodeRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    "ReadItemEpisodes",
+			OperationName:    "ReadItemEpisode",
 			OperationSummary: "Find the attached Episode",
-			OperationID:      "readItemEpisodes",
+			OperationID:      "readItemEpisode",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -2244,8 +2244,8 @@ func (s *Server) handleReadItemEpisodesRequest(args [1]string, argsEscaped bool,
 
 		type (
 			Request  = struct{}
-			Params   = ReadItemEpisodesParams
-			Response = ReadItemEpisodesRes
+			Params   = ReadItemEpisodeParams
+			Response = ReadItemEpisodeRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -2254,14 +2254,14 @@ func (s *Server) handleReadItemEpisodesRequest(args [1]string, argsEscaped bool,
 		](
 			m,
 			mreq,
-			unpackReadItemEpisodesParams,
+			unpackReadItemEpisodeParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadItemEpisodes(ctx, params)
+				response, err = s.h.ReadItemEpisode(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ReadItemEpisodes(ctx, params)
+		response, err = s.h.ReadItemEpisode(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -2269,7 +2269,7 @@ func (s *Server) handleReadItemEpisodesRequest(args [1]string, argsEscaped bool,
 		return
 	}
 
-	if err := encodeReadItemEpisodesResponse(response, w, span); err != nil {
+	if err := encodeReadItemEpisodeResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

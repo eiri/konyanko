@@ -841,7 +841,7 @@
                     "type": "string",
                     "format": "date-time"
                   },
-                  "episodes": {
+                  "episode": {
                     "type": "integer"
                   }
                 },
@@ -1001,7 +1001,7 @@
                     "type": "string",
                     "format": "date-time"
                   },
-                  "episodes": {
+                  "episode": {
                     "type": "integer"
                   }
                 }
@@ -1036,14 +1036,14 @@
         }
       }
     },
-    "/items/{id}/episodes": {
+    "/items/{id}/episode": {
       "get": {
         "tags": [
           "Item"
         ],
         "summary": "Find the attached Episode",
         "description": "Find the attached Episode of the Item with the given ID",
-        "operationId": "readItemEpisodes",
+        "operationId": "readItemEpisode",
         "parameters": [
           {
             "name": "id",
@@ -1061,7 +1061,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Item_EpisodesRead"
+                  "$ref": "#/components/schemas/Item_EpisodeRead"
                 }
               }
             }
@@ -1749,7 +1749,7 @@
             "type": "string",
             "format": "date-time"
           },
-          "episodes": {
+          "episode": {
             "$ref": "#/components/schemas/Episode"
           }
         },
@@ -1885,7 +1885,7 @@
           "file_size"
         ]
       },
-      "Item_EpisodesRead": {
+      "Item_EpisodeRead": {
         "type": "object",
         "properties": {
           "id": {

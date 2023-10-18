@@ -28,7 +28,7 @@ func (Item) Fields() []ent.Field {
 // Edges of the Item.
 func (Item) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("episodes", Episode.Type).StorageKey(edge.Column("item_id")).Unique(),
+		edge.To("episode", Episode.Type).StorageKey(edge.Column("item_id")).Unique(),
 	}
 }
 

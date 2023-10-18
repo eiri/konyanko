@@ -77,8 +77,8 @@ type ReadEpisodeTitleRes interface {
 	readEpisodeTitleRes()
 }
 
-type ReadItemEpisodesRes interface {
-	readItemEpisodesRes()
+type ReadItemEpisodeRes interface {
+	readItemEpisodeRes()
 }
 
 type ReadItemRes interface {

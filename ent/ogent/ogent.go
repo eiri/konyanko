@@ -523,8 +523,8 @@ func (h *OgentHandler) CreateItem(ctx context.Context, req *CreateItemReq) (Crea
 	b.SetFileSize(req.FileSize)
 	b.SetPublishDate(req.PublishDate)
 	// Add all edges.
-	if v, ok := req.Episodes.Get(); ok {
-		b.SetEpisodesID(v)
+	if v, ok := req.Episode.Get(); ok {
+		b.SetEpisodeID(v)
 	}
 	// Persist to storage.
 	e, err := b.Save(ctx)
@@ -603,8 +603,8 @@ func (h *OgentHandler) UpdateItem(ctx context.Context, req *UpdateItemReq, param
 		b.SetPublishDate(v)
 	}
 	// Add all edges.
-	if v, ok := req.Episodes.Get(); ok {
-		b.SetEpisodesID(v)
+	if v, ok := req.Episode.Get(); ok {
+		b.SetEpisodeID(v)
 	}
 	// Persist to storage.
 	e, err := b.Save(ctx)
@@ -700,9 +700,9 @@ func (h *OgentHandler) ListItem(ctx context.Context, params ListItemParams) (Lis
 	return (*ListItemOKApplicationJSON)(&r), nil
 }
 
-// ReadItemEpisodes handles GET /items/{id}/episodes requests.
-func (h *OgentHandler) ReadItemEpisodes(ctx context.Context, params ReadItemEpisodesParams) (ReadItemEpisodesRes, error) {
-	q := h.client.Item.Query().Where(item.IDEQ(params.ID)).QueryEpisodes()
+// ReadItemEpisode handles GET /items/{id}/episode requests.
+func (h *OgentHandler) ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error) {
+	q := h.client.Item.Query().Where(item.IDEQ(params.ID)).QueryEpisode()
 	e, err := q.Only(ctx)
 	if err != nil {
 		switch {
@@ -723,7 +723,7 @@ func (h *OgentHandler) ReadItemEpisodes(ctx context.Context, params ReadItemEpis
 			return nil, err
 		}
 	}
-	return NewItemEpisodesRead(e), nil
+	return NewItemEpisodeRead(e), nil
 }
 
 // CreateReleaseGroup handles POST /release-groups requests.

@@ -660,15 +660,15 @@ func (c *ItemClient) GetX(ctx context.Context, id int) *Item {
 	return obj
 }
 
-// QueryEpisodes queries the episodes edge of a Item.
-func (c *ItemClient) QueryEpisodes(i *Item) *EpisodeQuery {
+// QueryEpisode queries the episode edge of a Item.
+func (c *ItemClient) QueryEpisode(i *Item) *EpisodeQuery {
 	query := (&EpisodeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := i.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(item.Table, item.FieldID, id),
 			sqlgraph.To(episode.Table, episode.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, item.EpisodesTable, item.EpisodesColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, item.EpisodeTable, item.EpisodeColumn),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil

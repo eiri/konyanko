@@ -1311,21 +1311,21 @@ func (m *EpisodeMutation) ResetEdge(name string) error {
 // ItemMutation represents an operation that mutates the Item nodes in the graph.
 type ItemMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	view_url        *string
-	download_url    *string
-	file_name       *string
-	file_size       *int
-	addfile_size    *int
-	publish_date    *time.Time
-	clearedFields   map[string]struct{}
-	episodes        *int
-	clearedepisodes bool
-	done            bool
-	oldValue        func(context.Context) (*Item, error)
-	predicates      []predicate.Item
+	op             Op
+	typ            string
+	id             *int
+	view_url       *string
+	download_url   *string
+	file_name      *string
+	file_size      *int
+	addfile_size   *int
+	publish_date   *time.Time
+	clearedFields  map[string]struct{}
+	episode        *int
+	clearedepisode bool
+	done           bool
+	oldValue       func(context.Context) (*Item, error)
+	predicates     []predicate.Item
 }
 
 var _ ent.Mutation = (*ItemMutation)(nil)
@@ -1626,43 +1626,43 @@ func (m *ItemMutation) ResetPublishDate() {
 	m.publish_date = nil
 }
 
-// SetEpisodesID sets the "episodes" edge to the Episode entity by id.
-func (m *ItemMutation) SetEpisodesID(id int) {
-	m.episodes = &id
+// SetEpisodeID sets the "episode" edge to the Episode entity by id.
+func (m *ItemMutation) SetEpisodeID(id int) {
+	m.episode = &id
 }
 
-// ClearEpisodes clears the "episodes" edge to the Episode entity.
-func (m *ItemMutation) ClearEpisodes() {
-	m.clearedepisodes = true
+// ClearEpisode clears the "episode" edge to the Episode entity.
+func (m *ItemMutation) ClearEpisode() {
+	m.clearedepisode = true
 }
 
-// EpisodesCleared reports if the "episodes" edge to the Episode entity was cleared.
-func (m *ItemMutation) EpisodesCleared() bool {
-	return m.clearedepisodes
+// EpisodeCleared reports if the "episode" edge to the Episode entity was cleared.
+func (m *ItemMutation) EpisodeCleared() bool {
+	return m.clearedepisode
 }
 
-// EpisodesID returns the "episodes" edge ID in the mutation.
-func (m *ItemMutation) EpisodesID() (id int, exists bool) {
-	if m.episodes != nil {
-		return *m.episodes, true
+// EpisodeID returns the "episode" edge ID in the mutation.
+func (m *ItemMutation) EpisodeID() (id int, exists bool) {
+	if m.episode != nil {
+		return *m.episode, true
 	}
 	return
 }
 
-// EpisodesIDs returns the "episodes" edge IDs in the mutation.
+// EpisodeIDs returns the "episode" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// EpisodesID instead. It exists only for internal usage by the builders.
-func (m *ItemMutation) EpisodesIDs() (ids []int) {
-	if id := m.episodes; id != nil {
+// EpisodeID instead. It exists only for internal usage by the builders.
+func (m *ItemMutation) EpisodeIDs() (ids []int) {
+	if id := m.episode; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetEpisodes resets all changes to the "episodes" edge.
-func (m *ItemMutation) ResetEpisodes() {
-	m.episodes = nil
-	m.clearedepisodes = false
+// ResetEpisode resets all changes to the "episode" edge.
+func (m *ItemMutation) ResetEpisode() {
+	m.episode = nil
+	m.clearedepisode = false
 }
 
 // Where appends a list predicates to the ItemMutation builder.
@@ -1882,8 +1882,8 @@ func (m *ItemMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ItemMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.episodes != nil {
-		edges = append(edges, item.EdgeEpisodes)
+	if m.episode != nil {
+		edges = append(edges, item.EdgeEpisode)
 	}
 	return edges
 }
@@ -1892,8 +1892,8 @@ func (m *ItemMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ItemMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case item.EdgeEpisodes:
-		if id := m.episodes; id != nil {
+	case item.EdgeEpisode:
+		if id := m.episode; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -1915,8 +1915,8 @@ func (m *ItemMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ItemMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedepisodes {
-		edges = append(edges, item.EdgeEpisodes)
+	if m.clearedepisode {
+		edges = append(edges, item.EdgeEpisode)
 	}
 	return edges
 }
@@ -1925,8 +1925,8 @@ func (m *ItemMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ItemMutation) EdgeCleared(name string) bool {
 	switch name {
-	case item.EdgeEpisodes:
-		return m.clearedepisodes
+	case item.EdgeEpisode:
+		return m.clearedepisode
 	}
 	return false
 }
@@ -1935,8 +1935,8 @@ func (m *ItemMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ItemMutation) ClearEdge(name string) error {
 	switch name {
-	case item.EdgeEpisodes:
-		m.ClearEpisodes()
+	case item.EdgeEpisode:
+		m.ClearEpisode()
 		return nil
 	}
 	return fmt.Errorf("unknown Item unique edge %s", name)
@@ -1946,8 +1946,8 @@ func (m *ItemMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ItemMutation) ResetEdge(name string) error {
 	switch name {
-	case item.EdgeEpisodes:
-		m.ResetEpisodes()
+	case item.EdgeEpisode:
+		m.ResetEpisode()
 		return nil
 	}
 	return fmt.Errorf("unknown Item edge %s", name)

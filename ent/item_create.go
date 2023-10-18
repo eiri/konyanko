@@ -59,23 +59,23 @@ func (ic *ItemCreate) SetNillablePublishDate(t *time.Time) *ItemCreate {
 	return ic
 }
 
-// SetEpisodesID sets the "episodes" edge to the Episode entity by ID.
-func (ic *ItemCreate) SetEpisodesID(id int) *ItemCreate {
-	ic.mutation.SetEpisodesID(id)
+// SetEpisodeID sets the "episode" edge to the Episode entity by ID.
+func (ic *ItemCreate) SetEpisodeID(id int) *ItemCreate {
+	ic.mutation.SetEpisodeID(id)
 	return ic
 }
 
-// SetNillableEpisodesID sets the "episodes" edge to the Episode entity by ID if the given value is not nil.
-func (ic *ItemCreate) SetNillableEpisodesID(id *int) *ItemCreate {
+// SetNillableEpisodeID sets the "episode" edge to the Episode entity by ID if the given value is not nil.
+func (ic *ItemCreate) SetNillableEpisodeID(id *int) *ItemCreate {
 	if id != nil {
-		ic = ic.SetEpisodesID(*id)
+		ic = ic.SetEpisodeID(*id)
 	}
 	return ic
 }
 
-// SetEpisodes sets the "episodes" edge to the Episode entity.
-func (ic *ItemCreate) SetEpisodes(e *Episode) *ItemCreate {
-	return ic.SetEpisodesID(e.ID)
+// SetEpisode sets the "episode" edge to the Episode entity.
+func (ic *ItemCreate) SetEpisode(e *Episode) *ItemCreate {
+	return ic.SetEpisodeID(e.ID)
 }
 
 // Mutation returns the ItemMutation object of the builder.
@@ -192,12 +192,12 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		_spec.SetField(item.FieldPublishDate, field.TypeTime, value)
 		_node.PublishDate = &value
 	}
-	if nodes := ic.mutation.EpisodesIDs(); len(nodes) > 0 {
+	if nodes := ic.mutation.EpisodeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   item.EpisodesTable,
-			Columns: []string{item.EpisodesColumn},
+			Table:   item.EpisodeTable,
+			Columns: []string{item.EpisodeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt),

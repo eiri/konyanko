@@ -327,8 +327,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/episodes"
-						if l := len("/episodes"); len(elem) >= l && elem[0:l] == "/episodes" {
+					case '/': // Prefix: "/episode"
+						if l := len("/episode"); len(elem) >= l && elem[0:l] == "/episode" {
 							elem = elem[l:]
 						} else {
 							break
@@ -338,7 +338,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							// Leaf node.
 							switch r.Method {
 							case "GET":
-								s.handleReadItemEpisodesRequest([1]string{
+								s.handleReadItemEpisodeRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
 							default:
@@ -855,8 +855,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/episodes"
-						if l := len("/episodes"); len(elem) >= l && elem[0:l] == "/episodes" {
+					case '/': // Prefix: "/episode"
+						if l := len("/episode"); len(elem) >= l && elem[0:l] == "/episode" {
 							elem = elem[l:]
 						} else {
 							break
@@ -865,11 +865,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						if len(elem) == 0 {
 							switch method {
 							case "GET":
-								// Leaf: ReadItemEpisodes
-								r.name = "ReadItemEpisodes"
+								// Leaf: ReadItemEpisode
+								r.name = "ReadItemEpisode"
 								r.summary = "Find the attached Episode"
-								r.operationID = "readItemEpisodes"
-								r.pathPattern = "/items/{id}/episodes"
+								r.operationID = "readItemEpisode"
+								r.pathPattern = "/items/{id}/episode"
 								r.args = args
 								r.count = 1
 								return r, true

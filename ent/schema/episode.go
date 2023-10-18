@@ -26,7 +26,7 @@ func (Episode) Fields() []ent.Field {
 // Edges of the Episode.
 func (Episode) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("item", Item.Type).Ref("episodes").Unique().Required(),
+		edge.From("item", Item.Type).Ref("episode").Unique().Required(),
 		edge.From("title", Anime.Type).Ref("episodes").Unique().Required(),
 		edge.From("release_group", ReleaseGroup.Type).Ref("episodes").Unique(),
 	}

@@ -143,12 +143,12 @@ type Invoker interface {
 	//
 	// GET /items/{id}
 	ReadItem(ctx context.Context, params ReadItemParams) (ReadItemRes, error)
-	// ReadItemEpisodes invokes readItemEpisodes operation.
+	// ReadItemEpisode invokes readItemEpisode operation.
 	//
 	// Find the attached Episode of the Item with the given ID.
 	//
-	// GET /items/{id}/episodes
-	ReadItemEpisodes(ctx context.Context, params ReadItemEpisodesParams) (ReadItemEpisodesRes, error)
+	// GET /items/{id}/episode
+	ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error)
 	// ReadReleaseGroup invokes readReleaseGroup operation.
 	//
 	// Finds the ReleaseGroup with the requested ID and returns it.
@@ -2130,21 +2130,21 @@ func (c *Client) sendReadItem(ctx context.Context, params ReadItemParams) (res R
 	return result, nil
 }
 
-// ReadItemEpisodes invokes readItemEpisodes operation.
+// ReadItemEpisode invokes readItemEpisode operation.
 //
 // Find the attached Episode of the Item with the given ID.
 //
-// GET /items/{id}/episodes
-func (c *Client) ReadItemEpisodes(ctx context.Context, params ReadItemEpisodesParams) (ReadItemEpisodesRes, error) {
-	res, err := c.sendReadItemEpisodes(ctx, params)
+// GET /items/{id}/episode
+func (c *Client) ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error) {
+	res, err := c.sendReadItemEpisode(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendReadItemEpisodes(ctx context.Context, params ReadItemEpisodesParams) (res ReadItemEpisodesRes, err error) {
+func (c *Client) sendReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (res ReadItemEpisodeRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readItemEpisodes"),
+		otelogen.OperationID("readItemEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items/{id}/episodes"),
+		semconv.HTTPRouteKey.String("/items/{id}/episode"),
 	}
 
 	// Run stopwatch.
@@ -2159,7 +2159,7 @@ func (c *Client) sendReadItemEpisodes(ctx context.Context, params ReadItemEpisod
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadItemEpisodes",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ReadItemEpisode",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2196,7 +2196,7 @@ func (c *Client) sendReadItemEpisodes(ctx context.Context, params ReadItemEpisod
 		}
 		pathParts[1] = encoded
 	}
-	pathParts[2] = "/episodes"
+	pathParts[2] = "/episode"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -2213,7 +2213,7 @@ func (c *Client) sendReadItemEpisodes(ctx context.Context, params ReadItemEpisod
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeReadItemEpisodesResponse(resp)
+	result, err := decodeReadItemEpisodeResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

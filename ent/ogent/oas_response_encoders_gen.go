@@ -1371,9 +1371,9 @@ func encodeReadItemResponse(response ReadItemRes, w http.ResponseWriter, span tr
 	}
 }
 
-func encodeReadItemEpisodesResponse(response ReadItemEpisodesRes, w http.ResponseWriter, span trace.Span) error {
+func encodeReadItemEpisodeResponse(response ReadItemEpisodeRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *ItemEpisodesRead:
+	case *ItemEpisodeRead:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))

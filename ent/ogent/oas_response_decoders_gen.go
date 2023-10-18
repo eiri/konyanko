@@ -3366,7 +3366,7 @@ func decodeReadItemResponse(resp *http.Response) (res ReadItemRes, _ error) {
 	return res, validate.UnexpectedStatusCode(resp.StatusCode)
 }
 
-func decodeReadItemEpisodesResponse(resp *http.Response) (res ReadItemEpisodesRes, _ error) {
+func decodeReadItemEpisodeResponse(resp *http.Response) (res ReadItemEpisodeRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -3382,7 +3382,7 @@ func decodeReadItemEpisodesResponse(resp *http.Response) (res ReadItemEpisodesRe
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response ItemEpisodesRead
+			var response ItemEpisodeRead
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

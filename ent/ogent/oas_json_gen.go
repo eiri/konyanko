@@ -1018,9 +1018,9 @@ func (s *CreateItemReq) encodeFields(e *jx.Encoder) {
 		json.EncodeDateTime(e, s.PublishDate)
 	}
 	{
-		if s.Episodes.Set {
-			e.FieldStart("episodes")
-			s.Episodes.Encode(e)
+		if s.Episode.Set {
+			e.FieldStart("episode")
+			s.Episode.Encode(e)
 		}
 	}
 }
@@ -1031,7 +1031,7 @@ var jsonFieldsNameOfCreateItemReq = [6]string{
 	2: "file_name",
 	3: "file_size",
 	4: "publish_date",
-	5: "episodes",
+	5: "episode",
 }
 
 // Decode decodes CreateItemReq from json.
@@ -1103,15 +1103,15 @@ func (s *CreateItemReq) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"publish_date\"")
 			}
-		case "episodes":
+		case "episode":
 			if err := func() error {
-				s.Episodes.Reset()
-				if err := s.Episodes.Decode(d); err != nil {
+				s.Episode.Reset()
+				if err := s.Episode.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"episodes\"")
+				return errors.Wrap(err, "decode field \"episode\"")
 			}
 		default:
 			return d.Skip()
@@ -2608,14 +2608,14 @@ func (s *ItemCreate) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *ItemEpisodesRead) Encode(e *jx.Encoder) {
+func (s *ItemEpisodeRead) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *ItemEpisodesRead) encodeFields(e *jx.Encoder) {
+func (s *ItemEpisodeRead) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("id")
 		e.Int(s.ID)
@@ -2648,7 +2648,7 @@ func (s *ItemEpisodesRead) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfItemEpisodesRead = [6]string{
+var jsonFieldsNameOfItemEpisodeRead = [6]string{
 	0: "id",
 	1: "episode_number",
 	2: "anime_season",
@@ -2657,10 +2657,10 @@ var jsonFieldsNameOfItemEpisodesRead = [6]string{
 	5: "audio_codec",
 }
 
-// Decode decodes ItemEpisodesRead from json.
-func (s *ItemEpisodesRead) Decode(d *jx.Decoder) error {
+// Decode decodes ItemEpisodeRead from json.
+func (s *ItemEpisodeRead) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode ItemEpisodesRead to nil")
+		return errors.New("invalid: unable to decode ItemEpisodeRead to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -2737,7 +2737,7 @@ func (s *ItemEpisodesRead) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode ItemEpisodesRead")
+		return errors.Wrap(err, "decode ItemEpisodeRead")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -2754,8 +2754,8 @@ func (s *ItemEpisodesRead) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfItemEpisodesRead) {
-					name = jsonFieldsNameOfItemEpisodesRead[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfItemEpisodeRead) {
+					name = jsonFieldsNameOfItemEpisodeRead[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -2776,14 +2776,14 @@ func (s *ItemEpisodesRead) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *ItemEpisodesRead) MarshalJSON() ([]byte, error) {
+func (s *ItemEpisodeRead) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ItemEpisodesRead) UnmarshalJSON(data []byte) error {
+func (s *ItemEpisodeRead) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -5208,9 +5208,9 @@ func (s *UpdateItemReq) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Episodes.Set {
-			e.FieldStart("episodes")
-			s.Episodes.Encode(e)
+		if s.Episode.Set {
+			e.FieldStart("episode")
+			s.Episode.Encode(e)
 		}
 	}
 }
@@ -5221,7 +5221,7 @@ var jsonFieldsNameOfUpdateItemReq = [6]string{
 	2: "file_name",
 	3: "file_size",
 	4: "publish_date",
-	5: "episodes",
+	5: "episode",
 }
 
 // Decode decodes UpdateItemReq from json.
@@ -5282,15 +5282,15 @@ func (s *UpdateItemReq) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"publish_date\"")
 			}
-		case "episodes":
+		case "episode":
 			if err := func() error {
-				s.Episodes.Reset()
-				if err := s.Episodes.Decode(d); err != nil {
+				s.Episode.Reset()
+				if err := s.Episode.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"episodes\"")
+				return errors.Wrap(err, "decode field \"episode\"")
 			}
 		default:
 			return d.Skip()

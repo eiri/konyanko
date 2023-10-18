@@ -36,24 +36,24 @@ type Item struct {
 
 // ItemEdges holds the relations/edges for other nodes in the graph.
 type ItemEdges struct {
-	// Episodes holds the value of the episodes edge.
-	Episodes *Episode `json:"episodes,omitempty"`
+	// Episode holds the value of the episode edge.
+	Episode *Episode `json:"episode,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// EpisodesOrErr returns the Episodes value or an error if the edge
+// EpisodeOrErr returns the Episode value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ItemEdges) EpisodesOrErr() (*Episode, error) {
+func (e ItemEdges) EpisodeOrErr() (*Episode, error) {
 	if e.loadedTypes[0] {
-		if e.Episodes == nil {
+		if e.Episode == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: episode.Label}
 		}
-		return e.Episodes, nil
+		return e.Episode, nil
 	}
-	return nil, &NotLoadedError{edge: "episodes"}
+	return nil, &NotLoadedError{edge: "episode"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -132,9 +132,9 @@ func (i *Item) Value(name string) (ent.Value, error) {
 	return i.selectValues.Get(name)
 }
 
-// QueryEpisodes queries the "episodes" edge of the Item entity.
-func (i *Item) QueryEpisodes() *EpisodeQuery {
-	return NewItemClient(i.config).QueryEpisodes(i)
+// QueryEpisode queries the "episode" edge of the Item entity.
+func (i *Item) QueryEpisode() *EpisodeQuery {
+	return NewItemClient(i.config).QueryEpisode(i)
 }
 
 // Update returns a builder for updating this Item.

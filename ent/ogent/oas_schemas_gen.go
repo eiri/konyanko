@@ -310,7 +310,7 @@ type CreateItemReq struct {
 	FileName    string    `json:"file_name"`
 	FileSize    int       `json:"file_size"`
 	PublishDate time.Time `json:"publish_date"`
-	Episodes    OptInt    `json:"episodes"`
+	Episode     OptInt    `json:"episode"`
 }
 
 // GetViewURL returns the value of ViewURL.
@@ -338,9 +338,9 @@ func (s *CreateItemReq) GetPublishDate() time.Time {
 	return s.PublishDate
 }
 
-// GetEpisodes returns the value of Episodes.
-func (s *CreateItemReq) GetEpisodes() OptInt {
-	return s.Episodes
+// GetEpisode returns the value of Episode.
+func (s *CreateItemReq) GetEpisode() OptInt {
+	return s.Episode
 }
 
 // SetViewURL sets the value of ViewURL.
@@ -368,9 +368,9 @@ func (s *CreateItemReq) SetPublishDate(val time.Time) {
 	s.PublishDate = val
 }
 
-// SetEpisodes sets the value of Episodes.
-func (s *CreateItemReq) SetEpisodes(val OptInt) {
-	s.Episodes = val
+// SetEpisode sets the value of Episode.
+func (s *CreateItemReq) SetEpisode(val OptInt) {
+	s.Episode = val
 }
 
 type CreateReleaseGroupReq struct {
@@ -904,8 +904,8 @@ func (s *ItemCreate) SetPublishDate(val OptDateTime) {
 
 func (*ItemCreate) createItemRes() {}
 
-// Ref: #/components/schemas/Item_EpisodesRead
-type ItemEpisodesRead struct {
+// Ref: #/components/schemas/Item_EpisodeRead
+type ItemEpisodeRead struct {
 	ID            int       `json:"id"`
 	EpisodeNumber int       `json:"episode_number"`
 	AnimeSeason   int       `json:"anime_season"`
@@ -915,66 +915,66 @@ type ItemEpisodesRead struct {
 }
 
 // GetID returns the value of ID.
-func (s *ItemEpisodesRead) GetID() int {
+func (s *ItemEpisodeRead) GetID() int {
 	return s.ID
 }
 
 // GetEpisodeNumber returns the value of EpisodeNumber.
-func (s *ItemEpisodesRead) GetEpisodeNumber() int {
+func (s *ItemEpisodeRead) GetEpisodeNumber() int {
 	return s.EpisodeNumber
 }
 
 // GetAnimeSeason returns the value of AnimeSeason.
-func (s *ItemEpisodesRead) GetAnimeSeason() int {
+func (s *ItemEpisodeRead) GetAnimeSeason() int {
 	return s.AnimeSeason
 }
 
 // GetResolution returns the value of Resolution.
-func (s *ItemEpisodesRead) GetResolution() OptString {
+func (s *ItemEpisodeRead) GetResolution() OptString {
 	return s.Resolution
 }
 
 // GetVideoCodec returns the value of VideoCodec.
-func (s *ItemEpisodesRead) GetVideoCodec() OptString {
+func (s *ItemEpisodeRead) GetVideoCodec() OptString {
 	return s.VideoCodec
 }
 
 // GetAudioCodec returns the value of AudioCodec.
-func (s *ItemEpisodesRead) GetAudioCodec() OptString {
+func (s *ItemEpisodeRead) GetAudioCodec() OptString {
 	return s.AudioCodec
 }
 
 // SetID sets the value of ID.
-func (s *ItemEpisodesRead) SetID(val int) {
+func (s *ItemEpisodeRead) SetID(val int) {
 	s.ID = val
 }
 
 // SetEpisodeNumber sets the value of EpisodeNumber.
-func (s *ItemEpisodesRead) SetEpisodeNumber(val int) {
+func (s *ItemEpisodeRead) SetEpisodeNumber(val int) {
 	s.EpisodeNumber = val
 }
 
 // SetAnimeSeason sets the value of AnimeSeason.
-func (s *ItemEpisodesRead) SetAnimeSeason(val int) {
+func (s *ItemEpisodeRead) SetAnimeSeason(val int) {
 	s.AnimeSeason = val
 }
 
 // SetResolution sets the value of Resolution.
-func (s *ItemEpisodesRead) SetResolution(val OptString) {
+func (s *ItemEpisodeRead) SetResolution(val OptString) {
 	s.Resolution = val
 }
 
 // SetVideoCodec sets the value of VideoCodec.
-func (s *ItemEpisodesRead) SetVideoCodec(val OptString) {
+func (s *ItemEpisodeRead) SetVideoCodec(val OptString) {
 	s.VideoCodec = val
 }
 
 // SetAudioCodec sets the value of AudioCodec.
-func (s *ItemEpisodesRead) SetAudioCodec(val OptString) {
+func (s *ItemEpisodeRead) SetAudioCodec(val OptString) {
 	s.AudioCodec = val
 }
 
-func (*ItemEpisodesRead) readItemEpisodesRes() {}
+func (*ItemEpisodeRead) readItemEpisodeRes() {}
 
 // Ref: #/components/schemas/ItemList
 type ItemList struct {
@@ -1407,7 +1407,7 @@ func (*R400) readEpisodeItemRes()          {}
 func (*R400) readEpisodeReleaseGroupRes()  {}
 func (*R400) readEpisodeRes()              {}
 func (*R400) readEpisodeTitleRes()         {}
-func (*R400) readItemEpisodesRes()         {}
+func (*R400) readItemEpisodeRes()          {}
 func (*R400) readItemRes()                 {}
 func (*R400) readReleaseGroupRes()         {}
 func (*R400) updateAnimeRes()              {}
@@ -1466,7 +1466,7 @@ func (*R404) readEpisodeItemRes()          {}
 func (*R404) readEpisodeReleaseGroupRes()  {}
 func (*R404) readEpisodeRes()              {}
 func (*R404) readEpisodeTitleRes()         {}
-func (*R404) readItemEpisodesRes()         {}
+func (*R404) readItemEpisodeRes()          {}
 func (*R404) readItemRes()                 {}
 func (*R404) readReleaseGroupRes()         {}
 func (*R404) updateAnimeRes()              {}
@@ -1529,7 +1529,7 @@ func (*R409) readEpisodeItemRes()          {}
 func (*R409) readEpisodeReleaseGroupRes()  {}
 func (*R409) readEpisodeRes()              {}
 func (*R409) readEpisodeTitleRes()         {}
-func (*R409) readItemEpisodesRes()         {}
+func (*R409) readItemEpisodeRes()          {}
 func (*R409) readItemRes()                 {}
 func (*R409) readReleaseGroupRes()         {}
 func (*R409) updateAnimeRes()              {}
@@ -1592,7 +1592,7 @@ func (*R500) readEpisodeItemRes()          {}
 func (*R500) readEpisodeReleaseGroupRes()  {}
 func (*R500) readEpisodeRes()              {}
 func (*R500) readEpisodeTitleRes()         {}
-func (*R500) readItemEpisodesRes()         {}
+func (*R500) readItemEpisodeRes()          {}
 func (*R500) readItemRes()                 {}
 func (*R500) readReleaseGroupRes()         {}
 func (*R500) updateAnimeRes()              {}
@@ -1902,7 +1902,7 @@ type UpdateItemReq struct {
 	FileName    OptString   `json:"file_name"`
 	FileSize    OptInt      `json:"file_size"`
 	PublishDate OptDateTime `json:"publish_date"`
-	Episodes    OptInt      `json:"episodes"`
+	Episode     OptInt      `json:"episode"`
 }
 
 // GetViewURL returns the value of ViewURL.
@@ -1930,9 +1930,9 @@ func (s *UpdateItemReq) GetPublishDate() OptDateTime {
 	return s.PublishDate
 }
 
-// GetEpisodes returns the value of Episodes.
-func (s *UpdateItemReq) GetEpisodes() OptInt {
-	return s.Episodes
+// GetEpisode returns the value of Episode.
+func (s *UpdateItemReq) GetEpisode() OptInt {
+	return s.Episode
 }
 
 // SetViewURL sets the value of ViewURL.
@@ -1960,9 +1960,9 @@ func (s *UpdateItemReq) SetPublishDate(val OptDateTime) {
 	s.PublishDate = val
 }
 
-// SetEpisodes sets the value of Episodes.
-func (s *UpdateItemReq) SetEpisodes(val OptInt) {
-	s.Episodes = val
+// SetEpisode sets the value of Episode.
+func (s *UpdateItemReq) SetEpisode(val OptInt) {
+	s.Episode = val
 }
 
 type UpdateReleaseGroupReq struct {

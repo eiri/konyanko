@@ -355,21 +355,21 @@ func PublishDateLTE(v time.Time) predicate.Item {
 	return predicate.Item(sql.FieldLTE(FieldPublishDate, v))
 }
 
-// HasEpisodes applies the HasEdge predicate on the "episodes" edge.
-func HasEpisodes() predicate.Item {
+// HasEpisode applies the HasEdge predicate on the "episode" edge.
+func HasEpisode() predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, EpisodesTable, EpisodesColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, EpisodeTable, EpisodeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasEpisodesWith applies the HasEdge predicate on the "episodes" edge with a given conditions (other predicates).
-func HasEpisodesWith(preds ...predicate.Episode) predicate.Item {
+// HasEpisodeWith applies the HasEdge predicate on the "episode" edge with a given conditions (other predicates).
+func HasEpisodeWith(preds ...predicate.Episode) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := newEpisodesStep()
+		step := newEpisodeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

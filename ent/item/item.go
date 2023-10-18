@@ -24,17 +24,17 @@ const (
 	FieldFileSize = "file_size"
 	// FieldPublishDate holds the string denoting the publish_date field in the database.
 	FieldPublishDate = "publish_date"
-	// EdgeEpisodes holds the string denoting the episodes edge name in mutations.
-	EdgeEpisodes = "episodes"
+	// EdgeEpisode holds the string denoting the episode edge name in mutations.
+	EdgeEpisode = "episode"
 	// Table holds the table name of the item in the database.
 	Table = "items"
-	// EpisodesTable is the table that holds the episodes relation/edge.
-	EpisodesTable = "episodes"
-	// EpisodesInverseTable is the table name for the Episode entity.
+	// EpisodeTable is the table that holds the episode relation/edge.
+	EpisodeTable = "episodes"
+	// EpisodeInverseTable is the table name for the Episode entity.
 	// It exists in this package in order to avoid circular dependency with the "episode" package.
-	EpisodesInverseTable = "episodes"
-	// EpisodesColumn is the table column denoting the episodes relation/edge.
-	EpisodesColumn = "item_id"
+	EpisodeInverseTable = "episodes"
+	// EpisodeColumn is the table column denoting the episode relation/edge.
+	EpisodeColumn = "item_id"
 )
 
 // Columns holds all SQL columns for item fields.
@@ -99,16 +99,16 @@ func ByPublishDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPublishDate, opts...).ToFunc()
 }
 
-// ByEpisodesField orders the results by episodes field.
-func ByEpisodesField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByEpisodeField orders the results by episode field.
+func ByEpisodeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newEpisodesStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newEpisodeStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newEpisodesStep() *sqlgraph.Step {
+func newEpisodeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(EpisodesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, EpisodesTable, EpisodesColumn),
+		sqlgraph.To(EpisodeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, EpisodeTable, EpisodeColumn),
 	)
 }

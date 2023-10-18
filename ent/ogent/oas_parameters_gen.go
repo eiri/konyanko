@@ -1677,13 +1677,13 @@ func decodeReadItemParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 	return params, nil
 }
 
-// ReadItemEpisodesParams is parameters of readItemEpisodes operation.
-type ReadItemEpisodesParams struct {
+// ReadItemEpisodeParams is parameters of readItemEpisode operation.
+type ReadItemEpisodeParams struct {
 	// ID of the Item.
 	ID int
 }
 
-func unpackReadItemEpisodesParams(packed middleware.Parameters) (params ReadItemEpisodesParams) {
+func unpackReadItemEpisodeParams(packed middleware.Parameters) (params ReadItemEpisodeParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "id",
@@ -1694,7 +1694,7 @@ func unpackReadItemEpisodesParams(packed middleware.Parameters) (params ReadItem
 	return params
 }
 
-func decodeReadItemEpisodesParams(args [1]string, argsEscaped bool, r *http.Request) (params ReadItemEpisodesParams, _ error) {
+func decodeReadItemEpisodeParams(args [1]string, argsEscaped bool, r *http.Request) (params ReadItemEpisodeParams, _ error) {
 	// Decode path: id.
 	if err := func() error {
 		param := args[0]

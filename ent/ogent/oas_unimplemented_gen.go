@@ -193,12 +193,12 @@ func (UnimplementedHandler) ReadItem(ctx context.Context, params ReadItemParams)
 	return r, ht.ErrNotImplemented
 }
 
-// ReadItemEpisodes implements readItemEpisodes operation.
+// ReadItemEpisode implements readItemEpisode operation.
 //
 // Find the attached Episode of the Item with the given ID.
 //
-// GET /items/{id}/episodes
-func (UnimplementedHandler) ReadItemEpisodes(ctx context.Context, params ReadItemEpisodesParams) (r ReadItemEpisodesRes, _ error) {
+// GET /items/{id}/episode
+func (UnimplementedHandler) ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (r ReadItemEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
