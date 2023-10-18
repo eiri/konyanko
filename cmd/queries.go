@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/eiri/konyanko/ent"
 	"github.com/eiri/konyanko/ent/anime"
@@ -38,9 +39,19 @@ var (
 		Use:   "anime",
 		Short: "Print all the available episods in JSON format",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			//FIXME! read date from command line
+			d := time.Now()
 			ctx := context.Background()
-			animes, err := client.Anime.
+			animes, err := client.Item.
 				Query().
+				Where(
+					item.And(
+						item.PublishDateLTE(d),
+						item.PublishDateGT(d.AddDate(0, 0, -1)),
+					),
+				).
+				QueryEpisode().
+				QueryTitle().
 				WithEpisodes(func(q *ent.EpisodeQuery) {
 					q.WithItem()
 					q.WithReleaseGroup()
@@ -67,7 +78,7 @@ var (
 			items, err := client.Item.
 				Query().
 				Select(item.FieldFileName, item.FieldViewURL).
-				Where(item.Not(item.HasEpisodes())).
+				Where(item.Not(item.HasEpisode())).
 				All(ctx)
 			if err != nil {
 				return err
@@ -88,13 +99,3 @@ func init() {
 	listCmd.AddCommand(animeCmd)
 	listCmd.AddCommand(irregularCmd)
 }
-
-/*
-	titles, err := client.Anime.
-		Query().
-		WithEpisodes(func(q *ent.EpisodeQuery) {
-			q.WithItem()
-			q.WithReleaseGroup()
-		}).
-		All(ctx)
-*/
