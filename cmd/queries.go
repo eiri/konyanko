@@ -35,12 +35,15 @@ var (
 		},
 	}
 
+	day      string
 	animeCmd = &cobra.Command{
 		Use:   "anime",
 		Short: "Print all the available episods in JSON format",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			//FIXME! read date from command line
-			d := time.Now()
+			d, err := time.Parse(time.DateOnly, day)
+			if err != nil {
+				return err
+			}
 			ctx := context.Background()
 			animes, err := client.Item.
 				Query().
@@ -95,6 +98,8 @@ var (
 )
 
 func init() {
+	animeCmd.Flags().StringVarP(&day, "day", "d", time.Now().Format(time.DateOnly), "A day to print records for")
+
 	listCmd.AddCommand(titlesCmd)
 	listCmd.AddCommand(animeCmd)
 	listCmd.AddCommand(irregularCmd)
