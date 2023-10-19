@@ -49,17 +49,20 @@ server: $(PROJECT)
 schema: ENTITY := Episode
 schema:
 	go run -mod=mod entgo.io/ent/cmd/ent new $(ENTITY)
+	go mod tidy
 
 .PHONY: cli-command
 cli-command: COMMAND := queries
 cli-command:
 	go run -mod=mod github.com/spf13/cobra-cli add $(COMMAND) -p 'listCmd'
-# 	go run -mod=mod github.com/spf13/cobra-cli add $(COMMAND)
+	go mod tidy
 
 .PHONY: describe
 describe:
 	go run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema
+	go mod tidy
 
 .PHONY: generate
 generate:
 	go generate ./ent/...
+	go mod tidy
