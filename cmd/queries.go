@@ -44,19 +44,18 @@ var (
 			if err != nil {
 				return err
 			}
+
 			ctx := context.Background()
 			animes, err := client.Item.
 				Query().
 				Where(
 					item.And(
-						item.PublishDateLTE(d),
-						item.PublishDateGT(d.AddDate(0, 0, -1)),
+						item.PublishDateGTE(d),
+						item.PublishDateLT(d.AddDate(0, 0, 1)),
 					),
 				).
-				QueryEpisode().
-				QueryTitle().
-				WithEpisodes(func(q *ent.EpisodeQuery) {
-					q.WithItem()
+				WithEpisode(func(q *ent.EpisodeQuery) {
+					q.WithTitle()
 					q.WithReleaseGroup()
 				}).
 				All(ctx)

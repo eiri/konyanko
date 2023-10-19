@@ -31,11 +31,11 @@ list-titles: $(PROJECT)
 
 .PHONY: list-anime
 list-anime: $(PROJECT)
-	@./$< list anime
+	@./$< list anime --day 2023-10-10
 
-.PHONY: gron-list
-gron-list:
-	$(MAKE) list anime 2>&1 | tail -n +1 | jq -cs . | gron
+.PHONY: list-anime-gron
+list-anime-gron:
+	$(MAKE) list-anime 2>&1 | tail -n +1 | gron
 
 .PHONY: list-irregular
 list-irregular: $(PROJECT)
