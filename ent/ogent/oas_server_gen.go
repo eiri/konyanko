@@ -12,157 +12,157 @@ type Handler interface {
 	//
 	// Creates a new Anime and persists it to storage.
 	//
-	// POST /animes
+	// POST /api/v1/animes
 	CreateAnime(ctx context.Context, req *CreateAnimeReq) (CreateAnimeRes, error)
 	// CreateEpisode implements createEpisode operation.
 	//
 	// Creates a new Episode and persists it to storage.
 	//
-	// POST /episodes
+	// POST /api/v1/episodes
 	CreateEpisode(ctx context.Context, req *CreateEpisodeReq) (CreateEpisodeRes, error)
 	// CreateItem implements createItem operation.
 	//
 	// Creates a new Item and persists it to storage.
 	//
-	// POST /items
+	// POST /api/v1/items
 	CreateItem(ctx context.Context, req *CreateItemReq) (CreateItemRes, error)
 	// CreateReleaseGroup implements createReleaseGroup operation.
 	//
 	// Creates a new ReleaseGroup and persists it to storage.
 	//
-	// POST /release-groups
+	// POST /api/v1/release-groups
 	CreateReleaseGroup(ctx context.Context, req *CreateReleaseGroupReq) (CreateReleaseGroupRes, error)
 	// DeleteAnime implements deleteAnime operation.
 	//
 	// Deletes the Anime with the requested ID.
 	//
-	// DELETE /animes/{id}
+	// DELETE /api/v1/animes/{id}
 	DeleteAnime(ctx context.Context, params DeleteAnimeParams) (DeleteAnimeRes, error)
 	// DeleteEpisode implements deleteEpisode operation.
 	//
 	// Deletes the Episode with the requested ID.
 	//
-	// DELETE /episodes/{id}
+	// DELETE /api/v1/episodes/{id}
 	DeleteEpisode(ctx context.Context, params DeleteEpisodeParams) (DeleteEpisodeRes, error)
 	// DeleteItem implements deleteItem operation.
 	//
 	// Deletes the Item with the requested ID.
 	//
-	// DELETE /items/{id}
+	// DELETE /api/v1/items/{id}
 	DeleteItem(ctx context.Context, params DeleteItemParams) (DeleteItemRes, error)
 	// DeleteReleaseGroup implements deleteReleaseGroup operation.
 	//
 	// Deletes the ReleaseGroup with the requested ID.
 	//
-	// DELETE /release-groups/{id}
+	// DELETE /api/v1/release-groups/{id}
 	DeleteReleaseGroup(ctx context.Context, params DeleteReleaseGroupParams) (DeleteReleaseGroupRes, error)
 	// ListAnime implements listAnime operation.
 	//
 	// List Animes.
 	//
-	// GET /animes
+	// GET /api/v1/animes
 	ListAnime(ctx context.Context, params ListAnimeParams) (ListAnimeRes, error)
 	// ListAnimeEpisodes implements listAnimeEpisodes operation.
 	//
 	// List attached Episodes.
 	//
-	// GET /animes/{id}/episodes
+	// GET /api/v1/animes/{id}/episodes
 	ListAnimeEpisodes(ctx context.Context, params ListAnimeEpisodesParams) (ListAnimeEpisodesRes, error)
 	// ListEpisode implements listEpisode operation.
 	//
 	// List Episodes.
 	//
-	// GET /episodes
+	// GET /api/v1/episodes
 	ListEpisode(ctx context.Context, params ListEpisodeParams) (ListEpisodeRes, error)
 	// ListItem implements listItem operation.
 	//
 	// List Items.
 	//
-	// GET /items
+	// GET /api/v1/items
 	ListItem(ctx context.Context, params ListItemParams) (ListItemRes, error)
 	// ListReleaseGroup implements listReleaseGroup operation.
 	//
 	// List ReleaseGroups.
 	//
-	// GET /release-groups
+	// GET /api/v1/release-groups
 	ListReleaseGroup(ctx context.Context, params ListReleaseGroupParams) (ListReleaseGroupRes, error)
 	// ListReleaseGroupEpisodes implements listReleaseGroupEpisodes operation.
 	//
 	// List attached Episodes.
 	//
-	// GET /release-groups/{id}/episodes
+	// GET /api/v1/release-groups/{id}/episodes
 	ListReleaseGroupEpisodes(ctx context.Context, params ListReleaseGroupEpisodesParams) (ListReleaseGroupEpisodesRes, error)
 	// ReadAnime implements readAnime operation.
 	//
 	// Finds the Anime with the requested ID and returns it.
 	//
-	// GET /animes/{id}
+	// GET /api/v1/animes/{id}
 	ReadAnime(ctx context.Context, params ReadAnimeParams) (ReadAnimeRes, error)
 	// ReadEpisode implements readEpisode operation.
 	//
 	// Finds the Episode with the requested ID and returns it.
 	//
-	// GET /episodes/{id}
+	// GET /api/v1/episodes/{id}
 	ReadEpisode(ctx context.Context, params ReadEpisodeParams) (ReadEpisodeRes, error)
 	// ReadEpisodeItem implements readEpisodeItem operation.
 	//
 	// Find the attached Item of the Episode with the given ID.
 	//
-	// GET /episodes/{id}/item
+	// GET /api/v1/episodes/{id}/item
 	ReadEpisodeItem(ctx context.Context, params ReadEpisodeItemParams) (ReadEpisodeItemRes, error)
 	// ReadEpisodeReleaseGroup implements readEpisodeReleaseGroup operation.
 	//
 	// Find the attached ReleaseGroup of the Episode with the given ID.
 	//
-	// GET /episodes/{id}/release-group
+	// GET /api/v1/episodes/{id}/release-group
 	ReadEpisodeReleaseGroup(ctx context.Context, params ReadEpisodeReleaseGroupParams) (ReadEpisodeReleaseGroupRes, error)
 	// ReadEpisodeTitle implements readEpisodeTitle operation.
 	//
 	// Find the attached Anime of the Episode with the given ID.
 	//
-	// GET /episodes/{id}/title
+	// GET /api/v1/episodes/{id}/title
 	ReadEpisodeTitle(ctx context.Context, params ReadEpisodeTitleParams) (ReadEpisodeTitleRes, error)
 	// ReadItem implements readItem operation.
 	//
 	// Finds the Item with the requested ID and returns it.
 	//
-	// GET /items/{id}
+	// GET /api/v1/items/{id}
 	ReadItem(ctx context.Context, params ReadItemParams) (ReadItemRes, error)
 	// ReadItemEpisode implements readItemEpisode operation.
 	//
 	// Find the attached Episode of the Item with the given ID.
 	//
-	// GET /items/{id}/episode
+	// GET /api/v1/items/{id}/episode
 	ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error)
 	// ReadReleaseGroup implements readReleaseGroup operation.
 	//
 	// Finds the ReleaseGroup with the requested ID and returns it.
 	//
-	// GET /release-groups/{id}
+	// GET /api/v1/release-groups/{id}
 	ReadReleaseGroup(ctx context.Context, params ReadReleaseGroupParams) (ReadReleaseGroupRes, error)
 	// UpdateAnime implements updateAnime operation.
 	//
 	// Updates a Anime and persists changes to storage.
 	//
-	// PATCH /animes/{id}
+	// PATCH /api/v1/animes/{id}
 	UpdateAnime(ctx context.Context, req *UpdateAnimeReq, params UpdateAnimeParams) (UpdateAnimeRes, error)
 	// UpdateEpisode implements updateEpisode operation.
 	//
 	// Updates a Episode and persists changes to storage.
 	//
-	// PATCH /episodes/{id}
+	// PATCH /api/v1/episodes/{id}
 	UpdateEpisode(ctx context.Context, req *UpdateEpisodeReq, params UpdateEpisodeParams) (UpdateEpisodeRes, error)
 	// UpdateItem implements updateItem operation.
 	//
 	// Updates a Item and persists changes to storage.
 	//
-	// PATCH /items/{id}
+	// PATCH /api/v1/items/{id}
 	UpdateItem(ctx context.Context, req *UpdateItemReq, params UpdateItemParams) (UpdateItemRes, error)
 	// UpdateReleaseGroup implements updateReleaseGroup operation.
 	//
 	// Updates a ReleaseGroup and persists changes to storage.
 	//
-	// PATCH /release-groups/{id}
+	// PATCH /api/v1/release-groups/{id}
 	UpdateReleaseGroup(ctx context.Context, req *UpdateReleaseGroupReq, params UpdateReleaseGroupParams) (UpdateReleaseGroupRes, error)
 }
 

@@ -14,7 +14,17 @@ import (
 
 func main() {
 	spec := new(ogen.Spec)
-	oas, err := entoas.NewExtension(entoas.Spec(spec))
+	oas, err := entoas.NewExtension(
+		entoas.Spec(spec),
+		entoas.Mutations(func(graph *gen.Graph, spec *ogen.Spec) error {
+			p := make(ogen.Paths)
+			for k, v := range spec.Paths {
+				p["/api/v1"+k] = v
+			}
+			spec.Paths = p
+			return nil
+		}),
+	)
 	if err != nil {
 		log.Fatalf("creating entoas extension: %v", err)
 	}

@@ -49,8 +49,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/"
-			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+		case '/': // Prefix: "/api/v1/"
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
@@ -509,8 +509,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/"
-			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+		case '/': // Prefix: "/api/v1/"
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
@@ -533,7 +533,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "ListAnime"
 						r.summary = "List Animes"
 						r.operationID = "listAnime"
-						r.pathPattern = "/animes"
+						r.pathPattern = "/api/v1/animes"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -541,7 +541,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "CreateAnime"
 						r.summary = "Create a new Anime"
 						r.operationID = "createAnime"
-						r.pathPattern = "/animes"
+						r.pathPattern = "/api/v1/animes"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -572,7 +572,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "DeleteAnime"
 							r.summary = "Deletes a Anime by ID"
 							r.operationID = "deleteAnime"
-							r.pathPattern = "/animes/{id}"
+							r.pathPattern = "/api/v1/animes/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -580,7 +580,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "ReadAnime"
 							r.summary = "Find a Anime by ID"
 							r.operationID = "readAnime"
-							r.pathPattern = "/animes/{id}"
+							r.pathPattern = "/api/v1/animes/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -588,7 +588,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "UpdateAnime"
 							r.summary = "Updates a Anime"
 							r.operationID = "updateAnime"
-							r.pathPattern = "/animes/{id}"
+							r.pathPattern = "/api/v1/animes/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -611,7 +611,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = "ListAnimeEpisodes"
 								r.summary = "List attached Episodes"
 								r.operationID = "listAnimeEpisodes"
-								r.pathPattern = "/animes/{id}/episodes"
+								r.pathPattern = "/api/v1/animes/{id}/episodes"
 								r.args = args
 								r.count = 1
 								return r, true
@@ -634,7 +634,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "ListEpisode"
 						r.summary = "List Episodes"
 						r.operationID = "listEpisode"
-						r.pathPattern = "/episodes"
+						r.pathPattern = "/api/v1/episodes"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -642,7 +642,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "CreateEpisode"
 						r.summary = "Create a new Episode"
 						r.operationID = "createEpisode"
-						r.pathPattern = "/episodes"
+						r.pathPattern = "/api/v1/episodes"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -673,7 +673,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "DeleteEpisode"
 							r.summary = "Deletes a Episode by ID"
 							r.operationID = "deleteEpisode"
-							r.pathPattern = "/episodes/{id}"
+							r.pathPattern = "/api/v1/episodes/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -681,7 +681,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "ReadEpisode"
 							r.summary = "Find a Episode by ID"
 							r.operationID = "readEpisode"
-							r.pathPattern = "/episodes/{id}"
+							r.pathPattern = "/api/v1/episodes/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -689,7 +689,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "UpdateEpisode"
 							r.summary = "Updates a Episode"
 							r.operationID = "updateEpisode"
-							r.pathPattern = "/episodes/{id}"
+							r.pathPattern = "/api/v1/episodes/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -723,7 +723,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = "ReadEpisodeItem"
 									r.summary = "Find the attached Item"
 									r.operationID = "readEpisodeItem"
-									r.pathPattern = "/episodes/{id}/item"
+									r.pathPattern = "/api/v1/episodes/{id}/item"
 									r.args = args
 									r.count = 1
 									return r, true
@@ -745,7 +745,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = "ReadEpisodeReleaseGroup"
 									r.summary = "Find the attached ReleaseGroup"
 									r.operationID = "readEpisodeReleaseGroup"
-									r.pathPattern = "/episodes/{id}/release-group"
+									r.pathPattern = "/api/v1/episodes/{id}/release-group"
 									r.args = args
 									r.count = 1
 									return r, true
@@ -767,7 +767,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = "ReadEpisodeTitle"
 									r.summary = "Find the attached Anime"
 									r.operationID = "readEpisodeTitle"
-									r.pathPattern = "/episodes/{id}/title"
+									r.pathPattern = "/api/v1/episodes/{id}/title"
 									r.args = args
 									r.count = 1
 									return r, true
@@ -791,7 +791,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "ListItem"
 						r.summary = "List Items"
 						r.operationID = "listItem"
-						r.pathPattern = "/items"
+						r.pathPattern = "/api/v1/items"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -799,7 +799,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "CreateItem"
 						r.summary = "Create a new Item"
 						r.operationID = "createItem"
-						r.pathPattern = "/items"
+						r.pathPattern = "/api/v1/items"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -830,7 +830,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "DeleteItem"
 							r.summary = "Deletes a Item by ID"
 							r.operationID = "deleteItem"
-							r.pathPattern = "/items/{id}"
+							r.pathPattern = "/api/v1/items/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -838,7 +838,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "ReadItem"
 							r.summary = "Find a Item by ID"
 							r.operationID = "readItem"
-							r.pathPattern = "/items/{id}"
+							r.pathPattern = "/api/v1/items/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -846,7 +846,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "UpdateItem"
 							r.summary = "Updates a Item"
 							r.operationID = "updateItem"
-							r.pathPattern = "/items/{id}"
+							r.pathPattern = "/api/v1/items/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -869,7 +869,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = "ReadItemEpisode"
 								r.summary = "Find the attached Episode"
 								r.operationID = "readItemEpisode"
-								r.pathPattern = "/items/{id}/episode"
+								r.pathPattern = "/api/v1/items/{id}/episode"
 								r.args = args
 								r.count = 1
 								return r, true
@@ -892,7 +892,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "ListReleaseGroup"
 						r.summary = "List ReleaseGroups"
 						r.operationID = "listReleaseGroup"
-						r.pathPattern = "/release-groups"
+						r.pathPattern = "/api/v1/release-groups"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -900,7 +900,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = "CreateReleaseGroup"
 						r.summary = "Create a new ReleaseGroup"
 						r.operationID = "createReleaseGroup"
-						r.pathPattern = "/release-groups"
+						r.pathPattern = "/api/v1/release-groups"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -931,7 +931,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "DeleteReleaseGroup"
 							r.summary = "Deletes a ReleaseGroup by ID"
 							r.operationID = "deleteReleaseGroup"
-							r.pathPattern = "/release-groups/{id}"
+							r.pathPattern = "/api/v1/release-groups/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -939,7 +939,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "ReadReleaseGroup"
 							r.summary = "Find a ReleaseGroup by ID"
 							r.operationID = "readReleaseGroup"
-							r.pathPattern = "/release-groups/{id}"
+							r.pathPattern = "/api/v1/release-groups/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -947,7 +947,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "UpdateReleaseGroup"
 							r.summary = "Updates a ReleaseGroup"
 							r.operationID = "updateReleaseGroup"
-							r.pathPattern = "/release-groups/{id}"
+							r.pathPattern = "/api/v1/release-groups/{id}"
 							r.args = args
 							r.count = 1
 							return r, true
@@ -970,7 +970,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = "ListReleaseGroupEpisodes"
 								r.summary = "List attached Episodes"
 								r.operationID = "listReleaseGroupEpisodes"
-								r.pathPattern = "/release-groups/{id}/episodes"
+								r.pathPattern = "/api/v1/release-groups/{id}/episodes"
 								r.args = args
 								r.count = 1
 								return r, true

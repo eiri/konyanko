@@ -17,7 +17,7 @@ var _ Handler = UnimplementedHandler{}
 //
 // Creates a new Anime and persists it to storage.
 //
-// POST /animes
+// POST /api/v1/animes
 func (UnimplementedHandler) CreateAnime(ctx context.Context, req *CreateAnimeReq) (r CreateAnimeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -26,7 +26,7 @@ func (UnimplementedHandler) CreateAnime(ctx context.Context, req *CreateAnimeReq
 //
 // Creates a new Episode and persists it to storage.
 //
-// POST /episodes
+// POST /api/v1/episodes
 func (UnimplementedHandler) CreateEpisode(ctx context.Context, req *CreateEpisodeReq) (r CreateEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -35,7 +35,7 @@ func (UnimplementedHandler) CreateEpisode(ctx context.Context, req *CreateEpisod
 //
 // Creates a new Item and persists it to storage.
 //
-// POST /items
+// POST /api/v1/items
 func (UnimplementedHandler) CreateItem(ctx context.Context, req *CreateItemReq) (r CreateItemRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -44,7 +44,7 @@ func (UnimplementedHandler) CreateItem(ctx context.Context, req *CreateItemReq) 
 //
 // Creates a new ReleaseGroup and persists it to storage.
 //
-// POST /release-groups
+// POST /api/v1/release-groups
 func (UnimplementedHandler) CreateReleaseGroup(ctx context.Context, req *CreateReleaseGroupReq) (r CreateReleaseGroupRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -53,7 +53,7 @@ func (UnimplementedHandler) CreateReleaseGroup(ctx context.Context, req *CreateR
 //
 // Deletes the Anime with the requested ID.
 //
-// DELETE /animes/{id}
+// DELETE /api/v1/animes/{id}
 func (UnimplementedHandler) DeleteAnime(ctx context.Context, params DeleteAnimeParams) (r DeleteAnimeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -62,7 +62,7 @@ func (UnimplementedHandler) DeleteAnime(ctx context.Context, params DeleteAnimeP
 //
 // Deletes the Episode with the requested ID.
 //
-// DELETE /episodes/{id}
+// DELETE /api/v1/episodes/{id}
 func (UnimplementedHandler) DeleteEpisode(ctx context.Context, params DeleteEpisodeParams) (r DeleteEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -71,7 +71,7 @@ func (UnimplementedHandler) DeleteEpisode(ctx context.Context, params DeleteEpis
 //
 // Deletes the Item with the requested ID.
 //
-// DELETE /items/{id}
+// DELETE /api/v1/items/{id}
 func (UnimplementedHandler) DeleteItem(ctx context.Context, params DeleteItemParams) (r DeleteItemRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -80,7 +80,7 @@ func (UnimplementedHandler) DeleteItem(ctx context.Context, params DeleteItemPar
 //
 // Deletes the ReleaseGroup with the requested ID.
 //
-// DELETE /release-groups/{id}
+// DELETE /api/v1/release-groups/{id}
 func (UnimplementedHandler) DeleteReleaseGroup(ctx context.Context, params DeleteReleaseGroupParams) (r DeleteReleaseGroupRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -89,7 +89,7 @@ func (UnimplementedHandler) DeleteReleaseGroup(ctx context.Context, params Delet
 //
 // List Animes.
 //
-// GET /animes
+// GET /api/v1/animes
 func (UnimplementedHandler) ListAnime(ctx context.Context, params ListAnimeParams) (r ListAnimeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -98,7 +98,7 @@ func (UnimplementedHandler) ListAnime(ctx context.Context, params ListAnimeParam
 //
 // List attached Episodes.
 //
-// GET /animes/{id}/episodes
+// GET /api/v1/animes/{id}/episodes
 func (UnimplementedHandler) ListAnimeEpisodes(ctx context.Context, params ListAnimeEpisodesParams) (r ListAnimeEpisodesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -107,7 +107,7 @@ func (UnimplementedHandler) ListAnimeEpisodes(ctx context.Context, params ListAn
 //
 // List Episodes.
 //
-// GET /episodes
+// GET /api/v1/episodes
 func (UnimplementedHandler) ListEpisode(ctx context.Context, params ListEpisodeParams) (r ListEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -116,7 +116,7 @@ func (UnimplementedHandler) ListEpisode(ctx context.Context, params ListEpisodeP
 //
 // List Items.
 //
-// GET /items
+// GET /api/v1/items
 func (UnimplementedHandler) ListItem(ctx context.Context, params ListItemParams) (r ListItemRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -125,7 +125,7 @@ func (UnimplementedHandler) ListItem(ctx context.Context, params ListItemParams)
 //
 // List ReleaseGroups.
 //
-// GET /release-groups
+// GET /api/v1/release-groups
 func (UnimplementedHandler) ListReleaseGroup(ctx context.Context, params ListReleaseGroupParams) (r ListReleaseGroupRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -134,7 +134,7 @@ func (UnimplementedHandler) ListReleaseGroup(ctx context.Context, params ListRel
 //
 // List attached Episodes.
 //
-// GET /release-groups/{id}/episodes
+// GET /api/v1/release-groups/{id}/episodes
 func (UnimplementedHandler) ListReleaseGroupEpisodes(ctx context.Context, params ListReleaseGroupEpisodesParams) (r ListReleaseGroupEpisodesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -143,7 +143,7 @@ func (UnimplementedHandler) ListReleaseGroupEpisodes(ctx context.Context, params
 //
 // Finds the Anime with the requested ID and returns it.
 //
-// GET /animes/{id}
+// GET /api/v1/animes/{id}
 func (UnimplementedHandler) ReadAnime(ctx context.Context, params ReadAnimeParams) (r ReadAnimeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -152,7 +152,7 @@ func (UnimplementedHandler) ReadAnime(ctx context.Context, params ReadAnimeParam
 //
 // Finds the Episode with the requested ID and returns it.
 //
-// GET /episodes/{id}
+// GET /api/v1/episodes/{id}
 func (UnimplementedHandler) ReadEpisode(ctx context.Context, params ReadEpisodeParams) (r ReadEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -161,7 +161,7 @@ func (UnimplementedHandler) ReadEpisode(ctx context.Context, params ReadEpisodeP
 //
 // Find the attached Item of the Episode with the given ID.
 //
-// GET /episodes/{id}/item
+// GET /api/v1/episodes/{id}/item
 func (UnimplementedHandler) ReadEpisodeItem(ctx context.Context, params ReadEpisodeItemParams) (r ReadEpisodeItemRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -170,7 +170,7 @@ func (UnimplementedHandler) ReadEpisodeItem(ctx context.Context, params ReadEpis
 //
 // Find the attached ReleaseGroup of the Episode with the given ID.
 //
-// GET /episodes/{id}/release-group
+// GET /api/v1/episodes/{id}/release-group
 func (UnimplementedHandler) ReadEpisodeReleaseGroup(ctx context.Context, params ReadEpisodeReleaseGroupParams) (r ReadEpisodeReleaseGroupRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -179,7 +179,7 @@ func (UnimplementedHandler) ReadEpisodeReleaseGroup(ctx context.Context, params 
 //
 // Find the attached Anime of the Episode with the given ID.
 //
-// GET /episodes/{id}/title
+// GET /api/v1/episodes/{id}/title
 func (UnimplementedHandler) ReadEpisodeTitle(ctx context.Context, params ReadEpisodeTitleParams) (r ReadEpisodeTitleRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -188,7 +188,7 @@ func (UnimplementedHandler) ReadEpisodeTitle(ctx context.Context, params ReadEpi
 //
 // Finds the Item with the requested ID and returns it.
 //
-// GET /items/{id}
+// GET /api/v1/items/{id}
 func (UnimplementedHandler) ReadItem(ctx context.Context, params ReadItemParams) (r ReadItemRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -197,7 +197,7 @@ func (UnimplementedHandler) ReadItem(ctx context.Context, params ReadItemParams)
 //
 // Find the attached Episode of the Item with the given ID.
 //
-// GET /items/{id}/episode
+// GET /api/v1/items/{id}/episode
 func (UnimplementedHandler) ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (r ReadItemEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -206,7 +206,7 @@ func (UnimplementedHandler) ReadItemEpisode(ctx context.Context, params ReadItem
 //
 // Finds the ReleaseGroup with the requested ID and returns it.
 //
-// GET /release-groups/{id}
+// GET /api/v1/release-groups/{id}
 func (UnimplementedHandler) ReadReleaseGroup(ctx context.Context, params ReadReleaseGroupParams) (r ReadReleaseGroupRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -215,7 +215,7 @@ func (UnimplementedHandler) ReadReleaseGroup(ctx context.Context, params ReadRel
 //
 // Updates a Anime and persists changes to storage.
 //
-// PATCH /animes/{id}
+// PATCH /api/v1/animes/{id}
 func (UnimplementedHandler) UpdateAnime(ctx context.Context, req *UpdateAnimeReq, params UpdateAnimeParams) (r UpdateAnimeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -224,7 +224,7 @@ func (UnimplementedHandler) UpdateAnime(ctx context.Context, req *UpdateAnimeReq
 //
 // Updates a Episode and persists changes to storage.
 //
-// PATCH /episodes/{id}
+// PATCH /api/v1/episodes/{id}
 func (UnimplementedHandler) UpdateEpisode(ctx context.Context, req *UpdateEpisodeReq, params UpdateEpisodeParams) (r UpdateEpisodeRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -233,7 +233,7 @@ func (UnimplementedHandler) UpdateEpisode(ctx context.Context, req *UpdateEpisod
 //
 // Updates a Item and persists changes to storage.
 //
-// PATCH /items/{id}
+// PATCH /api/v1/items/{id}
 func (UnimplementedHandler) UpdateItem(ctx context.Context, req *UpdateItemReq, params UpdateItemParams) (r UpdateItemRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -242,7 +242,7 @@ func (UnimplementedHandler) UpdateItem(ctx context.Context, req *UpdateItemReq, 
 //
 // Updates a ReleaseGroup and persists changes to storage.
 //
-// PATCH /release-groups/{id}
+// PATCH /api/v1/release-groups/{id}
 func (UnimplementedHandler) UpdateReleaseGroup(ctx context.Context, req *UpdateReleaseGroupReq, params UpdateReleaseGroupParams) (r UpdateReleaseGroupRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

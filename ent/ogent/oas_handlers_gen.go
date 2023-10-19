@@ -24,12 +24,12 @@ import (
 //
 // Creates a new Anime and persists it to storage.
 //
-// POST /animes
+// POST /api/v1/animes
 func (s *Server) handleCreateAnimeRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createAnime"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/animes"),
+		semconv.HTTPRouteKey.String("/api/v1/animes"),
 	}
 
 	// Start a span for this request.
@@ -130,12 +130,12 @@ func (s *Server) handleCreateAnimeRequest(args [0]string, argsEscaped bool, w ht
 //
 // Creates a new Episode and persists it to storage.
 //
-// POST /episodes
+// POST /api/v1/episodes
 func (s *Server) handleCreateEpisodeRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createEpisode"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes"),
 	}
 
 	// Start a span for this request.
@@ -236,12 +236,12 @@ func (s *Server) handleCreateEpisodeRequest(args [0]string, argsEscaped bool, w 
 //
 // Creates a new Item and persists it to storage.
 //
-// POST /items
+// POST /api/v1/items
 func (s *Server) handleCreateItemRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createItem"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/items"),
+		semconv.HTTPRouteKey.String("/api/v1/items"),
 	}
 
 	// Start a span for this request.
@@ -342,12 +342,12 @@ func (s *Server) handleCreateItemRequest(args [0]string, argsEscaped bool, w htt
 //
 // Creates a new ReleaseGroup and persists it to storage.
 //
-// POST /release-groups
+// POST /api/v1/release-groups
 func (s *Server) handleCreateReleaseGroupRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createReleaseGroup"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/release-groups"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups"),
 	}
 
 	// Start a span for this request.
@@ -448,12 +448,12 @@ func (s *Server) handleCreateReleaseGroupRequest(args [0]string, argsEscaped boo
 //
 // Deletes the Anime with the requested ID.
 //
-// DELETE /animes/{id}
+// DELETE /api/v1/animes/{id}
 func (s *Server) handleDeleteAnimeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteAnime"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/animes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}"),
 	}
 
 	// Start a span for this request.
@@ -554,12 +554,12 @@ func (s *Server) handleDeleteAnimeRequest(args [1]string, argsEscaped bool, w ht
 //
 // Deletes the Episode with the requested ID.
 //
-// DELETE /episodes/{id}
+// DELETE /api/v1/episodes/{id}
 func (s *Server) handleDeleteEpisodeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteEpisode"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/episodes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}"),
 	}
 
 	// Start a span for this request.
@@ -660,12 +660,12 @@ func (s *Server) handleDeleteEpisodeRequest(args [1]string, argsEscaped bool, w 
 //
 // Deletes the Item with the requested ID.
 //
-// DELETE /items/{id}
+// DELETE /api/v1/items/{id}
 func (s *Server) handleDeleteItemRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteItem"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/items/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}"),
 	}
 
 	// Start a span for this request.
@@ -766,12 +766,12 @@ func (s *Server) handleDeleteItemRequest(args [1]string, argsEscaped bool, w htt
 //
 // Deletes the ReleaseGroup with the requested ID.
 //
-// DELETE /release-groups/{id}
+// DELETE /api/v1/release-groups/{id}
 func (s *Server) handleDeleteReleaseGroupRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteReleaseGroup"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}"),
 	}
 
 	// Start a span for this request.
@@ -872,12 +872,12 @@ func (s *Server) handleDeleteReleaseGroupRequest(args [1]string, argsEscaped boo
 //
 // List Animes.
 //
-// GET /animes
+// GET /api/v1/animes
 func (s *Server) handleListAnimeRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listAnime"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/animes"),
+		semconv.HTTPRouteKey.String("/api/v1/animes"),
 	}
 
 	// Start a span for this request.
@@ -982,12 +982,12 @@ func (s *Server) handleListAnimeRequest(args [0]string, argsEscaped bool, w http
 //
 // List attached Episodes.
 //
-// GET /animes/{id}/episodes
+// GET /api/v1/animes/{id}/episodes
 func (s *Server) handleListAnimeEpisodesRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listAnimeEpisodes"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/animes/{id}/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}/episodes"),
 	}
 
 	// Start a span for this request.
@@ -1096,12 +1096,12 @@ func (s *Server) handleListAnimeEpisodesRequest(args [1]string, argsEscaped bool
 //
 // List Episodes.
 //
-// GET /episodes
+// GET /api/v1/episodes
 func (s *Server) handleListEpisodeRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes"),
 	}
 
 	// Start a span for this request.
@@ -1206,12 +1206,12 @@ func (s *Server) handleListEpisodeRequest(args [0]string, argsEscaped bool, w ht
 //
 // List Items.
 //
-// GET /items
+// GET /api/v1/items
 func (s *Server) handleListItemRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listItem"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items"),
+		semconv.HTTPRouteKey.String("/api/v1/items"),
 	}
 
 	// Start a span for this request.
@@ -1316,12 +1316,12 @@ func (s *Server) handleListItemRequest(args [0]string, argsEscaped bool, w http.
 //
 // List ReleaseGroups.
 //
-// GET /release-groups
+// GET /api/v1/release-groups
 func (s *Server) handleListReleaseGroupRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listReleaseGroup"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/release-groups"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups"),
 	}
 
 	// Start a span for this request.
@@ -1426,12 +1426,12 @@ func (s *Server) handleListReleaseGroupRequest(args [0]string, argsEscaped bool,
 //
 // List attached Episodes.
 //
-// GET /release-groups/{id}/episodes
+// GET /api/v1/release-groups/{id}/episodes
 func (s *Server) handleListReleaseGroupEpisodesRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listReleaseGroupEpisodes"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}/episodes"),
 	}
 
 	// Start a span for this request.
@@ -1540,12 +1540,12 @@ func (s *Server) handleListReleaseGroupEpisodesRequest(args [1]string, argsEscap
 //
 // Finds the Anime with the requested ID and returns it.
 //
-// GET /animes/{id}
+// GET /api/v1/animes/{id}
 func (s *Server) handleReadAnimeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readAnime"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/animes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}"),
 	}
 
 	// Start a span for this request.
@@ -1646,12 +1646,12 @@ func (s *Server) handleReadAnimeRequest(args [1]string, argsEscaped bool, w http
 //
 // Finds the Episode with the requested ID and returns it.
 //
-// GET /episodes/{id}
+// GET /api/v1/episodes/{id}
 func (s *Server) handleReadEpisodeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}"),
 	}
 
 	// Start a span for this request.
@@ -1752,12 +1752,12 @@ func (s *Server) handleReadEpisodeRequest(args [1]string, argsEscaped bool, w ht
 //
 // Find the attached Item of the Episode with the given ID.
 //
-// GET /episodes/{id}/item
+// GET /api/v1/episodes/{id}/item
 func (s *Server) handleReadEpisodeItemRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisodeItem"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}/item"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}/item"),
 	}
 
 	// Start a span for this request.
@@ -1858,12 +1858,12 @@ func (s *Server) handleReadEpisodeItemRequest(args [1]string, argsEscaped bool, 
 //
 // Find the attached ReleaseGroup of the Episode with the given ID.
 //
-// GET /episodes/{id}/release-group
+// GET /api/v1/episodes/{id}/release-group
 func (s *Server) handleReadEpisodeReleaseGroupRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisodeReleaseGroup"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}/release-group"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}/release-group"),
 	}
 
 	// Start a span for this request.
@@ -1964,12 +1964,12 @@ func (s *Server) handleReadEpisodeReleaseGroupRequest(args [1]string, argsEscape
 //
 // Find the attached Anime of the Episode with the given ID.
 //
-// GET /episodes/{id}/title
+// GET /api/v1/episodes/{id}/title
 func (s *Server) handleReadEpisodeTitleRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisodeTitle"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}/title"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}/title"),
 	}
 
 	// Start a span for this request.
@@ -2070,12 +2070,12 @@ func (s *Server) handleReadEpisodeTitleRequest(args [1]string, argsEscaped bool,
 //
 // Finds the Item with the requested ID and returns it.
 //
-// GET /items/{id}
+// GET /api/v1/items/{id}
 func (s *Server) handleReadItemRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readItem"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}"),
 	}
 
 	// Start a span for this request.
@@ -2176,12 +2176,12 @@ func (s *Server) handleReadItemRequest(args [1]string, argsEscaped bool, w http.
 //
 // Find the attached Episode of the Item with the given ID.
 //
-// GET /items/{id}/episode
+// GET /api/v1/items/{id}/episode
 func (s *Server) handleReadItemEpisodeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readItemEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items/{id}/episode"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}/episode"),
 	}
 
 	// Start a span for this request.
@@ -2282,12 +2282,12 @@ func (s *Server) handleReadItemEpisodeRequest(args [1]string, argsEscaped bool, 
 //
 // Finds the ReleaseGroup with the requested ID and returns it.
 //
-// GET /release-groups/{id}
+// GET /api/v1/release-groups/{id}
 func (s *Server) handleReadReleaseGroupRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readReleaseGroup"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}"),
 	}
 
 	// Start a span for this request.
@@ -2388,12 +2388,12 @@ func (s *Server) handleReadReleaseGroupRequest(args [1]string, argsEscaped bool,
 //
 // Updates a Anime and persists changes to storage.
 //
-// PATCH /animes/{id}
+// PATCH /api/v1/animes/{id}
 func (s *Server) handleUpdateAnimeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateAnime"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/animes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}"),
 	}
 
 	// Start a span for this request.
@@ -2509,12 +2509,12 @@ func (s *Server) handleUpdateAnimeRequest(args [1]string, argsEscaped bool, w ht
 //
 // Updates a Episode and persists changes to storage.
 //
-// PATCH /episodes/{id}
+// PATCH /api/v1/episodes/{id}
 func (s *Server) handleUpdateEpisodeRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEpisode"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/episodes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}"),
 	}
 
 	// Start a span for this request.
@@ -2630,12 +2630,12 @@ func (s *Server) handleUpdateEpisodeRequest(args [1]string, argsEscaped bool, w 
 //
 // Updates a Item and persists changes to storage.
 //
-// PATCH /items/{id}
+// PATCH /api/v1/items/{id}
 func (s *Server) handleUpdateItemRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateItem"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/items/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}"),
 	}
 
 	// Start a span for this request.
@@ -2751,12 +2751,12 @@ func (s *Server) handleUpdateItemRequest(args [1]string, argsEscaped bool, w htt
 //
 // Updates a ReleaseGroup and persists changes to storage.
 //
-// PATCH /release-groups/{id}
+// PATCH /api/v1/release-groups/{id}
 func (s *Server) handleUpdateReleaseGroupRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateReleaseGroup"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}"),
 	}
 
 	// Start a span for this request.

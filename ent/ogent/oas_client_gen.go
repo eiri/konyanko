@@ -27,157 +27,157 @@ type Invoker interface {
 	//
 	// Creates a new Anime and persists it to storage.
 	//
-	// POST /animes
+	// POST /api/v1/animes
 	CreateAnime(ctx context.Context, request *CreateAnimeReq) (CreateAnimeRes, error)
 	// CreateEpisode invokes createEpisode operation.
 	//
 	// Creates a new Episode and persists it to storage.
 	//
-	// POST /episodes
+	// POST /api/v1/episodes
 	CreateEpisode(ctx context.Context, request *CreateEpisodeReq) (CreateEpisodeRes, error)
 	// CreateItem invokes createItem operation.
 	//
 	// Creates a new Item and persists it to storage.
 	//
-	// POST /items
+	// POST /api/v1/items
 	CreateItem(ctx context.Context, request *CreateItemReq) (CreateItemRes, error)
 	// CreateReleaseGroup invokes createReleaseGroup operation.
 	//
 	// Creates a new ReleaseGroup and persists it to storage.
 	//
-	// POST /release-groups
+	// POST /api/v1/release-groups
 	CreateReleaseGroup(ctx context.Context, request *CreateReleaseGroupReq) (CreateReleaseGroupRes, error)
 	// DeleteAnime invokes deleteAnime operation.
 	//
 	// Deletes the Anime with the requested ID.
 	//
-	// DELETE /animes/{id}
+	// DELETE /api/v1/animes/{id}
 	DeleteAnime(ctx context.Context, params DeleteAnimeParams) (DeleteAnimeRes, error)
 	// DeleteEpisode invokes deleteEpisode operation.
 	//
 	// Deletes the Episode with the requested ID.
 	//
-	// DELETE /episodes/{id}
+	// DELETE /api/v1/episodes/{id}
 	DeleteEpisode(ctx context.Context, params DeleteEpisodeParams) (DeleteEpisodeRes, error)
 	// DeleteItem invokes deleteItem operation.
 	//
 	// Deletes the Item with the requested ID.
 	//
-	// DELETE /items/{id}
+	// DELETE /api/v1/items/{id}
 	DeleteItem(ctx context.Context, params DeleteItemParams) (DeleteItemRes, error)
 	// DeleteReleaseGroup invokes deleteReleaseGroup operation.
 	//
 	// Deletes the ReleaseGroup with the requested ID.
 	//
-	// DELETE /release-groups/{id}
+	// DELETE /api/v1/release-groups/{id}
 	DeleteReleaseGroup(ctx context.Context, params DeleteReleaseGroupParams) (DeleteReleaseGroupRes, error)
 	// ListAnime invokes listAnime operation.
 	//
 	// List Animes.
 	//
-	// GET /animes
+	// GET /api/v1/animes
 	ListAnime(ctx context.Context, params ListAnimeParams) (ListAnimeRes, error)
 	// ListAnimeEpisodes invokes listAnimeEpisodes operation.
 	//
 	// List attached Episodes.
 	//
-	// GET /animes/{id}/episodes
+	// GET /api/v1/animes/{id}/episodes
 	ListAnimeEpisodes(ctx context.Context, params ListAnimeEpisodesParams) (ListAnimeEpisodesRes, error)
 	// ListEpisode invokes listEpisode operation.
 	//
 	// List Episodes.
 	//
-	// GET /episodes
+	// GET /api/v1/episodes
 	ListEpisode(ctx context.Context, params ListEpisodeParams) (ListEpisodeRes, error)
 	// ListItem invokes listItem operation.
 	//
 	// List Items.
 	//
-	// GET /items
+	// GET /api/v1/items
 	ListItem(ctx context.Context, params ListItemParams) (ListItemRes, error)
 	// ListReleaseGroup invokes listReleaseGroup operation.
 	//
 	// List ReleaseGroups.
 	//
-	// GET /release-groups
+	// GET /api/v1/release-groups
 	ListReleaseGroup(ctx context.Context, params ListReleaseGroupParams) (ListReleaseGroupRes, error)
 	// ListReleaseGroupEpisodes invokes listReleaseGroupEpisodes operation.
 	//
 	// List attached Episodes.
 	//
-	// GET /release-groups/{id}/episodes
+	// GET /api/v1/release-groups/{id}/episodes
 	ListReleaseGroupEpisodes(ctx context.Context, params ListReleaseGroupEpisodesParams) (ListReleaseGroupEpisodesRes, error)
 	// ReadAnime invokes readAnime operation.
 	//
 	// Finds the Anime with the requested ID and returns it.
 	//
-	// GET /animes/{id}
+	// GET /api/v1/animes/{id}
 	ReadAnime(ctx context.Context, params ReadAnimeParams) (ReadAnimeRes, error)
 	// ReadEpisode invokes readEpisode operation.
 	//
 	// Finds the Episode with the requested ID and returns it.
 	//
-	// GET /episodes/{id}
+	// GET /api/v1/episodes/{id}
 	ReadEpisode(ctx context.Context, params ReadEpisodeParams) (ReadEpisodeRes, error)
 	// ReadEpisodeItem invokes readEpisodeItem operation.
 	//
 	// Find the attached Item of the Episode with the given ID.
 	//
-	// GET /episodes/{id}/item
+	// GET /api/v1/episodes/{id}/item
 	ReadEpisodeItem(ctx context.Context, params ReadEpisodeItemParams) (ReadEpisodeItemRes, error)
 	// ReadEpisodeReleaseGroup invokes readEpisodeReleaseGroup operation.
 	//
 	// Find the attached ReleaseGroup of the Episode with the given ID.
 	//
-	// GET /episodes/{id}/release-group
+	// GET /api/v1/episodes/{id}/release-group
 	ReadEpisodeReleaseGroup(ctx context.Context, params ReadEpisodeReleaseGroupParams) (ReadEpisodeReleaseGroupRes, error)
 	// ReadEpisodeTitle invokes readEpisodeTitle operation.
 	//
 	// Find the attached Anime of the Episode with the given ID.
 	//
-	// GET /episodes/{id}/title
+	// GET /api/v1/episodes/{id}/title
 	ReadEpisodeTitle(ctx context.Context, params ReadEpisodeTitleParams) (ReadEpisodeTitleRes, error)
 	// ReadItem invokes readItem operation.
 	//
 	// Finds the Item with the requested ID and returns it.
 	//
-	// GET /items/{id}
+	// GET /api/v1/items/{id}
 	ReadItem(ctx context.Context, params ReadItemParams) (ReadItemRes, error)
 	// ReadItemEpisode invokes readItemEpisode operation.
 	//
 	// Find the attached Episode of the Item with the given ID.
 	//
-	// GET /items/{id}/episode
+	// GET /api/v1/items/{id}/episode
 	ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error)
 	// ReadReleaseGroup invokes readReleaseGroup operation.
 	//
 	// Finds the ReleaseGroup with the requested ID and returns it.
 	//
-	// GET /release-groups/{id}
+	// GET /api/v1/release-groups/{id}
 	ReadReleaseGroup(ctx context.Context, params ReadReleaseGroupParams) (ReadReleaseGroupRes, error)
 	// UpdateAnime invokes updateAnime operation.
 	//
 	// Updates a Anime and persists changes to storage.
 	//
-	// PATCH /animes/{id}
+	// PATCH /api/v1/animes/{id}
 	UpdateAnime(ctx context.Context, request *UpdateAnimeReq, params UpdateAnimeParams) (UpdateAnimeRes, error)
 	// UpdateEpisode invokes updateEpisode operation.
 	//
 	// Updates a Episode and persists changes to storage.
 	//
-	// PATCH /episodes/{id}
+	// PATCH /api/v1/episodes/{id}
 	UpdateEpisode(ctx context.Context, request *UpdateEpisodeReq, params UpdateEpisodeParams) (UpdateEpisodeRes, error)
 	// UpdateItem invokes updateItem operation.
 	//
 	// Updates a Item and persists changes to storage.
 	//
-	// PATCH /items/{id}
+	// PATCH /api/v1/items/{id}
 	UpdateItem(ctx context.Context, request *UpdateItemReq, params UpdateItemParams) (UpdateItemRes, error)
 	// UpdateReleaseGroup invokes updateReleaseGroup operation.
 	//
 	// Updates a ReleaseGroup and persists changes to storage.
 	//
-	// PATCH /release-groups/{id}
+	// PATCH /api/v1/release-groups/{id}
 	UpdateReleaseGroup(ctx context.Context, request *UpdateReleaseGroupReq, params UpdateReleaseGroupParams) (UpdateReleaseGroupRes, error)
 }
 
@@ -233,7 +233,7 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 //
 // Creates a new Anime and persists it to storage.
 //
-// POST /animes
+// POST /api/v1/animes
 func (c *Client) CreateAnime(ctx context.Context, request *CreateAnimeReq) (CreateAnimeRes, error) {
 	res, err := c.sendCreateAnime(ctx, request)
 	return res, err
@@ -243,7 +243,7 @@ func (c *Client) sendCreateAnime(ctx context.Context, request *CreateAnimeReq) (
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createAnime"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/animes"),
+		semconv.HTTPRouteKey.String("/api/v1/animes"),
 	}
 
 	// Run stopwatch.
@@ -276,7 +276,7 @@ func (c *Client) sendCreateAnime(ctx context.Context, request *CreateAnimeReq) (
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/animes"
+	pathParts[0] = "/api/v1/animes"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -308,7 +308,7 @@ func (c *Client) sendCreateAnime(ctx context.Context, request *CreateAnimeReq) (
 //
 // Creates a new Episode and persists it to storage.
 //
-// POST /episodes
+// POST /api/v1/episodes
 func (c *Client) CreateEpisode(ctx context.Context, request *CreateEpisodeReq) (CreateEpisodeRes, error) {
 	res, err := c.sendCreateEpisode(ctx, request)
 	return res, err
@@ -318,7 +318,7 @@ func (c *Client) sendCreateEpisode(ctx context.Context, request *CreateEpisodeRe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createEpisode"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes"),
 	}
 
 	// Run stopwatch.
@@ -351,7 +351,7 @@ func (c *Client) sendCreateEpisode(ctx context.Context, request *CreateEpisodeRe
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/episodes"
+	pathParts[0] = "/api/v1/episodes"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -383,7 +383,7 @@ func (c *Client) sendCreateEpisode(ctx context.Context, request *CreateEpisodeRe
 //
 // Creates a new Item and persists it to storage.
 //
-// POST /items
+// POST /api/v1/items
 func (c *Client) CreateItem(ctx context.Context, request *CreateItemReq) (CreateItemRes, error) {
 	res, err := c.sendCreateItem(ctx, request)
 	return res, err
@@ -393,7 +393,7 @@ func (c *Client) sendCreateItem(ctx context.Context, request *CreateItemReq) (re
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createItem"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/items"),
+		semconv.HTTPRouteKey.String("/api/v1/items"),
 	}
 
 	// Run stopwatch.
@@ -426,7 +426,7 @@ func (c *Client) sendCreateItem(ctx context.Context, request *CreateItemReq) (re
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/items"
+	pathParts[0] = "/api/v1/items"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -458,7 +458,7 @@ func (c *Client) sendCreateItem(ctx context.Context, request *CreateItemReq) (re
 //
 // Creates a new ReleaseGroup and persists it to storage.
 //
-// POST /release-groups
+// POST /api/v1/release-groups
 func (c *Client) CreateReleaseGroup(ctx context.Context, request *CreateReleaseGroupReq) (CreateReleaseGroupRes, error) {
 	res, err := c.sendCreateReleaseGroup(ctx, request)
 	return res, err
@@ -468,7 +468,7 @@ func (c *Client) sendCreateReleaseGroup(ctx context.Context, request *CreateRele
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createReleaseGroup"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/release-groups"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups"),
 	}
 
 	// Run stopwatch.
@@ -501,7 +501,7 @@ func (c *Client) sendCreateReleaseGroup(ctx context.Context, request *CreateRele
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/release-groups"
+	pathParts[0] = "/api/v1/release-groups"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -533,7 +533,7 @@ func (c *Client) sendCreateReleaseGroup(ctx context.Context, request *CreateRele
 //
 // Deletes the Anime with the requested ID.
 //
-// DELETE /animes/{id}
+// DELETE /api/v1/animes/{id}
 func (c *Client) DeleteAnime(ctx context.Context, params DeleteAnimeParams) (DeleteAnimeRes, error) {
 	res, err := c.sendDeleteAnime(ctx, params)
 	return res, err
@@ -543,7 +543,7 @@ func (c *Client) sendDeleteAnime(ctx context.Context, params DeleteAnimeParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteAnime"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/animes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}"),
 	}
 
 	// Run stopwatch.
@@ -576,7 +576,7 @@ func (c *Client) sendDeleteAnime(ctx context.Context, params DeleteAnimeParams) 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/animes/"
+	pathParts[0] = "/api/v1/animes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -623,7 +623,7 @@ func (c *Client) sendDeleteAnime(ctx context.Context, params DeleteAnimeParams) 
 //
 // Deletes the Episode with the requested ID.
 //
-// DELETE /episodes/{id}
+// DELETE /api/v1/episodes/{id}
 func (c *Client) DeleteEpisode(ctx context.Context, params DeleteEpisodeParams) (DeleteEpisodeRes, error) {
 	res, err := c.sendDeleteEpisode(ctx, params)
 	return res, err
@@ -633,7 +633,7 @@ func (c *Client) sendDeleteEpisode(ctx context.Context, params DeleteEpisodePara
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteEpisode"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/episodes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}"),
 	}
 
 	// Run stopwatch.
@@ -666,7 +666,7 @@ func (c *Client) sendDeleteEpisode(ctx context.Context, params DeleteEpisodePara
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/episodes/"
+	pathParts[0] = "/api/v1/episodes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -713,7 +713,7 @@ func (c *Client) sendDeleteEpisode(ctx context.Context, params DeleteEpisodePara
 //
 // Deletes the Item with the requested ID.
 //
-// DELETE /items/{id}
+// DELETE /api/v1/items/{id}
 func (c *Client) DeleteItem(ctx context.Context, params DeleteItemParams) (DeleteItemRes, error) {
 	res, err := c.sendDeleteItem(ctx, params)
 	return res, err
@@ -723,7 +723,7 @@ func (c *Client) sendDeleteItem(ctx context.Context, params DeleteItemParams) (r
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteItem"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/items/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}"),
 	}
 
 	// Run stopwatch.
@@ -756,7 +756,7 @@ func (c *Client) sendDeleteItem(ctx context.Context, params DeleteItemParams) (r
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/items/"
+	pathParts[0] = "/api/v1/items/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -803,7 +803,7 @@ func (c *Client) sendDeleteItem(ctx context.Context, params DeleteItemParams) (r
 //
 // Deletes the ReleaseGroup with the requested ID.
 //
-// DELETE /release-groups/{id}
+// DELETE /api/v1/release-groups/{id}
 func (c *Client) DeleteReleaseGroup(ctx context.Context, params DeleteReleaseGroupParams) (DeleteReleaseGroupRes, error) {
 	res, err := c.sendDeleteReleaseGroup(ctx, params)
 	return res, err
@@ -813,7 +813,7 @@ func (c *Client) sendDeleteReleaseGroup(ctx context.Context, params DeleteReleas
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteReleaseGroup"),
 		semconv.HTTPMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}"),
 	}
 
 	// Run stopwatch.
@@ -846,7 +846,7 @@ func (c *Client) sendDeleteReleaseGroup(ctx context.Context, params DeleteReleas
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/release-groups/"
+	pathParts[0] = "/api/v1/release-groups/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -893,7 +893,7 @@ func (c *Client) sendDeleteReleaseGroup(ctx context.Context, params DeleteReleas
 //
 // List Animes.
 //
-// GET /animes
+// GET /api/v1/animes
 func (c *Client) ListAnime(ctx context.Context, params ListAnimeParams) (ListAnimeRes, error) {
 	res, err := c.sendListAnime(ctx, params)
 	return res, err
@@ -903,7 +903,7 @@ func (c *Client) sendListAnime(ctx context.Context, params ListAnimeParams) (res
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listAnime"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/animes"),
+		semconv.HTTPRouteKey.String("/api/v1/animes"),
 	}
 
 	// Run stopwatch.
@@ -936,7 +936,7 @@ func (c *Client) sendListAnime(ctx context.Context, params ListAnimeParams) (res
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/animes"
+	pathParts[0] = "/api/v1/animes"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeQueryParams"
@@ -1003,7 +1003,7 @@ func (c *Client) sendListAnime(ctx context.Context, params ListAnimeParams) (res
 //
 // List attached Episodes.
 //
-// GET /animes/{id}/episodes
+// GET /api/v1/animes/{id}/episodes
 func (c *Client) ListAnimeEpisodes(ctx context.Context, params ListAnimeEpisodesParams) (ListAnimeEpisodesRes, error) {
 	res, err := c.sendListAnimeEpisodes(ctx, params)
 	return res, err
@@ -1013,7 +1013,7 @@ func (c *Client) sendListAnimeEpisodes(ctx context.Context, params ListAnimeEpis
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listAnimeEpisodes"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/animes/{id}/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}/episodes"),
 	}
 
 	// Run stopwatch.
@@ -1046,7 +1046,7 @@ func (c *Client) sendListAnimeEpisodes(ctx context.Context, params ListAnimeEpis
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/animes/"
+	pathParts[0] = "/api/v1/animes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1132,7 +1132,7 @@ func (c *Client) sendListAnimeEpisodes(ctx context.Context, params ListAnimeEpis
 //
 // List Episodes.
 //
-// GET /episodes
+// GET /api/v1/episodes
 func (c *Client) ListEpisode(ctx context.Context, params ListEpisodeParams) (ListEpisodeRes, error) {
 	res, err := c.sendListEpisode(ctx, params)
 	return res, err
@@ -1142,7 +1142,7 @@ func (c *Client) sendListEpisode(ctx context.Context, params ListEpisodeParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes"),
 	}
 
 	// Run stopwatch.
@@ -1175,7 +1175,7 @@ func (c *Client) sendListEpisode(ctx context.Context, params ListEpisodeParams) 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/episodes"
+	pathParts[0] = "/api/v1/episodes"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeQueryParams"
@@ -1242,7 +1242,7 @@ func (c *Client) sendListEpisode(ctx context.Context, params ListEpisodeParams) 
 //
 // List Items.
 //
-// GET /items
+// GET /api/v1/items
 func (c *Client) ListItem(ctx context.Context, params ListItemParams) (ListItemRes, error) {
 	res, err := c.sendListItem(ctx, params)
 	return res, err
@@ -1252,7 +1252,7 @@ func (c *Client) sendListItem(ctx context.Context, params ListItemParams) (res L
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listItem"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items"),
+		semconv.HTTPRouteKey.String("/api/v1/items"),
 	}
 
 	// Run stopwatch.
@@ -1285,7 +1285,7 @@ func (c *Client) sendListItem(ctx context.Context, params ListItemParams) (res L
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/items"
+	pathParts[0] = "/api/v1/items"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeQueryParams"
@@ -1352,7 +1352,7 @@ func (c *Client) sendListItem(ctx context.Context, params ListItemParams) (res L
 //
 // List ReleaseGroups.
 //
-// GET /release-groups
+// GET /api/v1/release-groups
 func (c *Client) ListReleaseGroup(ctx context.Context, params ListReleaseGroupParams) (ListReleaseGroupRes, error) {
 	res, err := c.sendListReleaseGroup(ctx, params)
 	return res, err
@@ -1362,7 +1362,7 @@ func (c *Client) sendListReleaseGroup(ctx context.Context, params ListReleaseGro
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listReleaseGroup"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/release-groups"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups"),
 	}
 
 	// Run stopwatch.
@@ -1395,7 +1395,7 @@ func (c *Client) sendListReleaseGroup(ctx context.Context, params ListReleaseGro
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/release-groups"
+	pathParts[0] = "/api/v1/release-groups"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeQueryParams"
@@ -1462,7 +1462,7 @@ func (c *Client) sendListReleaseGroup(ctx context.Context, params ListReleaseGro
 //
 // List attached Episodes.
 //
-// GET /release-groups/{id}/episodes
+// GET /api/v1/release-groups/{id}/episodes
 func (c *Client) ListReleaseGroupEpisodes(ctx context.Context, params ListReleaseGroupEpisodesParams) (ListReleaseGroupEpisodesRes, error) {
 	res, err := c.sendListReleaseGroupEpisodes(ctx, params)
 	return res, err
@@ -1472,7 +1472,7 @@ func (c *Client) sendListReleaseGroupEpisodes(ctx context.Context, params ListRe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listReleaseGroupEpisodes"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}/episodes"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}/episodes"),
 	}
 
 	// Run stopwatch.
@@ -1505,7 +1505,7 @@ func (c *Client) sendListReleaseGroupEpisodes(ctx context.Context, params ListRe
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/release-groups/"
+	pathParts[0] = "/api/v1/release-groups/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1591,7 +1591,7 @@ func (c *Client) sendListReleaseGroupEpisodes(ctx context.Context, params ListRe
 //
 // Finds the Anime with the requested ID and returns it.
 //
-// GET /animes/{id}
+// GET /api/v1/animes/{id}
 func (c *Client) ReadAnime(ctx context.Context, params ReadAnimeParams) (ReadAnimeRes, error) {
 	res, err := c.sendReadAnime(ctx, params)
 	return res, err
@@ -1601,7 +1601,7 @@ func (c *Client) sendReadAnime(ctx context.Context, params ReadAnimeParams) (res
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readAnime"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/animes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}"),
 	}
 
 	// Run stopwatch.
@@ -1634,7 +1634,7 @@ func (c *Client) sendReadAnime(ctx context.Context, params ReadAnimeParams) (res
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/animes/"
+	pathParts[0] = "/api/v1/animes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1681,7 +1681,7 @@ func (c *Client) sendReadAnime(ctx context.Context, params ReadAnimeParams) (res
 //
 // Finds the Episode with the requested ID and returns it.
 //
-// GET /episodes/{id}
+// GET /api/v1/episodes/{id}
 func (c *Client) ReadEpisode(ctx context.Context, params ReadEpisodeParams) (ReadEpisodeRes, error) {
 	res, err := c.sendReadEpisode(ctx, params)
 	return res, err
@@ -1691,7 +1691,7 @@ func (c *Client) sendReadEpisode(ctx context.Context, params ReadEpisodeParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}"),
 	}
 
 	// Run stopwatch.
@@ -1724,7 +1724,7 @@ func (c *Client) sendReadEpisode(ctx context.Context, params ReadEpisodeParams) 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/episodes/"
+	pathParts[0] = "/api/v1/episodes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1771,7 +1771,7 @@ func (c *Client) sendReadEpisode(ctx context.Context, params ReadEpisodeParams) 
 //
 // Find the attached Item of the Episode with the given ID.
 //
-// GET /episodes/{id}/item
+// GET /api/v1/episodes/{id}/item
 func (c *Client) ReadEpisodeItem(ctx context.Context, params ReadEpisodeItemParams) (ReadEpisodeItemRes, error) {
 	res, err := c.sendReadEpisodeItem(ctx, params)
 	return res, err
@@ -1781,7 +1781,7 @@ func (c *Client) sendReadEpisodeItem(ctx context.Context, params ReadEpisodeItem
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisodeItem"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}/item"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}/item"),
 	}
 
 	// Run stopwatch.
@@ -1814,7 +1814,7 @@ func (c *Client) sendReadEpisodeItem(ctx context.Context, params ReadEpisodeItem
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/episodes/"
+	pathParts[0] = "/api/v1/episodes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1862,7 +1862,7 @@ func (c *Client) sendReadEpisodeItem(ctx context.Context, params ReadEpisodeItem
 //
 // Find the attached ReleaseGroup of the Episode with the given ID.
 //
-// GET /episodes/{id}/release-group
+// GET /api/v1/episodes/{id}/release-group
 func (c *Client) ReadEpisodeReleaseGroup(ctx context.Context, params ReadEpisodeReleaseGroupParams) (ReadEpisodeReleaseGroupRes, error) {
 	res, err := c.sendReadEpisodeReleaseGroup(ctx, params)
 	return res, err
@@ -1872,7 +1872,7 @@ func (c *Client) sendReadEpisodeReleaseGroup(ctx context.Context, params ReadEpi
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisodeReleaseGroup"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}/release-group"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}/release-group"),
 	}
 
 	// Run stopwatch.
@@ -1905,7 +1905,7 @@ func (c *Client) sendReadEpisodeReleaseGroup(ctx context.Context, params ReadEpi
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/episodes/"
+	pathParts[0] = "/api/v1/episodes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1953,7 +1953,7 @@ func (c *Client) sendReadEpisodeReleaseGroup(ctx context.Context, params ReadEpi
 //
 // Find the attached Anime of the Episode with the given ID.
 //
-// GET /episodes/{id}/title
+// GET /api/v1/episodes/{id}/title
 func (c *Client) ReadEpisodeTitle(ctx context.Context, params ReadEpisodeTitleParams) (ReadEpisodeTitleRes, error) {
 	res, err := c.sendReadEpisodeTitle(ctx, params)
 	return res, err
@@ -1963,7 +1963,7 @@ func (c *Client) sendReadEpisodeTitle(ctx context.Context, params ReadEpisodeTit
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readEpisodeTitle"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/episodes/{id}/title"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}/title"),
 	}
 
 	// Run stopwatch.
@@ -1996,7 +1996,7 @@ func (c *Client) sendReadEpisodeTitle(ctx context.Context, params ReadEpisodeTit
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/episodes/"
+	pathParts[0] = "/api/v1/episodes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2044,7 +2044,7 @@ func (c *Client) sendReadEpisodeTitle(ctx context.Context, params ReadEpisodeTit
 //
 // Finds the Item with the requested ID and returns it.
 //
-// GET /items/{id}
+// GET /api/v1/items/{id}
 func (c *Client) ReadItem(ctx context.Context, params ReadItemParams) (ReadItemRes, error) {
 	res, err := c.sendReadItem(ctx, params)
 	return res, err
@@ -2054,7 +2054,7 @@ func (c *Client) sendReadItem(ctx context.Context, params ReadItemParams) (res R
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readItem"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}"),
 	}
 
 	// Run stopwatch.
@@ -2087,7 +2087,7 @@ func (c *Client) sendReadItem(ctx context.Context, params ReadItemParams) (res R
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/items/"
+	pathParts[0] = "/api/v1/items/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2134,7 +2134,7 @@ func (c *Client) sendReadItem(ctx context.Context, params ReadItemParams) (res R
 //
 // Find the attached Episode of the Item with the given ID.
 //
-// GET /items/{id}/episode
+// GET /api/v1/items/{id}/episode
 func (c *Client) ReadItemEpisode(ctx context.Context, params ReadItemEpisodeParams) (ReadItemEpisodeRes, error) {
 	res, err := c.sendReadItemEpisode(ctx, params)
 	return res, err
@@ -2144,7 +2144,7 @@ func (c *Client) sendReadItemEpisode(ctx context.Context, params ReadItemEpisode
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readItemEpisode"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/items/{id}/episode"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}/episode"),
 	}
 
 	// Run stopwatch.
@@ -2177,7 +2177,7 @@ func (c *Client) sendReadItemEpisode(ctx context.Context, params ReadItemEpisode
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/items/"
+	pathParts[0] = "/api/v1/items/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2225,7 +2225,7 @@ func (c *Client) sendReadItemEpisode(ctx context.Context, params ReadItemEpisode
 //
 // Finds the ReleaseGroup with the requested ID and returns it.
 //
-// GET /release-groups/{id}
+// GET /api/v1/release-groups/{id}
 func (c *Client) ReadReleaseGroup(ctx context.Context, params ReadReleaseGroupParams) (ReadReleaseGroupRes, error) {
 	res, err := c.sendReadReleaseGroup(ctx, params)
 	return res, err
@@ -2235,7 +2235,7 @@ func (c *Client) sendReadReleaseGroup(ctx context.Context, params ReadReleaseGro
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("readReleaseGroup"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}"),
 	}
 
 	// Run stopwatch.
@@ -2268,7 +2268,7 @@ func (c *Client) sendReadReleaseGroup(ctx context.Context, params ReadReleaseGro
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/release-groups/"
+	pathParts[0] = "/api/v1/release-groups/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2315,7 +2315,7 @@ func (c *Client) sendReadReleaseGroup(ctx context.Context, params ReadReleaseGro
 //
 // Updates a Anime and persists changes to storage.
 //
-// PATCH /animes/{id}
+// PATCH /api/v1/animes/{id}
 func (c *Client) UpdateAnime(ctx context.Context, request *UpdateAnimeReq, params UpdateAnimeParams) (UpdateAnimeRes, error) {
 	res, err := c.sendUpdateAnime(ctx, request, params)
 	return res, err
@@ -2325,7 +2325,7 @@ func (c *Client) sendUpdateAnime(ctx context.Context, request *UpdateAnimeReq, p
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateAnime"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/animes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/animes/{id}"),
 	}
 
 	// Run stopwatch.
@@ -2358,7 +2358,7 @@ func (c *Client) sendUpdateAnime(ctx context.Context, request *UpdateAnimeReq, p
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/animes/"
+	pathParts[0] = "/api/v1/animes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2408,7 +2408,7 @@ func (c *Client) sendUpdateAnime(ctx context.Context, request *UpdateAnimeReq, p
 //
 // Updates a Episode and persists changes to storage.
 //
-// PATCH /episodes/{id}
+// PATCH /api/v1/episodes/{id}
 func (c *Client) UpdateEpisode(ctx context.Context, request *UpdateEpisodeReq, params UpdateEpisodeParams) (UpdateEpisodeRes, error) {
 	res, err := c.sendUpdateEpisode(ctx, request, params)
 	return res, err
@@ -2418,7 +2418,7 @@ func (c *Client) sendUpdateEpisode(ctx context.Context, request *UpdateEpisodeRe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEpisode"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/episodes/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/episodes/{id}"),
 	}
 
 	// Run stopwatch.
@@ -2451,7 +2451,7 @@ func (c *Client) sendUpdateEpisode(ctx context.Context, request *UpdateEpisodeRe
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/episodes/"
+	pathParts[0] = "/api/v1/episodes/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2501,7 +2501,7 @@ func (c *Client) sendUpdateEpisode(ctx context.Context, request *UpdateEpisodeRe
 //
 // Updates a Item and persists changes to storage.
 //
-// PATCH /items/{id}
+// PATCH /api/v1/items/{id}
 func (c *Client) UpdateItem(ctx context.Context, request *UpdateItemReq, params UpdateItemParams) (UpdateItemRes, error) {
 	res, err := c.sendUpdateItem(ctx, request, params)
 	return res, err
@@ -2511,7 +2511,7 @@ func (c *Client) sendUpdateItem(ctx context.Context, request *UpdateItemReq, par
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateItem"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/items/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/items/{id}"),
 	}
 
 	// Run stopwatch.
@@ -2544,7 +2544,7 @@ func (c *Client) sendUpdateItem(ctx context.Context, request *UpdateItemReq, par
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/items/"
+	pathParts[0] = "/api/v1/items/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2594,7 +2594,7 @@ func (c *Client) sendUpdateItem(ctx context.Context, request *UpdateItemReq, par
 //
 // Updates a ReleaseGroup and persists changes to storage.
 //
-// PATCH /release-groups/{id}
+// PATCH /api/v1/release-groups/{id}
 func (c *Client) UpdateReleaseGroup(ctx context.Context, request *UpdateReleaseGroupReq, params UpdateReleaseGroupParams) (UpdateReleaseGroupRes, error) {
 	res, err := c.sendUpdateReleaseGroup(ctx, request, params)
 	return res, err
@@ -2604,7 +2604,7 @@ func (c *Client) sendUpdateReleaseGroup(ctx context.Context, request *UpdateRele
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateReleaseGroup"),
 		semconv.HTTPMethodKey.String("PATCH"),
-		semconv.HTTPRouteKey.String("/release-groups/{id}"),
+		semconv.HTTPRouteKey.String("/api/v1/release-groups/{id}"),
 	}
 
 	// Run stopwatch.
@@ -2637,7 +2637,7 @@ func (c *Client) sendUpdateReleaseGroup(ctx context.Context, request *UpdateRele
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/release-groups/"
+	pathParts[0] = "/api/v1/release-groups/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{

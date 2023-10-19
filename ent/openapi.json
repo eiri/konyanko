@@ -6,7 +6,7 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/animes": {
+    "/api/v1/animes": {
       "get": {
         "tags": [
           "Anime"
@@ -118,7 +118,7 @@
         }
       }
     },
-    "/animes/{id}": {
+    "/api/v1/animes/{id}": {
       "get": {
         "tags": [
           "Anime"
@@ -264,7 +264,7 @@
         }
       }
     },
-    "/animes/{id}/episodes": {
+    "/api/v1/animes/{id}/episodes": {
       "get": {
         "tags": [
           "Anime"
@@ -328,7 +328,7 @@
         }
       }
     },
-    "/episodes": {
+    "/api/v1/episodes": {
       "get": {
         "tags": [
           "Episode"
@@ -458,7 +458,7 @@
         }
       }
     },
-    "/episodes/{id}": {
+    "/api/v1/episodes/{id}": {
       "get": {
         "tags": [
           "Episode"
@@ -619,7 +619,7 @@
         }
       }
     },
-    "/episodes/{id}/item": {
+    "/api/v1/episodes/{id}/item": {
       "get": {
         "tags": [
           "Episode"
@@ -664,7 +664,7 @@
         }
       }
     },
-    "/episodes/{id}/release-group": {
+    "/api/v1/episodes/{id}/release-group": {
       "get": {
         "tags": [
           "Episode"
@@ -709,7 +709,7 @@
         }
       }
     },
-    "/episodes/{id}/title": {
+    "/api/v1/episodes/{id}/title": {
       "get": {
         "tags": [
           "Episode"
@@ -754,7 +754,7 @@
         }
       }
     },
-    "/items": {
+    "/api/v1/items": {
       "get": {
         "tags": [
           "Item"
@@ -880,7 +880,7 @@
         }
       }
     },
-    "/items/{id}": {
+    "/api/v1/items/{id}": {
       "get": {
         "tags": [
           "Item"
@@ -1036,7 +1036,7 @@
         }
       }
     },
-    "/items/{id}/episode": {
+    "/api/v1/items/{id}/episode": {
       "get": {
         "tags": [
           "Item"
@@ -1081,7 +1081,7 @@
         }
       }
     },
-    "/release-groups": {
+    "/api/v1/release-groups": {
       "get": {
         "tags": [
           "ReleaseGroup"
@@ -1193,7 +1193,7 @@
         }
       }
     },
-    "/release-groups/{id}": {
+    "/api/v1/release-groups/{id}": {
       "get": {
         "tags": [
           "ReleaseGroup"
@@ -1339,7 +1339,7 @@
         }
       }
     },
-    "/release-groups/{id}/episodes": {
+    "/api/v1/release-groups/{id}/episodes": {
       "get": {
         "tags": [
           "ReleaseGroup"
