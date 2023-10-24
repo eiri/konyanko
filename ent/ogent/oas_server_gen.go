@@ -80,6 +80,12 @@ type Handler interface {
 	//
 	// GET /api/v1/items
 	ListItem(ctx context.Context, params ListItemParams) (ListItemRes, error)
+	// ListItemByDate implements listItemByDate operation.
+	//
+	// List items by published date.
+	//
+	// GET /api/v1/items/by_date/{day}
+	ListItemByDate(ctx context.Context, params ListItemByDateParams) (ListItemByDateRes, error)
 	// ListReleaseGroup implements listReleaseGroup operation.
 	//
 	// List ReleaseGroups.

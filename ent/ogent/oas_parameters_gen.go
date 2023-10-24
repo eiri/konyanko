@@ -5,6 +5,7 @@ package ogent
 import (
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/go-faster/errors"
 
@@ -939,6 +940,72 @@ func decodeListItemParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 		return params, &ogenerrors.DecodeParamError{
 			Name: "itemsPerPage",
 			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// ListItemByDateParams is parameters of listItemByDate operation.
+type ListItemByDateParams struct {
+	// Item published date.
+	Day time.Time
+}
+
+func unpackListItemByDateParams(packed middleware.Parameters) (params ListItemByDateParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "day",
+			In:   "path",
+		}
+		params.Day = packed[key].(time.Time)
+	}
+	return params
+}
+
+func decodeListItemByDateParams(args [1]string, argsEscaped bool, r *http.Request) (params ListItemByDateParams, _ error) {
+	// Decode path: day.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "day",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToDate(val)
+				if err != nil {
+					return err
+				}
+
+				params.Day = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "day",
+			In:   "path",
 			Err:  err,
 		}
 	}

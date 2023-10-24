@@ -238,15 +238,15 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := ec.mutation.Resolution(); ok {
 		_spec.SetField(episode.FieldResolution, field.TypeString, value)
-		_node.Resolution = value
+		_node.Resolution = &value
 	}
 	if value, ok := ec.mutation.VideoCodec(); ok {
 		_spec.SetField(episode.FieldVideoCodec, field.TypeString, value)
-		_node.VideoCodec = value
+		_node.VideoCodec = &value
 	}
 	if value, ok := ec.mutation.AudioCodec(); ok {
 		_spec.SetField(episode.FieldAudioCodec, field.TypeString, value)
-		_node.AudioCodec = value
+		_node.AudioCodec = &value
 	}
 	if nodes := ec.mutation.ItemIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

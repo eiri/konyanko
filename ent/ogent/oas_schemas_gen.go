@@ -832,6 +832,109 @@ func (s *EpisodeUpdate) SetAudioCodec(val OptString) {
 
 func (*EpisodeUpdate) updateEpisodeRes() {}
 
+// Merged schema.
+type ItemByDateItem struct {
+	ID           int                 `json:"id"`
+	ViewURL      string              `json:"view_url"`
+	DownloadURL  string              `json:"download_url"`
+	FileName     string              `json:"file_name"`
+	FileSize     int                 `json:"file_size"`
+	PublishDate  OptDateTime         `json:"publish_date"`
+	Episode      OptEpisodeList      `json:"episode"`
+	Anime        OptAnimeList        `json:"anime"`
+	ReleaseGroup OptReleaseGroupList `json:"release_group"`
+}
+
+// GetID returns the value of ID.
+func (s *ItemByDateItem) GetID() int {
+	return s.ID
+}
+
+// GetViewURL returns the value of ViewURL.
+func (s *ItemByDateItem) GetViewURL() string {
+	return s.ViewURL
+}
+
+// GetDownloadURL returns the value of DownloadURL.
+func (s *ItemByDateItem) GetDownloadURL() string {
+	return s.DownloadURL
+}
+
+// GetFileName returns the value of FileName.
+func (s *ItemByDateItem) GetFileName() string {
+	return s.FileName
+}
+
+// GetFileSize returns the value of FileSize.
+func (s *ItemByDateItem) GetFileSize() int {
+	return s.FileSize
+}
+
+// GetPublishDate returns the value of PublishDate.
+func (s *ItemByDateItem) GetPublishDate() OptDateTime {
+	return s.PublishDate
+}
+
+// GetEpisode returns the value of Episode.
+func (s *ItemByDateItem) GetEpisode() OptEpisodeList {
+	return s.Episode
+}
+
+// GetAnime returns the value of Anime.
+func (s *ItemByDateItem) GetAnime() OptAnimeList {
+	return s.Anime
+}
+
+// GetReleaseGroup returns the value of ReleaseGroup.
+func (s *ItemByDateItem) GetReleaseGroup() OptReleaseGroupList {
+	return s.ReleaseGroup
+}
+
+// SetID sets the value of ID.
+func (s *ItemByDateItem) SetID(val int) {
+	s.ID = val
+}
+
+// SetViewURL sets the value of ViewURL.
+func (s *ItemByDateItem) SetViewURL(val string) {
+	s.ViewURL = val
+}
+
+// SetDownloadURL sets the value of DownloadURL.
+func (s *ItemByDateItem) SetDownloadURL(val string) {
+	s.DownloadURL = val
+}
+
+// SetFileName sets the value of FileName.
+func (s *ItemByDateItem) SetFileName(val string) {
+	s.FileName = val
+}
+
+// SetFileSize sets the value of FileSize.
+func (s *ItemByDateItem) SetFileSize(val int) {
+	s.FileSize = val
+}
+
+// SetPublishDate sets the value of PublishDate.
+func (s *ItemByDateItem) SetPublishDate(val OptDateTime) {
+	s.PublishDate = val
+}
+
+// SetEpisode sets the value of Episode.
+func (s *ItemByDateItem) SetEpisode(val OptEpisodeList) {
+	s.Episode = val
+}
+
+// SetAnime sets the value of Anime.
+func (s *ItemByDateItem) SetAnime(val OptAnimeList) {
+	s.Anime = val
+}
+
+// SetReleaseGroup sets the value of ReleaseGroup.
+func (s *ItemByDateItem) SetReleaseGroup(val OptReleaseGroupList) {
+	s.ReleaseGroup = val
+}
+
 // Ref: #/components/schemas/ItemCreate
 type ItemCreate struct {
 	ID          int         `json:"id"`
@@ -1202,6 +1305,10 @@ type ListEpisodeOKApplicationJSON []EpisodeList
 
 func (*ListEpisodeOKApplicationJSON) listEpisodeRes() {}
 
+type ListItemByDateOKApplicationJSON []ItemByDateItem
+
+func (*ListItemByDateOKApplicationJSON) listItemByDateRes() {}
+
 type ListItemOKApplicationJSON []ItemList
 
 func (*ListItemOKApplicationJSON) listItemRes() {}
@@ -1213,6 +1320,52 @@ func (*ListReleaseGroupEpisodesOKApplicationJSON) listReleaseGroupEpisodesRes() 
 type ListReleaseGroupOKApplicationJSON []ReleaseGroupList
 
 func (*ListReleaseGroupOKApplicationJSON) listReleaseGroupRes() {}
+
+// NewOptAnimeList returns new OptAnimeList with value set to v.
+func NewOptAnimeList(v AnimeList) OptAnimeList {
+	return OptAnimeList{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptAnimeList is optional AnimeList.
+type OptAnimeList struct {
+	Value AnimeList
+	Set   bool
+}
+
+// IsSet returns true if OptAnimeList was set.
+func (o OptAnimeList) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptAnimeList) Reset() {
+	var v AnimeList
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptAnimeList) SetTo(v AnimeList) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptAnimeList) Get() (v AnimeList, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptAnimeList) Or(d AnimeList) AnimeList {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
 
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {
@@ -1260,6 +1413,52 @@ func (o OptDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptEpisodeList returns new OptEpisodeList with value set to v.
+func NewOptEpisodeList(v EpisodeList) OptEpisodeList {
+	return OptEpisodeList{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEpisodeList is optional EpisodeList.
+type OptEpisodeList struct {
+	Value EpisodeList
+	Set   bool
+}
+
+// IsSet returns true if OptEpisodeList was set.
+func (o OptEpisodeList) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEpisodeList) Reset() {
+	var v EpisodeList
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEpisodeList) SetTo(v EpisodeList) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEpisodeList) Get() (v EpisodeList, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEpisodeList) Or(d EpisodeList) EpisodeList {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
 	return OptInt{
@@ -1300,6 +1499,52 @@ func (o OptInt) Get() (v int, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptReleaseGroupList returns new OptReleaseGroupList with value set to v.
+func NewOptReleaseGroupList(v ReleaseGroupList) OptReleaseGroupList {
+	return OptReleaseGroupList{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptReleaseGroupList is optional ReleaseGroupList.
+type OptReleaseGroupList struct {
+	Value ReleaseGroupList
+	Set   bool
+}
+
+// IsSet returns true if OptReleaseGroupList was set.
+func (o OptReleaseGroupList) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptReleaseGroupList) Reset() {
+	var v ReleaseGroupList
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptReleaseGroupList) SetTo(v ReleaseGroupList) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptReleaseGroupList) Get() (v ReleaseGroupList, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptReleaseGroupList) Or(d ReleaseGroupList) ReleaseGroupList {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -1399,6 +1644,7 @@ func (*R400) deleteReleaseGroupRes()       {}
 func (*R400) listAnimeEpisodesRes()        {}
 func (*R400) listAnimeRes()                {}
 func (*R400) listEpisodeRes()              {}
+func (*R400) listItemByDateRes()           {}
 func (*R400) listItemRes()                 {}
 func (*R400) listReleaseGroupEpisodesRes() {}
 func (*R400) listReleaseGroupRes()         {}
@@ -1458,6 +1704,7 @@ func (*R404) deleteReleaseGroupRes()       {}
 func (*R404) listAnimeEpisodesRes()        {}
 func (*R404) listAnimeRes()                {}
 func (*R404) listEpisodeRes()              {}
+func (*R404) listItemByDateRes()           {}
 func (*R404) listItemRes()                 {}
 func (*R404) listReleaseGroupEpisodesRes() {}
 func (*R404) listReleaseGroupRes()         {}
@@ -1521,6 +1768,7 @@ func (*R409) deleteReleaseGroupRes()       {}
 func (*R409) listAnimeEpisodesRes()        {}
 func (*R409) listAnimeRes()                {}
 func (*R409) listEpisodeRes()              {}
+func (*R409) listItemByDateRes()           {}
 func (*R409) listItemRes()                 {}
 func (*R409) listReleaseGroupEpisodesRes() {}
 func (*R409) listReleaseGroupRes()         {}
@@ -1584,6 +1832,7 @@ func (*R500) deleteReleaseGroupRes()       {}
 func (*R500) listAnimeEpisodesRes()        {}
 func (*R500) listAnimeRes()                {}
 func (*R500) listEpisodeRes()              {}
+func (*R500) listItemByDateRes()           {}
 func (*R500) listItemRes()                 {}
 func (*R500) listReleaseGroupEpisodesRes() {}
 func (*R500) listReleaseGroupRes()         {}

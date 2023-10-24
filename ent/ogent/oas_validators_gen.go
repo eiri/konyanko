@@ -30,6 +30,14 @@ func (s ListEpisodeOKApplicationJSON) Validate() error {
 	return nil
 }
 
+func (s ListItemByDateOKApplicationJSON) Validate() error {
+	alias := ([]ItemByDateItem)(s)
+	if alias == nil {
+		return errors.New("nil is invalid value")
+	}
+	return nil
+}
+
 func (s ListItemOKApplicationJSON) Validate() error {
 	alias := ([]ItemList)(s)
 	if alias == nil {

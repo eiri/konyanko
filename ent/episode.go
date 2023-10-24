@@ -24,11 +24,11 @@ type Episode struct {
 	// AnimeSeason holds the value of the "anime_season" field.
 	AnimeSeason int `json:"anime_season,omitempty"`
 	// Resolution holds the value of the "resolution" field.
-	Resolution string `json:"resolution,omitempty"`
+	Resolution *string `json:"resolution,omitempty"`
 	// VideoCodec holds the value of the "video_codec" field.
-	VideoCodec string `json:"video_codec,omitempty"`
+	VideoCodec *string `json:"video_codec,omitempty"`
 	// AudioCodec holds the value of the "audio_codec" field.
-	AudioCodec string `json:"audio_codec,omitempty"`
+	AudioCodec *string `json:"audio_codec,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EpisodeQuery when eager-loading is set.
 	Edges            EpisodeEdges `json:"edges"`
@@ -142,19 +142,22 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field resolution", values[i])
 			} else if value.Valid {
-				e.Resolution = value.String
+				e.Resolution = new(string)
+				*e.Resolution = value.String
 			}
 		case episode.FieldVideoCodec:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field video_codec", values[i])
 			} else if value.Valid {
-				e.VideoCodec = value.String
+				e.VideoCodec = new(string)
+				*e.VideoCodec = value.String
 			}
 		case episode.FieldAudioCodec:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field audio_codec", values[i])
 			} else if value.Valid {
-				e.AudioCodec = value.String
+				e.AudioCodec = new(string)
+				*e.AudioCodec = value.String
 			}
 		case episode.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -234,14 +237,20 @@ func (e *Episode) String() string {
 	builder.WriteString("anime_season=")
 	builder.WriteString(fmt.Sprintf("%v", e.AnimeSeason))
 	builder.WriteString(", ")
-	builder.WriteString("resolution=")
-	builder.WriteString(e.Resolution)
+	if v := e.Resolution; v != nil {
+		builder.WriteString("resolution=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("video_codec=")
-	builder.WriteString(e.VideoCodec)
+	if v := e.VideoCodec; v != nil {
+		builder.WriteString("video_codec=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("audio_codec=")
-	builder.WriteString(e.AudioCodec)
+	if v := e.AudioCodec; v != nil {
+		builder.WriteString("audio_codec=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

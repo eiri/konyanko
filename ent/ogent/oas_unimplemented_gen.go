@@ -121,6 +121,15 @@ func (UnimplementedHandler) ListItem(ctx context.Context, params ListItemParams)
 	return r, ht.ErrNotImplemented
 }
 
+// ListItemByDate implements listItemByDate operation.
+//
+// List items by published date.
+//
+// GET /api/v1/items/by_date/{day}
+func (UnimplementedHandler) ListItemByDate(ctx context.Context, params ListItemByDateParams) (r ListItemByDateRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ListReleaseGroup implements listReleaseGroup operation.
 //
 // List ReleaseGroups.

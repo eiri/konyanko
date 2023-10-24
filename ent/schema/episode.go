@@ -17,9 +17,9 @@ func (Episode) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("episode_number").NonNegative().Default(0),
 		field.Int("anime_season").NonNegative().Default(1),
-		field.String("resolution").Optional(),
-		field.String("video_codec").Optional(),
-		field.String("audio_codec").Optional(),
+		field.String("resolution").Optional().Nillable(),
+		field.String("video_codec").Optional().Nillable(),
+		field.String("audio_codec").Optional().Nillable(),
 	}
 }
 

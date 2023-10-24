@@ -124,9 +124,18 @@ func NewAnimeEpisodesList(e *ent.Episode) *AnimeEpisodesList {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 
@@ -156,9 +165,18 @@ func NewEpisodeCreate(e *ent.Episode) *EpisodeCreate {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 
@@ -188,9 +206,18 @@ func NewEpisodeList(e *ent.Episode) *EpisodeList {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 
@@ -220,9 +247,18 @@ func NewEpisodeRead(e *ent.Episode) *EpisodeRead {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 
@@ -252,9 +288,18 @@ func NewEpisodeUpdate(e *ent.Episode) *EpisodeUpdate {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 
@@ -515,9 +560,18 @@ func NewItemEpisodeRead(e *ent.Episode) *ItemEpisodeRead {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 
@@ -659,9 +713,18 @@ func NewReleaseGroupEpisodesList(e *ent.Episode) *ReleaseGroupEpisodesList {
 	ret.ID = e.ID
 	ret.EpisodeNumber = e.EpisodeNumber
 	ret.AnimeSeason = e.AnimeSeason
-	ret.Resolution = NewOptString(e.Resolution)
-	ret.VideoCodec = NewOptString(e.VideoCodec)
-	ret.AudioCodec = NewOptString(e.AudioCodec)
+	ret.Resolution = OptString{}
+	if e.Resolution != nil {
+		ret.Resolution.SetTo(*e.Resolution)
+	}
+	ret.VideoCodec = OptString{}
+	if e.VideoCodec != nil {
+		ret.VideoCodec.SetTo(*e.VideoCodec)
+	}
+	ret.AudioCodec = OptString{}
+	if e.AudioCodec != nil {
+		ret.AudioCodec.SetTo(*e.AudioCodec)
+	}
 	return &ret
 }
 

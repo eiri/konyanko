@@ -297,6 +297,36 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 'b': // Prefix: "by_date/"
+						if l := len("by_date/"); len(elem) >= l && elem[0:l] == "by_date/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "day"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleListItemByDateRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+					}
 					// Param: "id"
 					// Match until "/"
 					idx := strings.IndexByte(elem, '/')
@@ -815,6 +845,38 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 'b': // Prefix: "by_date/"
+						if l := len("by_date/"); len(elem) >= l && elem[0:l] == "by_date/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "day"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: ListItemByDate
+								r.name = "ListItemByDate"
+								r.summary = "List items by published date."
+								r.operationID = "listItemByDate"
+								r.pathPattern = "/api/v1/items/by_date/{day}"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+					}
 					// Param: "id"
 					// Match until "/"
 					idx := strings.IndexByte(elem, '/')

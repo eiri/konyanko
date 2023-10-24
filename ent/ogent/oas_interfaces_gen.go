@@ -45,6 +45,10 @@ type ListEpisodeRes interface {
 	listEpisodeRes()
 }
 
+type ListItemByDateRes interface {
+	listItemByDateRes()
+}
+
 type ListItemRes interface {
 	listItemRes()
 }

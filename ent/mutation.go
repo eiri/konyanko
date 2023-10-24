@@ -704,7 +704,7 @@ func (m *EpisodeMutation) Resolution() (r string, exists bool) {
 // OldResolution returns the old "resolution" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldResolution(ctx context.Context) (v string, err error) {
+func (m *EpisodeMutation) OldResolution(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResolution is only allowed on UpdateOne operations")
 	}
@@ -753,7 +753,7 @@ func (m *EpisodeMutation) VideoCodec() (r string, exists bool) {
 // OldVideoCodec returns the old "video_codec" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldVideoCodec(ctx context.Context) (v string, err error) {
+func (m *EpisodeMutation) OldVideoCodec(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldVideoCodec is only allowed on UpdateOne operations")
 	}
@@ -802,7 +802,7 @@ func (m *EpisodeMutation) AudioCodec() (r string, exists bool) {
 // OldAudioCodec returns the old "audio_codec" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldAudioCodec(ctx context.Context) (v string, err error) {
+func (m *EpisodeMutation) OldAudioCodec(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAudioCodec is only allowed on UpdateOne operations")
 	}

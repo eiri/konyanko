@@ -46,7 +46,7 @@ var (
 			}
 
 			ctx := context.Background()
-			animes, err := client.Item.
+			items, err := client.Item.
 				Query().
 				Where(
 					item.And(
@@ -63,7 +63,7 @@ var (
 				return err
 			}
 
-			data, err := json.MarshalIndent(animes, "", "  ")
+			data, err := json.MarshalIndent(items, "", "  ")
 			if err != nil {
 				return err
 			}

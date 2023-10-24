@@ -9,10 +9,10 @@ A nyaa.si aggregator.
 - [x] Anime name parser
 - [x] Iterative cycles of two above till completed
 - [x] Openapi specs from ent schema
+- [x] API server
 - [ ] Server in go and client in js from openapi specs
-- [ ] API server
-- [ ] Vue UI
-- [ ] Crontab RSS puller in server
+- [ ] ~Vue UI~ templ + htmx UI
+- [ ] Crontab RSS puller on server
 - [ ] Docker
 - [ ] Goreleaser
 - [ ] Myanimelist integration

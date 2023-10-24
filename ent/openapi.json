@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Ent Schema API",
-    "description": "This is an auto generated API description made out of an Ent schema definition",
+    "title": "Konyanko Schema API",
+    "description": "This is an auto generated API description for Konyanko server made out of an Ent schema definition",
     "version": "0.1.0"
   },
   "paths": {
@@ -870,6 +870,82 @@
           },
           "400": {
             "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/api/v1/items/by_date/{day}": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "List items by published date.",
+        "operationId": "listItemByDate",
+        "parameters": [
+          {
+            "name": "day",
+            "in": "path",
+            "description": "Item published date",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result of listing items by date",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ItemList"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "episode": {
+                            "$ref": "#/components/schemas/EpisodeList"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "anime": {
+                            "$ref": "#/components/schemas/AnimeList"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "release_group": {
+                            "$ref": "#/components/schemas/ReleaseGroupList"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
           },
           "409": {
             "$ref": "#/components/responses/409"
