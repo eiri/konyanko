@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := all
 
 PROJECT := konyanko
-SRC := $(wildcard ./cmd/*.go ./ent/**/*.go)
+SRC := $(wildcard ./*.go ./cmd/*.go ./ent/**/*.go)
 
 .PHONY: all
 all: build
@@ -51,6 +51,11 @@ schema:
 	go run -mod=mod entgo.io/ent/cmd/ent new $(ENTITY)
 	go mod tidy
 
+.PHONY: graphql
+graphql:
+	go run -mod=mod github.com/99designs/gqlgen
+	go mod tidy
+
 .PHONY: cli-command
 cli-command: COMMAND := queries
 cli-command:
@@ -64,5 +69,5 @@ describe:
 
 .PHONY: generate
 generate:
-	go generate ./ent/...
+	go generate .
 	go mod tidy

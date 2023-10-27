@@ -19,11 +19,14 @@ import (
 // ReleaseGroupQuery is the builder for querying ReleaseGroup entities.
 type ReleaseGroupQuery struct {
 	config
-	ctx          *QueryContext
-	order        []releasegroup.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.ReleaseGroup
-	withEpisodes *EpisodeQuery
+	ctx               *QueryContext
+	order             []releasegroup.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.ReleaseGroup
+	withEpisodes      *EpisodeQuery
+	modifiers         []func(*sql.Selector)
+	loadTotal         []func(context.Context, []*ReleaseGroup) error
+	withNamedEpisodes map[string]*EpisodeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -383,6 +386,9 @@ func (rgq *ReleaseGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(rgq.modifiers) > 0 {
+		_spec.Modifiers = rgq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -396,6 +402,18 @@ func (rgq *ReleaseGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		if err := rgq.loadEpisodes(ctx, query, nodes,
 			func(n *ReleaseGroup) { n.Edges.Episodes = []*Episode{} },
 			func(n *ReleaseGroup, e *Episode) { n.Edges.Episodes = append(n.Edges.Episodes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range rgq.withNamedEpisodes {
+		if err := rgq.loadEpisodes(ctx, query, nodes,
+			func(n *ReleaseGroup) { n.appendNamedEpisodes(name) },
+			func(n *ReleaseGroup, e *Episode) { n.appendNamedEpisodes(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range rgq.loadTotal {
+		if err := rgq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -436,6 +454,9 @@ func (rgq *ReleaseGroupQuery) loadEpisodes(ctx context.Context, query *EpisodeQu
 
 func (rgq *ReleaseGroupQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := rgq.querySpec()
+	if len(rgq.modifiers) > 0 {
+		_spec.Modifiers = rgq.modifiers
+	}
 	_spec.Node.Columns = rgq.ctx.Fields
 	if len(rgq.ctx.Fields) > 0 {
 		_spec.Unique = rgq.ctx.Unique != nil && *rgq.ctx.Unique
@@ -513,6 +534,20 @@ func (rgq *ReleaseGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// WithNamedEpisodes tells the query-builder to eager-load the nodes that are connected to the "episodes"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (rgq *ReleaseGroupQuery) WithNamedEpisodes(name string, opts ...func(*EpisodeQuery)) *ReleaseGroupQuery {
+	query := (&EpisodeClient{config: rgq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if rgq.withNamedEpisodes == nil {
+		rgq.withNamedEpisodes = make(map[string]*EpisodeQuery)
+	}
+	rgq.withNamedEpisodes[name] = query
+	return rgq
 }
 
 // ReleaseGroupGroupBy is the group-by builder for ReleaseGroup entities.

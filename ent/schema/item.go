@@ -3,7 +3,9 @@ package schema
 import (
 	"time"
 
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -36,5 +38,12 @@ func (Item) Edges() []ent.Edge {
 func (Item) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("view_url"),
+	}
+}
+
+// Annotations of the Item.
+func (Item) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.QueryField(),
 	}
 }

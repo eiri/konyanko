@@ -24,6 +24,8 @@ type ItemQuery struct {
 	inters      []Interceptor
 	predicates  []predicate.Item
 	withEpisode *EpisodeQuery
+	modifiers   []func(*sql.Selector)
+	loadTotal   []func(context.Context, []*Item) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -383,6 +385,9 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(iq.modifiers) > 0 {
+		_spec.Modifiers = iq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -395,6 +400,11 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 	if query := iq.withEpisode; query != nil {
 		if err := iq.loadEpisode(ctx, query, nodes, nil,
 			func(n *Item, e *Episode) { n.Edges.Episode = e }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range iq.loadTotal {
+		if err := iq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -432,6 +442,9 @@ func (iq *ItemQuery) loadEpisode(ctx context.Context, query *EpisodeQuery, nodes
 
 func (iq *ItemQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := iq.querySpec()
+	if len(iq.modifiers) > 0 {
+		_spec.Modifiers = iq.modifiers
+	}
 	_spec.Node.Columns = iq.ctx.Fields
 	if len(iq.ctx.Fields) > 0 {
 		_spec.Unique = iq.ctx.Unique != nil && *iq.ctx.Unique

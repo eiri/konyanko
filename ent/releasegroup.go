@@ -31,6 +31,10 @@ type ReleaseGroupEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
+	// totalCount holds the count of the edges above.
+	totalCount [1]map[string]int
+
+	namedEpisodes map[string][]*Episode
 }
 
 // EpisodesOrErr returns the Episodes value or an error if the edge
@@ -123,6 +127,30 @@ func (rg *ReleaseGroup) String() string {
 	builder.WriteString(rg.Name)
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedEpisodes returns the Episodes named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (rg *ReleaseGroup) NamedEpisodes(name string) ([]*Episode, error) {
+	if rg.Edges.namedEpisodes == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := rg.Edges.namedEpisodes[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (rg *ReleaseGroup) appendNamedEpisodes(name string, edges ...*Episode) {
+	if rg.Edges.namedEpisodes == nil {
+		rg.Edges.namedEpisodes = make(map[string][]*Episode)
+	}
+	if len(edges) == 0 {
+		rg.Edges.namedEpisodes[name] = []*Episode{}
+	} else {
+		rg.Edges.namedEpisodes[name] = append(rg.Edges.namedEpisodes[name], edges...)
+	}
 }
 
 // ReleaseGroups is a parsable slice of ReleaseGroup.

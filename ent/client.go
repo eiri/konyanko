@@ -34,6 +34,8 @@ type Client struct {
 	Item *ItemClient
 	// ReleaseGroup is the client for interacting with the ReleaseGroup builders.
 	ReleaseGroup *ReleaseGroupClient
+	// additional fields for node api
+	tables tables
 }
 
 // NewClient creates a new client configured with the given options.

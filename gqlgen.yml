@@ -1,0 +1,21 @@
+schema:
+  - konyanko.graphql
+
+resolver:
+  layout: follow-schema
+  dir: .
+
+autobind:
+  - github.com/eiri/konyanko/ent
+  - github.com/eiri/konyanko/ent/item
+  - github.com/eiri/konyanko/ent/episode
+  - github.com/eiri/konyanko/ent/anime
+  - github.com/eiri/konyanko/ent/releasegroup
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.IntID
+  Node:
+    model:
+      - github.com/eiri/konyanko/ent.Noder

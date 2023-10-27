@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -22,5 +24,12 @@ func (ReleaseGroup) Fields() []ent.Field {
 func (ReleaseGroup) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("episodes", Episode.Type).StorageKey(edge.Column("release_group_id")),
+	}
+}
+
+// Annotations of the ReleaseGroup.
+func (ReleaseGroup) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.QueryField(),
 	}
 }

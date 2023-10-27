@@ -19,11 +19,14 @@ import (
 // AnimeQuery is the builder for querying Anime entities.
 type AnimeQuery struct {
 	config
-	ctx          *QueryContext
-	order        []anime.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.Anime
-	withEpisodes *EpisodeQuery
+	ctx               *QueryContext
+	order             []anime.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.Anime
+	withEpisodes      *EpisodeQuery
+	modifiers         []func(*sql.Selector)
+	loadTotal         []func(context.Context, []*Anime) error
+	withNamedEpisodes map[string]*EpisodeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -383,6 +386,9 @@ func (aq *AnimeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Anime,
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -396,6 +402,18 @@ func (aq *AnimeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Anime,
 		if err := aq.loadEpisodes(ctx, query, nodes,
 			func(n *Anime) { n.Edges.Episodes = []*Episode{} },
 			func(n *Anime, e *Episode) { n.Edges.Episodes = append(n.Edges.Episodes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range aq.withNamedEpisodes {
+		if err := aq.loadEpisodes(ctx, query, nodes,
+			func(n *Anime) { n.appendNamedEpisodes(name) },
+			func(n *Anime, e *Episode) { n.appendNamedEpisodes(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range aq.loadTotal {
+		if err := aq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -436,6 +454,9 @@ func (aq *AnimeQuery) loadEpisodes(ctx context.Context, query *EpisodeQuery, nod
 
 func (aq *AnimeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
 	_spec.Node.Columns = aq.ctx.Fields
 	if len(aq.ctx.Fields) > 0 {
 		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
@@ -513,6 +534,20 @@ func (aq *AnimeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// WithNamedEpisodes tells the query-builder to eager-load the nodes that are connected to the "episodes"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (aq *AnimeQuery) WithNamedEpisodes(name string, opts ...func(*EpisodeQuery)) *AnimeQuery {
+	query := (&EpisodeClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if aq.withNamedEpisodes == nil {
+		aq.withNamedEpisodes = make(map[string]*EpisodeQuery)
+	}
+	aq.withNamedEpisodes[name] = query
+	return aq
 }
 
 // AnimeGroupBy is the group-by builder for Anime entities.

@@ -28,6 +28,8 @@ type EpisodeQuery struct {
 	withTitle        *AnimeQuery
 	withReleaseGroup *ReleaseGroupQuery
 	withFKs          bool
+	modifiers        []func(*sql.Selector)
+	loadTotal        []func(context.Context, []*Episode) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -464,6 +466,9 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(eq.modifiers) > 0 {
+		_spec.Modifiers = eq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -488,6 +493,11 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 	if query := eq.withReleaseGroup; query != nil {
 		if err := eq.loadReleaseGroup(ctx, query, nodes, nil,
 			func(n *Episode, e *ReleaseGroup) { n.Edges.ReleaseGroup = e }); err != nil {
+			return nil, err
+		}
+	}
+	for i := range eq.loadTotal {
+		if err := eq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -593,6 +603,9 @@ func (eq *EpisodeQuery) loadReleaseGroup(ctx context.Context, query *ReleaseGrou
 
 func (eq *EpisodeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
+	if len(eq.modifiers) > 0 {
+		_spec.Modifiers = eq.modifiers
+	}
 	_spec.Node.Columns = eq.ctx.Fields
 	if len(eq.ctx.Fields) > 0 {
 		_spec.Unique = eq.ctx.Unique != nil && *eq.ctx.Unique

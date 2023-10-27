@@ -8,14 +8,19 @@ A nyaa.si aggregator.
 - [x] RSS reader-exporter
 - [x] Anime name parser
 - [x] Iterative cycles of two above till completed
-- [x] Openapi specs from ent schema
-- [x] API server
-- [ ] Server in go and client in js from openapi specs
-- [ ] ~Vue UI~ templ + htmx UI
+- [x] ~Openapi specs from ent schema~
+- [ ] GraphQL schema
+- [ ] API server
+- [ ] ~Vue UI~
+- [ ] Templ + htmx UI
 - [ ] Crontab RSS puller on server
-- [ ] Docker
 - [ ] Goreleaser
+- [ ] Docker
+
+## Maybe later
+
 - [ ] Myanimelist integration
+- [ ] Terminal UI
 
 ## Schema
 
