@@ -16,20 +16,31 @@ type ReleaseGroup struct {
 // Fields of the ReleaseGroup.
 func (ReleaseGroup) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").NotEmpty().Unique(),
+		field.String("name").
+			NotEmpty().
+			Unique().
+			Annotations(
+				entgql.OrderField("NAME"),
+			),
 	}
 }
 
 // Edges of the ReleaseGroup.
 func (ReleaseGroup) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("episodes", Episode.Type).StorageKey(edge.Column("release_group_id")),
+		edge.To("episodes", Episode.Type).
+			StorageKey(edge.Column("release_group_id")).
+			Annotations(
+				entgql.RelayConnection(),
+				entgql.OrderField("EPISODES_COUNT"),
+			),
 	}
 }
 
 // Annotations of the ReleaseGroup.
 func (ReleaseGroup) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entgql.RelayConnection(),
 		entgql.QueryField(),
 	}
 }

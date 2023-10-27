@@ -120,13 +120,24 @@ type ComplexityRoot struct {
 		Items         func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder) int
 		Node          func(childComplexity int, id int) int
 		Nodes         func(childComplexity int, ids []int) int
-		ReleaseGroups func(childComplexity int) int
+		ReleaseGroups func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.ReleaseGroupOrder) int
 	}
 
 	ReleaseGroup struct {
-		Episodes func(childComplexity int) int
+		Episodes func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) int
 		ID       func(childComplexity int) int
 		Name     func(childComplexity int) int
+	}
+
+	ReleaseGroupConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ReleaseGroupEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 }
 
@@ -136,7 +147,7 @@ type QueryResolver interface {
 	Animes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.AnimeOrder) (*ent.AnimeConnection, error)
 	Episodes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) (*ent.EpisodeConnection, error)
 	Items(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder) (*ent.ItemConnection, error)
-	ReleaseGroups(ctx context.Context) ([]*ent.ReleaseGroup, error)
+	ReleaseGroups(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.ReleaseGroupOrder) (*ent.ReleaseGroupConnection, error)
 }
 
 type executableSchema struct {
@@ -490,14 +501,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.ReleaseGroups(childComplexity), true
+		args, err := ec.field_Query_releaseGroups_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ReleaseGroups(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.ReleaseGroupOrder)), true
 
 	case "ReleaseGroup.episodes":
 		if e.complexity.ReleaseGroup.Episodes == nil {
 			break
 		}
 
-		return e.complexity.ReleaseGroup.Episodes(childComplexity), true
+		args, err := ec.field_ReleaseGroup_episodes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.ReleaseGroup.Episodes(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].([]*ent.EpisodeOrder)), true
 
 	case "ReleaseGroup.id":
 		if e.complexity.ReleaseGroup.ID == nil {
@@ -513,6 +534,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ReleaseGroup.Name(childComplexity), true
 
+	case "ReleaseGroupConnection.edges":
+		if e.complexity.ReleaseGroupConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ReleaseGroupConnection.Edges(childComplexity), true
+
+	case "ReleaseGroupConnection.pageInfo":
+		if e.complexity.ReleaseGroupConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ReleaseGroupConnection.PageInfo(childComplexity), true
+
+	case "ReleaseGroupConnection.totalCount":
+		if e.complexity.ReleaseGroupConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ReleaseGroupConnection.TotalCount(childComplexity), true
+
+	case "ReleaseGroupEdge.cursor":
+		if e.complexity.ReleaseGroupEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ReleaseGroupEdge.Cursor(childComplexity), true
+
+	case "ReleaseGroupEdge.node":
+		if e.complexity.ReleaseGroupEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ReleaseGroupEdge.Node(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -524,6 +580,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAnimeOrder,
 		ec.unmarshalInputEpisodeOrder,
 		ec.unmarshalInputItemOrder,
+		ec.unmarshalInputReleaseGroupOrder,
 	)
 	first := true
 
@@ -871,6 +928,108 @@ func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs 
 		}
 	}
 	args["ids"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_releaseGroups_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ReleaseGroupOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOReleaseGroupOrder2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_ReleaseGroup_episodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 []*ent.EpisodeOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOEpisodeOrder2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeOrderᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
 	return args, nil
 }
 
@@ -3018,7 +3177,7 @@ func (ec *executionContext) _Query_releaseGroups(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ReleaseGroups(rctx)
+		return ec.resolvers.Query().ReleaseGroups(rctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.ReleaseGroupOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3030,9 +3189,9 @@ func (ec *executionContext) _Query_releaseGroups(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.ReleaseGroup)
+	res := resTmp.(*ent.ReleaseGroupConnection)
 	fc.Result = res
-	return ec.marshalNReleaseGroup2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupᚄ(ctx, field.Selections, res)
+	return ec.marshalNReleaseGroupConnection2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_releaseGroups(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3043,15 +3202,26 @@ func (ec *executionContext) fieldContext_Query_releaseGroups(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_ReleaseGroup_id(ctx, field)
-			case "name":
-				return ec.fieldContext_ReleaseGroup_name(ctx, field)
-			case "episodes":
-				return ec.fieldContext_ReleaseGroup_episodes(ctx, field)
+			case "edges":
+				return ec.fieldContext_ReleaseGroupConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_ReleaseGroupConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_ReleaseGroupConnection_totalCount(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type ReleaseGroup", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type ReleaseGroupConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_releaseGroups_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3287,18 +3457,21 @@ func (ec *executionContext) _ReleaseGroup_episodes(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Episodes(ctx)
+		return obj.Episodes(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].([]*ent.EpisodeOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.Episode)
+	res := resTmp.(*ent.EpisodeConnection)
 	fc.Result = res
-	return ec.marshalOEpisode2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeᚄ(ctx, field.Selections, res)
+	return ec.marshalNEpisodeConnection2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ReleaseGroup_episodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3309,26 +3482,263 @@ func (ec *executionContext) fieldContext_ReleaseGroup_episodes(ctx context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Episode_id(ctx, field)
-			case "episodeNumber":
-				return ec.fieldContext_Episode_episodeNumber(ctx, field)
-			case "animeSeason":
-				return ec.fieldContext_Episode_animeSeason(ctx, field)
-			case "resolution":
-				return ec.fieldContext_Episode_resolution(ctx, field)
-			case "videoCodec":
-				return ec.fieldContext_Episode_videoCodec(ctx, field)
-			case "audioCodec":
-				return ec.fieldContext_Episode_audioCodec(ctx, field)
-			case "item":
-				return ec.fieldContext_Episode_item(ctx, field)
-			case "anime":
-				return ec.fieldContext_Episode_anime(ctx, field)
-			case "releaseGroup":
-				return ec.fieldContext_Episode_releaseGroup(ctx, field)
+			case "edges":
+				return ec.fieldContext_EpisodeConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_EpisodeConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_EpisodeConnection_totalCount(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Episode", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type EpisodeConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_ReleaseGroup_episodes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ReleaseGroupConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ReleaseGroupConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ReleaseGroupConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ReleaseGroupEdge)
+	fc.Result = res
+	return ec.marshalOReleaseGroupEdge2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ReleaseGroupConnection_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ReleaseGroupConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_ReleaseGroupEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_ReleaseGroupEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ReleaseGroupEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ReleaseGroupConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ReleaseGroupConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ReleaseGroupConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(entgql.PageInfo[int])
+	fc.Result = res
+	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ReleaseGroupConnection_pageInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ReleaseGroupConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ReleaseGroupConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ReleaseGroupConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ReleaseGroupConnection_totalCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ReleaseGroupConnection_totalCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ReleaseGroupConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ReleaseGroupEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ReleaseGroupEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ReleaseGroupEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ReleaseGroup)
+	fc.Result = res
+	return ec.marshalOReleaseGroup2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ReleaseGroupEdge_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ReleaseGroupEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_ReleaseGroup_id(ctx, field)
+			case "name":
+				return ec.fieldContext_ReleaseGroup_name(ctx, field)
+			case "episodes":
+				return ec.fieldContext_ReleaseGroup_episodes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ReleaseGroup", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ReleaseGroupEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ReleaseGroupEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ReleaseGroupEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(entgql.Cursor[int])
+	fc.Result = res
+	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ReleaseGroupEdge_cursor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ReleaseGroupEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Cursor does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5233,6 +5643,48 @@ func (ec *executionContext) unmarshalInputItemOrder(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputReleaseGroupOrder(ctx context.Context, obj interface{}) (ent.ReleaseGroupOrder, error) {
+	var it ent.ReleaseGroupOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	if _, present := asMap["direction"]; !present {
+		asMap["direction"] = "ASC"
+	}
+
+	fieldsInOrder := [...]string{"direction", "field"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Direction = data
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			data, err := ec.unmarshalNReleaseGroupOrderField2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Field = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -6126,6 +6578,9 @@ func (ec *executionContext) _ReleaseGroup(ctx context.Context, sel ast.Selection
 					}
 				}()
 				res = ec._ReleaseGroup_episodes(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -6149,6 +6604,93 @@ func (ec *executionContext) _ReleaseGroup(ctx context.Context, sel ast.Selection
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var releaseGroupConnectionImplementors = []string{"ReleaseGroupConnection"}
+
+func (ec *executionContext) _ReleaseGroupConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ReleaseGroupConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, releaseGroupConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ReleaseGroupConnection")
+		case "edges":
+			out.Values[i] = ec._ReleaseGroupConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._ReleaseGroupConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._ReleaseGroupConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var releaseGroupEdgeImplementors = []string{"ReleaseGroupEdge"}
+
+func (ec *executionContext) _ReleaseGroupEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ReleaseGroupEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, releaseGroupEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ReleaseGroupEdge")
+		case "node":
+			out.Values[i] = ec._ReleaseGroupEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ReleaseGroupEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6563,16 +7105,6 @@ func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCurso
 	return v
 }
 
-func (ec *executionContext) marshalNEpisode2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisode(ctx context.Context, sel ast.SelectionSet, v *ent.Episode) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Episode(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNEpisodeConnection2githubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeConnection(ctx context.Context, sel ast.SelectionSet, v ent.EpisodeConnection) graphql.Marshaler {
 	return ec._EpisodeConnection(ctx, sel, &v)
 }
@@ -6767,58 +7299,34 @@ func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPag
 	return ec._PageInfo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNReleaseGroup2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ReleaseGroup) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNReleaseGroup2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroup(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
+func (ec *executionContext) marshalNReleaseGroupConnection2githubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupConnection(ctx context.Context, sel ast.SelectionSet, v ent.ReleaseGroupConnection) graphql.Marshaler {
+	return ec._ReleaseGroupConnection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNReleaseGroup2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroup(ctx context.Context, sel ast.SelectionSet, v *ent.ReleaseGroup) graphql.Marshaler {
+func (ec *executionContext) marshalNReleaseGroupConnection2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ReleaseGroupConnection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
-	return ec._ReleaseGroup(ctx, sel, v)
+	return ec._ReleaseGroupConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNReleaseGroupOrderField2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupOrderField(ctx context.Context, v interface{}) (*ent.ReleaseGroupOrderField, error) {
+	var res = new(ent.ReleaseGroupOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNReleaseGroupOrderField2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.ReleaseGroupOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -7215,53 +7723,6 @@ func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCu
 	return v
 }
 
-func (ec *executionContext) marshalOEpisode2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Episode) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNEpisode2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisode(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalOEpisode2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisode(ctx context.Context, sel ast.SelectionSet, v *ent.Episode) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -7440,6 +7901,62 @@ func (ec *executionContext) marshalOReleaseGroup2ᚖgithubᚗcomᚋeiriᚋkonyan
 		return graphql.Null
 	}
 	return ec._ReleaseGroup(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOReleaseGroupEdge2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ReleaseGroupEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOReleaseGroupEdge2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOReleaseGroupEdge2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ReleaseGroupEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ReleaseGroupEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOReleaseGroupOrder2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐReleaseGroupOrder(ctx context.Context, v interface{}) (*ent.ReleaseGroupOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputReleaseGroupOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

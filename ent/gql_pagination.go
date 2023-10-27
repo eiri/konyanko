@@ -583,7 +583,7 @@ func (p *episodePager) applyOrder(query *EpisodeQuery) *EpisodeQuery {
 			defaultOrdered = true
 		}
 		switch o.Field.column {
-		case ItemOrderFieldItemPublishDate.column, AnimeOrderFieldAnimeTitle.column:
+		case ItemOrderFieldItemPublishDate.column, AnimeOrderFieldAnimeTitle.column, ReleaseGroupOrderFieldReleaseGroupName.column:
 		default:
 			if len(query.ctx.Fields) > 0 {
 				query.ctx.AppendFieldOnce(o.Field.column)
@@ -603,7 +603,7 @@ func (p *episodePager) applyOrder(query *EpisodeQuery) *EpisodeQuery {
 func (p *episodePager) orderExpr(query *EpisodeQuery) sql.Querier {
 	for _, o := range p.order {
 		switch o.Field.column {
-		case ItemOrderFieldItemPublishDate.column, AnimeOrderFieldAnimeTitle.column:
+		case ItemOrderFieldItemPublishDate.column, AnimeOrderFieldAnimeTitle.column, ReleaseGroupOrderFieldReleaseGroupName.column:
 			direction := o.Direction
 			if p.reverse {
 				direction = direction.Reverse()
@@ -767,6 +767,26 @@ var (
 			}
 		},
 	}
+	// ReleaseGroupOrderFieldReleaseGroupName orders by RELEASE_GROUP_NAME.
+	ReleaseGroupOrderFieldReleaseGroupName = &EpisodeOrderField{
+		Value: func(e *Episode) (ent.Value, error) {
+			return e.Value("release_group_name")
+		},
+		column: "release_group_name",
+		toTerm: func(opts ...sql.OrderTermOption) episode.OrderOption {
+			return episode.ByReleaseGroupField(
+				releasegroup.FieldName,
+				append(opts, sql.OrderSelectAs("release_group_name"))...,
+			)
+		},
+		toCursor: func(e *Episode) Cursor {
+			cv, _ := e.Value("release_group_name")
+			return Cursor{
+				ID:    e.ID,
+				Value: cv,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -783,6 +803,8 @@ func (f EpisodeOrderField) String() string {
 		str = "ITEM_PUBLISH_DATE"
 	case AnimeOrderFieldAnimeTitle.column:
 		str = "ANIME_TITLE"
+	case ReleaseGroupOrderFieldReleaseGroupName.column:
+		str = "RELEASE_GROUP_NAME"
 	}
 	return str
 }
@@ -809,6 +831,8 @@ func (f *EpisodeOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *ItemOrderFieldItemPublishDate
 	case "ANIME_TITLE":
 		*f = *AnimeOrderFieldAnimeTitle
+	case "RELEASE_GROUP_NAME":
+		*f = *ReleaseGroupOrderFieldReleaseGroupName
 	default:
 		return fmt.Errorf("%s is not a valid EpisodeOrderField", str)
 	}
@@ -1356,8 +1380,12 @@ func (p *releasegroupPager) applyOrder(query *ReleaseGroupQuery) *ReleaseGroupQu
 	if p.order.Field != DefaultReleaseGroupOrder.Field {
 		query = query.Order(DefaultReleaseGroupOrder.Field.toTerm(direction.OrderTermOption()))
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case ReleaseGroupOrderFieldEpisodesCount.column:
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return query
 }
@@ -1367,8 +1395,13 @@ func (p *releasegroupPager) orderExpr(query *ReleaseGroupQuery) sql.Querier {
 	if p.reverse {
 		direction = direction.Reverse()
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case ReleaseGroupOrderFieldEpisodesCount.column:
+		query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
 		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
@@ -1428,6 +1461,76 @@ func (rg *ReleaseGroupQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// ReleaseGroupOrderFieldName orders ReleaseGroup by name.
+	ReleaseGroupOrderFieldName = &ReleaseGroupOrderField{
+		Value: func(rg *ReleaseGroup) (ent.Value, error) {
+			return rg.Name, nil
+		},
+		column: releasegroup.FieldName,
+		toTerm: releasegroup.ByName,
+		toCursor: func(rg *ReleaseGroup) Cursor {
+			return Cursor{
+				ID:    rg.ID,
+				Value: rg.Name,
+			}
+		},
+	}
+	// ReleaseGroupOrderFieldEpisodesCount orders by EPISODES_COUNT.
+	ReleaseGroupOrderFieldEpisodesCount = &ReleaseGroupOrderField{
+		Value: func(rg *ReleaseGroup) (ent.Value, error) {
+			return rg.Value("episodes_count")
+		},
+		column: "episodes_count",
+		toTerm: func(opts ...sql.OrderTermOption) releasegroup.OrderOption {
+			return releasegroup.ByEpisodesCount(
+				append(opts, sql.OrderSelectAs("episodes_count"))...,
+			)
+		},
+		toCursor: func(rg *ReleaseGroup) Cursor {
+			cv, _ := rg.Value("episodes_count")
+			return Cursor{
+				ID:    rg.ID,
+				Value: cv,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ReleaseGroupOrderField) String() string {
+	var str string
+	switch f.column {
+	case ReleaseGroupOrderFieldName.column:
+		str = "NAME"
+	case ReleaseGroupOrderFieldEpisodesCount.column:
+		str = "EPISODES_COUNT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ReleaseGroupOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ReleaseGroupOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ReleaseGroupOrderField %T must be a string", v)
+	}
+	switch str {
+	case "NAME":
+		*f = *ReleaseGroupOrderFieldName
+	case "EPISODES_COUNT":
+		*f = *ReleaseGroupOrderFieldEpisodesCount
+	default:
+		return fmt.Errorf("%s is not a valid ReleaseGroupOrderField", str)
+	}
+	return nil
 }
 
 // ReleaseGroupOrderField defines the ordering field of ReleaseGroup.

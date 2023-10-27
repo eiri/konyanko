@@ -59,7 +59,10 @@ func (Episode) Edges() []ent.Edge {
 			),
 		edge.From("release_group", ReleaseGroup.Type).
 			Ref("episodes").
-			Unique(),
+			Unique().
+			Annotations(
+				entgql.OrderField("RELEASE_GROUP_NAME"),
+			),
 	}
 }
 

@@ -94,6 +94,7 @@ enum EpisodeOrderField {
   RESOLUTION
   ITEM_PUBLISH_DATE
   ANIME_TITLE
+  RELEASE_GROUP_NAME
 }
 type Item implements Node {
   id: ID!
@@ -221,12 +222,70 @@ type Query {
     """Ordering options for Items returned from the connection."""
     orderBy: [ItemOrder!]
   ): ItemConnection!
-  releaseGroups: [ReleaseGroup!]!
+  releaseGroups(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for ReleaseGroups returned from the connection."""
+    orderBy: ReleaseGroupOrder
+  ): ReleaseGroupConnection!
 }
 type ReleaseGroup implements Node {
   id: ID!
   name: String!
-  episodes: [Episode!]
+  episodes(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Episodes returned from the connection."""
+    orderBy: [EpisodeOrder!]
+  ): EpisodeConnection!
+}
+"""A connection to a list of items."""
+type ReleaseGroupConnection {
+  """A list of edges."""
+  edges: [ReleaseGroupEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type ReleaseGroupEdge {
+  """The item at the end of the edge."""
+  node: ReleaseGroup
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""Ordering options for ReleaseGroup connections"""
+input ReleaseGroupOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order ReleaseGroups."""
+  field: ReleaseGroupOrderField!
+}
+"""Properties by which ReleaseGroup connections can be ordered."""
+enum ReleaseGroupOrderField {
+  NAME
+  EPISODES_COUNT
 }
 """The builtin Time type"""
 scalar Time

@@ -43,8 +43,10 @@ func (r *queryResolver) Items(ctx context.Context, after *entgql.Cursor[int], fi
 }
 
 // ReleaseGroups is the resolver for the releaseGroups field.
-func (r *queryResolver) ReleaseGroups(ctx context.Context) ([]*ent.ReleaseGroup, error) {
-	return r.client.ReleaseGroup.Query().All(ctx)
+func (r *queryResolver) ReleaseGroups(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.ReleaseGroupOrder) (*ent.ReleaseGroupConnection, error) {
+	return r.client.ReleaseGroup.Query().Paginate(ctx, after, first, before, last,
+		ent.WithReleaseGroupOrder(orderBy),
+	)
 }
 
 // Query returns QueryResolver implementation.

@@ -60,14 +60,22 @@ func (i *Item) Episode(ctx context.Context) (*Episode, error) {
 	return result, MaskNotFound(err)
 }
 
-func (rg *ReleaseGroup) Episodes(ctx context.Context) (result []*Episode, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = rg.NamedEpisodes(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = rg.Edges.EpisodesOrErr()
+func (rg *ReleaseGroup) Episodes(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy []*EpisodeOrder,
+) (*EpisodeConnection, error) {
+	opts := []EpisodePaginateOption{
+		WithEpisodeOrder(orderBy),
 	}
-	if IsNotLoaded(err) {
-		result, err = rg.QueryEpisodes().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := rg.Edges.totalCount[0][alias]
+	if nodes, err := rg.NamedEpisodes(alias); err == nil || hasTotalCount {
+		pager, err := newEpisodePager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &EpisodeConnection{Edges: []*EpisodeEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return rg.QueryEpisodes().Paginate(ctx, after, first, before, last, opts...)
 }
