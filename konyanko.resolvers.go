@@ -7,6 +7,7 @@ package konyanko
 import (
 	"context"
 
+	"entgo.io/contrib/entgql"
 	"github.com/eiri/konyanko/ent"
 )
 
@@ -26,13 +27,17 @@ func (r *queryResolver) Animes(ctx context.Context) ([]*ent.Anime, error) {
 }
 
 // Episodes is the resolver for the episodes field.
-func (r *queryResolver) Episodes(ctx context.Context) ([]*ent.Episode, error) {
-	return r.client.Episode.Query().All(ctx)
+func (r *queryResolver) Episodes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) (*ent.EpisodeConnection, error) {
+	return r.client.Episode.Query().Paginate(ctx, after, first, before, last,
+		ent.WithEpisodeOrder(orderBy),
+	)
 }
 
 // Items is the resolver for the items field.
-func (r *queryResolver) Items(ctx context.Context) ([]*ent.Item, error) {
-	return r.client.Item.Query().All(ctx)
+func (r *queryResolver) Items(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder) (*ent.ItemConnection, error) {
+	return r.client.Item.Query().Paginate(ctx, after, first, before, last,
+		ent.WithItemOrder(orderBy),
+	)
 }
 
 // ReleaseGroups is the resolver for the releaseGroups field.

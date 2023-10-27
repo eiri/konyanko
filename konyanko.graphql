@@ -21,6 +21,36 @@ type Episode implements Node {
   title: Anime!
   releaseGroup: ReleaseGroup
 }
+"""A connection to a list of items."""
+type EpisodeConnection {
+  """A list of edges."""
+  edges: [EpisodeEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type EpisodeEdge {
+  """The item at the end of the edge."""
+  node: Episode
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""Ordering options for Episode connections"""
+input EpisodeOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order Episodes."""
+  field: EpisodeOrderField!
+}
+"""Properties by which Episode connections can be ordered."""
+enum EpisodeOrderField {
+  EPISODE_NUMBER
+  ANIME_SEASON
+  RESOLUTION
+  ITEM_PUBLISH_DATE
+}
 type Item implements Node {
   id: ID!
   viewURL: String!
@@ -29,6 +59,35 @@ type Item implements Node {
   fileSize: Int!
   publishDate: Time!
   episode: Episode
+}
+"""A connection to a list of items."""
+type ItemConnection {
+  """A list of edges."""
+  edges: [ItemEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type ItemEdge {
+  """The item at the end of the edge."""
+  node: Item
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""Ordering options for Item connections"""
+input ItemOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order Items."""
+  field: ItemOrderField!
+}
+"""Properties by which Item connections can be ordered."""
+enum ItemOrderField {
+  FILE_NAME
+  FILE_SIZE
+  PUBLISH_DATE
 }
 """
 An object with an ID.
@@ -71,8 +130,38 @@ type Query {
     ids: [ID!]!
   ): [Node]!
   animes: [Anime!]!
-  episodes: [Episode!]!
-  items: [Item!]!
+  episodes(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Episodes returned from the connection."""
+    orderBy: [EpisodeOrder!]
+  ): EpisodeConnection!
+  items(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Items returned from the connection."""
+    orderBy: [ItemOrder!]
+  ): ItemConnection!
   releaseGroups: [ReleaseGroup!]!
 }
 type ReleaseGroup implements Node {

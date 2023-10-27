@@ -21,16 +21,31 @@ func (Item) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("view_url").Unique(),
 		field.String("download_url").Unique(),
-		field.String("file_name").NotEmpty(),
-		field.Int("file_size").Positive(),
-		field.Time("publish_date").Default(time.Now).Nillable(),
+		field.String("file_name").
+			NotEmpty().
+			Annotations(
+				entgql.OrderField("FILE_NAME"),
+			),
+		field.Int("file_size").
+			Positive().
+			Annotations(
+				entgql.OrderField("FILE_SIZE"),
+			),
+		field.Time("publish_date").
+			Default(time.Now).
+			Nillable().
+			Annotations(
+				entgql.OrderField("PUBLISH_DATE"),
+			),
 	}
 }
 
 // Edges of the Item.
 func (Item) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("episode", Episode.Type).StorageKey(edge.Column("item_id")).Unique(),
+		edge.To("episode", Episode.Type).
+			StorageKey(edge.Column("item_id")).
+			Unique(),
 	}
 }
 
@@ -44,6 +59,8 @@ func (Item) Indexes() []ent.Index {
 // Annotations of the Item.
 func (Item) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entgql.RelayConnection(),
 		entgql.QueryField(),
+		entgql.MultiOrder(),
 	}
 }

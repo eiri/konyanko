@@ -5,6 +5,9 @@ package ent
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io"
+	"strconv"
 
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
@@ -401,19 +404,14 @@ func (c *EpisodeConnection) build(nodes []*Episode, pager *episodePager, after *
 type EpisodePaginateOption func(*episodePager) error
 
 // WithEpisodeOrder configures pagination ordering.
-func WithEpisodeOrder(order *EpisodeOrder) EpisodePaginateOption {
-	if order == nil {
-		order = DefaultEpisodeOrder
-	}
-	o := *order
+func WithEpisodeOrder(order []*EpisodeOrder) EpisodePaginateOption {
 	return func(pager *episodePager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
+		for _, o := range order {
+			if err := o.Direction.Validate(); err != nil {
+				return err
+			}
 		}
-		if o.Field == nil {
-			o.Field = DefaultEpisodeOrder.Field
-		}
-		pager.order = &o
+		pager.order = append(pager.order, order...)
 		return nil
 	}
 }
@@ -431,7 +429,7 @@ func WithEpisodeFilter(filter func(*EpisodeQuery) (*EpisodeQuery, error)) Episod
 
 type episodePager struct {
 	reverse bool
-	order   *EpisodeOrder
+	order   []*EpisodeOrder
 	filter  func(*EpisodeQuery) (*EpisodeQuery, error)
 }
 
@@ -442,8 +440,10 @@ func newEpisodePager(opts []EpisodePaginateOption, reverse bool) (*episodePager,
 			return nil, err
 		}
 	}
-	if pager.order == nil {
-		pager.order = DefaultEpisodeOrder
+	for i, o := range pager.order {
+		if i > 0 && o.Field == pager.order[i-1].Field {
+			return nil, fmt.Errorf("duplicate order direction %q", o.Direction)
+		}
 	}
 	return pager, nil
 }
@@ -456,48 +456,100 @@ func (p *episodePager) applyFilter(query *EpisodeQuery) (*EpisodeQuery, error) {
 }
 
 func (p *episodePager) toCursor(e *Episode) Cursor {
-	return p.order.Field.toCursor(e)
+	cs := make([]any, 0, len(p.order))
+	for _, po := range p.order {
+		cs = append(cs, po.Field.toCursor(e).Value)
+	}
+	return Cursor{ID: e.ID, Value: cs}
 }
 
 func (p *episodePager) applyCursors(query *EpisodeQuery, after, before *Cursor) (*EpisodeQuery, error) {
-	direction := p.order.Direction
+	idDirection := entgql.OrderDirectionAsc
 	if p.reverse {
-		direction = direction.Reverse()
+		idDirection = entgql.OrderDirectionDesc
 	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultEpisodeOrder.Field.column, p.order.Field.column, direction) {
+	fields, directions := make([]string, 0, len(p.order)), make([]OrderDirection, 0, len(p.order))
+	for _, o := range p.order {
+		fields = append(fields, o.Field.column)
+		direction := o.Direction
+		if p.reverse {
+			direction = direction.Reverse()
+		}
+		directions = append(directions, direction)
+	}
+	predicates, err := entgql.MultiCursorsPredicate(after, before, &entgql.MultiCursorsOptions{
+		FieldID:     DefaultEpisodeOrder.Field.column,
+		DirectionID: idDirection,
+		Fields:      fields,
+		Directions:  directions,
+	})
+	if err != nil {
+		return nil, err
+	}
+	for _, predicate := range predicates {
 		query = query.Where(predicate)
 	}
 	return query, nil
 }
 
 func (p *episodePager) applyOrder(query *EpisodeQuery) *EpisodeQuery {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
+	var defaultOrdered bool
+	for _, o := range p.order {
+		direction := o.Direction
+		if p.reverse {
+			direction = direction.Reverse()
+		}
+		query = query.Order(o.Field.toTerm(direction.OrderTermOption()))
+		if o.Field.column == DefaultEpisodeOrder.Field.column {
+			defaultOrdered = true
+		}
+		switch o.Field.column {
+		case ItemOrderFieldItemPublishDate.column:
+		default:
+			if len(query.ctx.Fields) > 0 {
+				query.ctx.AppendFieldOnce(o.Field.column)
+			}
+		}
 	}
-	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultEpisodeOrder.Field {
+	if !defaultOrdered {
+		direction := entgql.OrderDirectionAsc
+		if p.reverse {
+			direction = direction.Reverse()
+		}
 		query = query.Order(DefaultEpisodeOrder.Field.toTerm(direction.OrderTermOption()))
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
 	}
 	return query
 }
 
 func (p *episodePager) orderExpr(query *EpisodeQuery) sql.Querier {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	for _, o := range p.order {
+		switch o.Field.column {
+		case ItemOrderFieldItemPublishDate.column:
+			direction := o.Direction
+			if p.reverse {
+				direction = direction.Reverse()
+			}
+			query = query.Order(o.Field.toTerm(direction.OrderTermOption()))
+		default:
+			if len(query.ctx.Fields) > 0 {
+				query.ctx.AppendFieldOnce(o.Field.column)
+			}
+		}
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultEpisodeOrder.Field {
-			b.Comma().Ident(DefaultEpisodeOrder.Field.column).Pad().WriteString(string(direction))
+		for _, o := range p.order {
+			direction := o.Direction
+			if p.reverse {
+				direction = direction.Reverse()
+			}
+			b.Ident(o.Field.column).Pad().WriteString(string(direction))
+			b.Comma()
 		}
+		direction := entgql.OrderDirectionAsc
+		if p.reverse {
+			direction = direction.Reverse()
+		}
+		b.Ident(DefaultEpisodeOrder.Field.column).Pad().WriteString(string(direction))
 	})
 }
 
@@ -551,6 +603,113 @@ func (e *EpisodeQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// EpisodeOrderFieldEpisodeNumber orders Episode by episode_number.
+	EpisodeOrderFieldEpisodeNumber = &EpisodeOrderField{
+		Value: func(e *Episode) (ent.Value, error) {
+			return e.EpisodeNumber, nil
+		},
+		column: episode.FieldEpisodeNumber,
+		toTerm: episode.ByEpisodeNumber,
+		toCursor: func(e *Episode) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.EpisodeNumber,
+			}
+		},
+	}
+	// EpisodeOrderFieldAnimeSeason orders Episode by anime_season.
+	EpisodeOrderFieldAnimeSeason = &EpisodeOrderField{
+		Value: func(e *Episode) (ent.Value, error) {
+			return e.AnimeSeason, nil
+		},
+		column: episode.FieldAnimeSeason,
+		toTerm: episode.ByAnimeSeason,
+		toCursor: func(e *Episode) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.AnimeSeason,
+			}
+		},
+	}
+	// EpisodeOrderFieldResolution orders Episode by resolution.
+	EpisodeOrderFieldResolution = &EpisodeOrderField{
+		Value: func(e *Episode) (ent.Value, error) {
+			return e.Resolution, nil
+		},
+		column: episode.FieldResolution,
+		toTerm: episode.ByResolution,
+		toCursor: func(e *Episode) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.Resolution,
+			}
+		},
+	}
+	// ItemOrderFieldItemPublishDate orders by ITEM_PUBLISH_DATE.
+	ItemOrderFieldItemPublishDate = &EpisodeOrderField{
+		Value: func(e *Episode) (ent.Value, error) {
+			return e.Value("item_publish_date")
+		},
+		column: "item_publish_date",
+		toTerm: func(opts ...sql.OrderTermOption) episode.OrderOption {
+			return episode.ByItemField(
+				item.FieldPublishDate,
+				append(opts, sql.OrderSelectAs("item_publish_date"))...,
+			)
+		},
+		toCursor: func(e *Episode) Cursor {
+			cv, _ := e.Value("item_publish_date")
+			return Cursor{
+				ID:    e.ID,
+				Value: cv,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f EpisodeOrderField) String() string {
+	var str string
+	switch f.column {
+	case EpisodeOrderFieldEpisodeNumber.column:
+		str = "EPISODE_NUMBER"
+	case EpisodeOrderFieldAnimeSeason.column:
+		str = "ANIME_SEASON"
+	case EpisodeOrderFieldResolution.column:
+		str = "RESOLUTION"
+	case ItemOrderFieldItemPublishDate.column:
+		str = "ITEM_PUBLISH_DATE"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f EpisodeOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *EpisodeOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("EpisodeOrderField %T must be a string", v)
+	}
+	switch str {
+	case "EPISODE_NUMBER":
+		*f = *EpisodeOrderFieldEpisodeNumber
+	case "ANIME_SEASON":
+		*f = *EpisodeOrderFieldAnimeSeason
+	case "RESOLUTION":
+		*f = *EpisodeOrderFieldResolution
+	case "ITEM_PUBLISH_DATE":
+		*f = *ItemOrderFieldItemPublishDate
+	default:
+		return fmt.Errorf("%s is not a valid EpisodeOrderField", str)
+	}
+	return nil
 }
 
 // EpisodeOrderField defines the ordering field of Episode.
@@ -649,19 +808,14 @@ func (c *ItemConnection) build(nodes []*Item, pager *itemPager, after *Cursor, f
 type ItemPaginateOption func(*itemPager) error
 
 // WithItemOrder configures pagination ordering.
-func WithItemOrder(order *ItemOrder) ItemPaginateOption {
-	if order == nil {
-		order = DefaultItemOrder
-	}
-	o := *order
+func WithItemOrder(order []*ItemOrder) ItemPaginateOption {
 	return func(pager *itemPager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
+		for _, o := range order {
+			if err := o.Direction.Validate(); err != nil {
+				return err
+			}
 		}
-		if o.Field == nil {
-			o.Field = DefaultItemOrder.Field
-		}
-		pager.order = &o
+		pager.order = append(pager.order, order...)
 		return nil
 	}
 }
@@ -679,7 +833,7 @@ func WithItemFilter(filter func(*ItemQuery) (*ItemQuery, error)) ItemPaginateOpt
 
 type itemPager struct {
 	reverse bool
-	order   *ItemOrder
+	order   []*ItemOrder
 	filter  func(*ItemQuery) (*ItemQuery, error)
 }
 
@@ -690,8 +844,10 @@ func newItemPager(opts []ItemPaginateOption, reverse bool) (*itemPager, error) {
 			return nil, err
 		}
 	}
-	if pager.order == nil {
-		pager.order = DefaultItemOrder
+	for i, o := range pager.order {
+		if i > 0 && o.Field == pager.order[i-1].Field {
+			return nil, fmt.Errorf("duplicate order direction %q", o.Direction)
+		}
 	}
 	return pager, nil
 }
@@ -704,48 +860,87 @@ func (p *itemPager) applyFilter(query *ItemQuery) (*ItemQuery, error) {
 }
 
 func (p *itemPager) toCursor(i *Item) Cursor {
-	return p.order.Field.toCursor(i)
+	cs := make([]any, 0, len(p.order))
+	for _, po := range p.order {
+		cs = append(cs, po.Field.toCursor(i).Value)
+	}
+	return Cursor{ID: i.ID, Value: cs}
 }
 
 func (p *itemPager) applyCursors(query *ItemQuery, after, before *Cursor) (*ItemQuery, error) {
-	direction := p.order.Direction
+	idDirection := entgql.OrderDirectionAsc
 	if p.reverse {
-		direction = direction.Reverse()
+		idDirection = entgql.OrderDirectionDesc
 	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultItemOrder.Field.column, p.order.Field.column, direction) {
+	fields, directions := make([]string, 0, len(p.order)), make([]OrderDirection, 0, len(p.order))
+	for _, o := range p.order {
+		fields = append(fields, o.Field.column)
+		direction := o.Direction
+		if p.reverse {
+			direction = direction.Reverse()
+		}
+		directions = append(directions, direction)
+	}
+	predicates, err := entgql.MultiCursorsPredicate(after, before, &entgql.MultiCursorsOptions{
+		FieldID:     DefaultItemOrder.Field.column,
+		DirectionID: idDirection,
+		Fields:      fields,
+		Directions:  directions,
+	})
+	if err != nil {
+		return nil, err
+	}
+	for _, predicate := range predicates {
 		query = query.Where(predicate)
 	}
 	return query, nil
 }
 
 func (p *itemPager) applyOrder(query *ItemQuery) *ItemQuery {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
+	var defaultOrdered bool
+	for _, o := range p.order {
+		direction := o.Direction
+		if p.reverse {
+			direction = direction.Reverse()
+		}
+		query = query.Order(o.Field.toTerm(direction.OrderTermOption()))
+		if o.Field.column == DefaultItemOrder.Field.column {
+			defaultOrdered = true
+		}
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(o.Field.column)
+		}
 	}
-	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultItemOrder.Field {
+	if !defaultOrdered {
+		direction := entgql.OrderDirectionAsc
+		if p.reverse {
+			direction = direction.Reverse()
+		}
 		query = query.Order(DefaultItemOrder.Field.toTerm(direction.OrderTermOption()))
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
 	}
 	return query
 }
 
 func (p *itemPager) orderExpr(query *ItemQuery) sql.Querier {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+		for _, o := range p.order {
+			query.ctx.AppendFieldOnce(o.Field.column)
+		}
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultItemOrder.Field {
-			b.Comma().Ident(DefaultItemOrder.Field.column).Pad().WriteString(string(direction))
+		for _, o := range p.order {
+			direction := o.Direction
+			if p.reverse {
+				direction = direction.Reverse()
+			}
+			b.Ident(o.Field.column).Pad().WriteString(string(direction))
+			b.Comma()
 		}
+		direction := entgql.OrderDirectionAsc
+		if p.reverse {
+			direction = direction.Reverse()
+		}
+		b.Ident(DefaultItemOrder.Field.column).Pad().WriteString(string(direction))
 	})
 }
 
@@ -799,6 +994,89 @@ func (i *ItemQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// ItemOrderFieldFileName orders Item by file_name.
+	ItemOrderFieldFileName = &ItemOrderField{
+		Value: func(i *Item) (ent.Value, error) {
+			return i.FileName, nil
+		},
+		column: item.FieldFileName,
+		toTerm: item.ByFileName,
+		toCursor: func(i *Item) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.FileName,
+			}
+		},
+	}
+	// ItemOrderFieldFileSize orders Item by file_size.
+	ItemOrderFieldFileSize = &ItemOrderField{
+		Value: func(i *Item) (ent.Value, error) {
+			return i.FileSize, nil
+		},
+		column: item.FieldFileSize,
+		toTerm: item.ByFileSize,
+		toCursor: func(i *Item) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.FileSize,
+			}
+		},
+	}
+	// ItemOrderFieldPublishDate orders Item by publish_date.
+	ItemOrderFieldPublishDate = &ItemOrderField{
+		Value: func(i *Item) (ent.Value, error) {
+			return i.PublishDate, nil
+		},
+		column: item.FieldPublishDate,
+		toTerm: item.ByPublishDate,
+		toCursor: func(i *Item) Cursor {
+			return Cursor{
+				ID:    i.ID,
+				Value: i.PublishDate,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ItemOrderField) String() string {
+	var str string
+	switch f.column {
+	case ItemOrderFieldFileName.column:
+		str = "FILE_NAME"
+	case ItemOrderFieldFileSize.column:
+		str = "FILE_SIZE"
+	case ItemOrderFieldPublishDate.column:
+		str = "PUBLISH_DATE"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ItemOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ItemOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ItemOrderField %T must be a string", v)
+	}
+	switch str {
+	case "FILE_NAME":
+		*f = *ItemOrderFieldFileName
+	case "FILE_SIZE":
+		*f = *ItemOrderFieldFileSize
+	case "PUBLISH_DATE":
+		*f = *ItemOrderFieldPublishDate
+	default:
+		return fmt.Errorf("%s is not a valid ItemOrderField", str)
+	}
+	return nil
 }
 
 // ItemOrderField defines the ordering field of Item.

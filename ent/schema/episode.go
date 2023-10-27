@@ -17,9 +17,24 @@ type Episode struct {
 // Fields of the Episode.
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("episode_number").NonNegative().Default(0),
-		field.Int("anime_season").NonNegative().Default(1),
-		field.String("resolution").Optional().Nillable(),
+		field.Int("episode_number").
+			NonNegative().
+			Default(0).
+			Annotations(
+				entgql.OrderField("EPISODE_NUMBER"),
+			),
+		field.Int("anime_season").
+			NonNegative().
+			Default(1).
+			Annotations(
+				entgql.OrderField("ANIME_SEASON"),
+			),
+		field.String("resolution").
+			Optional().
+			Nillable().
+			Annotations(
+				entgql.OrderField("RESOLUTION"),
+			),
 		field.String("video_codec").Optional().Nillable(),
 		field.String("audio_codec").Optional().Nillable(),
 	}
@@ -28,7 +43,13 @@ func (Episode) Fields() []ent.Field {
 // Edges of the Episode.
 func (Episode) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("item", Item.Type).Ref("episode").Unique().Required(),
+		edge.From("item", Item.Type).
+			Ref("episode").
+			Unique().
+			Required().
+			Annotations(
+				entgql.OrderField("ITEM_PUBLISH_DATE"),
+			),
 		edge.From("title", Anime.Type).Ref("episodes").Unique().Required(),
 		edge.From("release_group", ReleaseGroup.Type).Ref("episodes").Unique(),
 	}
@@ -44,6 +65,8 @@ func (Episode) Indexes() []ent.Index {
 // Annotations of the Episode.
 func (Episode) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entgql.RelayConnection(),
 		entgql.QueryField(),
+		entgql.MultiOrder(),
 	}
 }
