@@ -58,9 +58,9 @@ erDiagram
     }
 ```
 
-## OpenAPI specs
+## GraphQL specs
 
-[OpenAPI schema](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/eiri/konyanko/main/ent/openapi.json)
+[GraphQL schema](https://github.com/eiri/konyanko/blob/main/konyanko.graphql)
 
 ## Dev runflow
 
