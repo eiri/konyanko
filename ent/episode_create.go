@@ -103,15 +103,15 @@ func (ec *EpisodeCreate) SetItem(i *Item) *EpisodeCreate {
 	return ec.SetItemID(i.ID)
 }
 
-// SetTitleID sets the "title" edge to the Anime entity by ID.
-func (ec *EpisodeCreate) SetTitleID(id int) *EpisodeCreate {
-	ec.mutation.SetTitleID(id)
+// SetAnimeID sets the "anime" edge to the Anime entity by ID.
+func (ec *EpisodeCreate) SetAnimeID(id int) *EpisodeCreate {
+	ec.mutation.SetAnimeID(id)
 	return ec
 }
 
-// SetTitle sets the "title" edge to the Anime entity.
-func (ec *EpisodeCreate) SetTitle(a *Anime) *EpisodeCreate {
-	return ec.SetTitleID(a.ID)
+// SetAnime sets the "anime" edge to the Anime entity.
+func (ec *EpisodeCreate) SetAnime(a *Anime) *EpisodeCreate {
+	return ec.SetAnimeID(a.ID)
 }
 
 // SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID.
@@ -199,8 +199,8 @@ func (ec *EpisodeCreate) check() error {
 	if _, ok := ec.mutation.ItemID(); !ok {
 		return &ValidationError{Name: "item", err: errors.New(`ent: missing required edge "Episode.item"`)}
 	}
-	if _, ok := ec.mutation.TitleID(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required edge "Episode.title"`)}
+	if _, ok := ec.mutation.AnimeID(); !ok {
+		return &ValidationError{Name: "anime", err: errors.New(`ent: missing required edge "Episode.anime"`)}
 	}
 	return nil
 }
@@ -265,12 +265,12 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_node.item_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ec.mutation.TitleIDs(); len(nodes) > 0 {
+	if nodes := ec.mutation.AnimeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   episode.TitleTable,
-			Columns: []string{episode.TitleColumn},
+			Table:   episode.AnimeTable,
+			Columns: []string{episode.AnimeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),

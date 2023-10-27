@@ -24,8 +24,8 @@ const (
 	FieldAudioCodec = "audio_codec"
 	// EdgeItem holds the string denoting the item edge name in mutations.
 	EdgeItem = "item"
-	// EdgeTitle holds the string denoting the title edge name in mutations.
-	EdgeTitle = "title"
+	// EdgeAnime holds the string denoting the anime edge name in mutations.
+	EdgeAnime = "anime"
 	// EdgeReleaseGroup holds the string denoting the release_group edge name in mutations.
 	EdgeReleaseGroup = "release_group"
 	// Table holds the table name of the episode in the database.
@@ -37,13 +37,13 @@ const (
 	ItemInverseTable = "items"
 	// ItemColumn is the table column denoting the item relation/edge.
 	ItemColumn = "item_id"
-	// TitleTable is the table that holds the title relation/edge.
-	TitleTable = "episodes"
-	// TitleInverseTable is the table name for the Anime entity.
+	// AnimeTable is the table that holds the anime relation/edge.
+	AnimeTable = "episodes"
+	// AnimeInverseTable is the table name for the Anime entity.
 	// It exists in this package in order to avoid circular dependency with the "anime" package.
-	TitleInverseTable = "animes"
-	// TitleColumn is the table column denoting the title relation/edge.
-	TitleColumn = "anime_id"
+	AnimeInverseTable = "animes"
+	// AnimeColumn is the table column denoting the anime relation/edge.
+	AnimeColumn = "anime_id"
 	// ReleaseGroupTable is the table that holds the release_group relation/edge.
 	ReleaseGroupTable = "episodes"
 	// ReleaseGroupInverseTable is the table name for the ReleaseGroup entity.
@@ -137,10 +137,10 @@ func ByItemField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByTitleField orders the results by title field.
-func ByTitleField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByAnimeField orders the results by anime field.
+func ByAnimeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTitleStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newAnimeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -157,11 +157,11 @@ func newItemStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2O, true, ItemTable, ItemColumn),
 	)
 }
-func newTitleStep() *sqlgraph.Step {
+func newAnimeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TitleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, TitleTable, TitleColumn),
+		sqlgraph.To(AnimeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, AnimeTable, AnimeColumn),
 	)
 }
 func newReleaseGroupStep() *sqlgraph.Step {

@@ -468,8 +468,8 @@ type EpisodeMutation struct {
 	clearedFields        map[string]struct{}
 	item                 *int
 	cleareditem          bool
-	title                *int
-	clearedtitle         bool
+	anime                *int
+	clearedanime         bool
 	release_group        *int
 	clearedrelease_group bool
 	done                 bool
@@ -873,43 +873,43 @@ func (m *EpisodeMutation) ResetItem() {
 	m.cleareditem = false
 }
 
-// SetTitleID sets the "title" edge to the Anime entity by id.
-func (m *EpisodeMutation) SetTitleID(id int) {
-	m.title = &id
+// SetAnimeID sets the "anime" edge to the Anime entity by id.
+func (m *EpisodeMutation) SetAnimeID(id int) {
+	m.anime = &id
 }
 
-// ClearTitle clears the "title" edge to the Anime entity.
-func (m *EpisodeMutation) ClearTitle() {
-	m.clearedtitle = true
+// ClearAnime clears the "anime" edge to the Anime entity.
+func (m *EpisodeMutation) ClearAnime() {
+	m.clearedanime = true
 }
 
-// TitleCleared reports if the "title" edge to the Anime entity was cleared.
-func (m *EpisodeMutation) TitleCleared() bool {
-	return m.clearedtitle
+// AnimeCleared reports if the "anime" edge to the Anime entity was cleared.
+func (m *EpisodeMutation) AnimeCleared() bool {
+	return m.clearedanime
 }
 
-// TitleID returns the "title" edge ID in the mutation.
-func (m *EpisodeMutation) TitleID() (id int, exists bool) {
-	if m.title != nil {
-		return *m.title, true
+// AnimeID returns the "anime" edge ID in the mutation.
+func (m *EpisodeMutation) AnimeID() (id int, exists bool) {
+	if m.anime != nil {
+		return *m.anime, true
 	}
 	return
 }
 
-// TitleIDs returns the "title" edge IDs in the mutation.
+// AnimeIDs returns the "anime" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TitleID instead. It exists only for internal usage by the builders.
-func (m *EpisodeMutation) TitleIDs() (ids []int) {
-	if id := m.title; id != nil {
+// AnimeID instead. It exists only for internal usage by the builders.
+func (m *EpisodeMutation) AnimeIDs() (ids []int) {
+	if id := m.anime; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTitle resets all changes to the "title" edge.
-func (m *EpisodeMutation) ResetTitle() {
-	m.title = nil
-	m.clearedtitle = false
+// ResetAnime resets all changes to the "anime" edge.
+func (m *EpisodeMutation) ResetAnime() {
+	m.anime = nil
+	m.clearedanime = false
 }
 
 // SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by id.
@@ -1204,8 +1204,8 @@ func (m *EpisodeMutation) AddedEdges() []string {
 	if m.item != nil {
 		edges = append(edges, episode.EdgeItem)
 	}
-	if m.title != nil {
-		edges = append(edges, episode.EdgeTitle)
+	if m.anime != nil {
+		edges = append(edges, episode.EdgeAnime)
 	}
 	if m.release_group != nil {
 		edges = append(edges, episode.EdgeReleaseGroup)
@@ -1221,8 +1221,8 @@ func (m *EpisodeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.item; id != nil {
 			return []ent.Value{*id}
 		}
-	case episode.EdgeTitle:
-		if id := m.title; id != nil {
+	case episode.EdgeAnime:
+		if id := m.anime; id != nil {
 			return []ent.Value{*id}
 		}
 	case episode.EdgeReleaseGroup:
@@ -1251,8 +1251,8 @@ func (m *EpisodeMutation) ClearedEdges() []string {
 	if m.cleareditem {
 		edges = append(edges, episode.EdgeItem)
 	}
-	if m.clearedtitle {
-		edges = append(edges, episode.EdgeTitle)
+	if m.clearedanime {
+		edges = append(edges, episode.EdgeAnime)
 	}
 	if m.clearedrelease_group {
 		edges = append(edges, episode.EdgeReleaseGroup)
@@ -1266,8 +1266,8 @@ func (m *EpisodeMutation) EdgeCleared(name string) bool {
 	switch name {
 	case episode.EdgeItem:
 		return m.cleareditem
-	case episode.EdgeTitle:
-		return m.clearedtitle
+	case episode.EdgeAnime:
+		return m.clearedanime
 	case episode.EdgeReleaseGroup:
 		return m.clearedrelease_group
 	}
@@ -1281,8 +1281,8 @@ func (m *EpisodeMutation) ClearEdge(name string) error {
 	case episode.EdgeItem:
 		m.ClearItem()
 		return nil
-	case episode.EdgeTitle:
-		m.ClearTitle()
+	case episode.EdgeAnime:
+		m.ClearAnime()
 		return nil
 	case episode.EdgeReleaseGroup:
 		m.ClearReleaseGroup()
@@ -1298,8 +1298,8 @@ func (m *EpisodeMutation) ResetEdge(name string) error {
 	case episode.EdgeItem:
 		m.ResetItem()
 		return nil
-	case episode.EdgeTitle:
-		m.ResetTitle()
+	case episode.EdgeAnime:
+		m.ResetAnime()
 		return nil
 	case episode.EdgeReleaseGroup:
 		m.ResetReleaseGroup()

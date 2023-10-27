@@ -28,10 +28,10 @@ func (e *Episode) Item(ctx context.Context) (*Item, error) {
 	return result, err
 }
 
-func (e *Episode) Title(ctx context.Context) (*Anime, error) {
-	result, err := e.Edges.TitleOrErr()
+func (e *Episode) Anime(ctx context.Context) (*Anime, error) {
+	result, err := e.Edges.AnimeOrErr()
 	if IsNotLoaded(err) {
-		result, err = e.QueryTitle().Only(ctx)
+		result, err = e.QueryAnime().Only(ctx)
 	}
 	return result, err
 }

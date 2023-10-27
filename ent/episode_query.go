@@ -25,7 +25,7 @@ type EpisodeQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.Episode
 	withItem         *ItemQuery
-	withTitle        *AnimeQuery
+	withAnime        *AnimeQuery
 	withReleaseGroup *ReleaseGroupQuery
 	withFKs          bool
 	modifiers        []func(*sql.Selector)
@@ -88,8 +88,8 @@ func (eq *EpisodeQuery) QueryItem() *ItemQuery {
 	return query
 }
 
-// QueryTitle chains the current query on the "title" edge.
-func (eq *EpisodeQuery) QueryTitle() *AnimeQuery {
+// QueryAnime chains the current query on the "anime" edge.
+func (eq *EpisodeQuery) QueryAnime() *AnimeQuery {
 	query := (&AnimeClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
@@ -102,7 +102,7 @@ func (eq *EpisodeQuery) QueryTitle() *AnimeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(episode.Table, episode.FieldID, selector),
 			sqlgraph.To(anime.Table, anime.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, episode.TitleTable, episode.TitleColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, episode.AnimeTable, episode.AnimeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -325,7 +325,7 @@ func (eq *EpisodeQuery) Clone() *EpisodeQuery {
 		inters:           append([]Interceptor{}, eq.inters...),
 		predicates:       append([]predicate.Episode{}, eq.predicates...),
 		withItem:         eq.withItem.Clone(),
-		withTitle:        eq.withTitle.Clone(),
+		withAnime:        eq.withAnime.Clone(),
 		withReleaseGroup: eq.withReleaseGroup.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
@@ -344,14 +344,14 @@ func (eq *EpisodeQuery) WithItem(opts ...func(*ItemQuery)) *EpisodeQuery {
 	return eq
 }
 
-// WithTitle tells the query-builder to eager-load the nodes that are connected to
-// the "title" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EpisodeQuery) WithTitle(opts ...func(*AnimeQuery)) *EpisodeQuery {
+// WithAnime tells the query-builder to eager-load the nodes that are connected to
+// the "anime" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EpisodeQuery) WithAnime(opts ...func(*AnimeQuery)) *EpisodeQuery {
 	query := (&AnimeClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	eq.withTitle = query
+	eq.withAnime = query
 	return eq
 }
 
@@ -447,11 +447,11 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 		_spec       = eq.querySpec()
 		loadedTypes = [3]bool{
 			eq.withItem != nil,
-			eq.withTitle != nil,
+			eq.withAnime != nil,
 			eq.withReleaseGroup != nil,
 		}
 	)
-	if eq.withItem != nil || eq.withTitle != nil || eq.withReleaseGroup != nil {
+	if eq.withItem != nil || eq.withAnime != nil || eq.withReleaseGroup != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -484,9 +484,9 @@ func (eq *EpisodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Epis
 			return nil, err
 		}
 	}
-	if query := eq.withTitle; query != nil {
-		if err := eq.loadTitle(ctx, query, nodes, nil,
-			func(n *Episode, e *Anime) { n.Edges.Title = e }); err != nil {
+	if query := eq.withAnime; query != nil {
+		if err := eq.loadAnime(ctx, query, nodes, nil,
+			func(n *Episode, e *Anime) { n.Edges.Anime = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -536,7 +536,7 @@ func (eq *EpisodeQuery) loadItem(ctx context.Context, query *ItemQuery, nodes []
 	}
 	return nil
 }
-func (eq *EpisodeQuery) loadTitle(ctx context.Context, query *AnimeQuery, nodes []*Episode, init func(*Episode), assign func(*Episode, *Anime)) error {
+func (eq *EpisodeQuery) loadAnime(ctx context.Context, query *AnimeQuery, nodes []*Episode, init func(*Episode), assign func(*Episode, *Anime)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Episode)
 	for i := range nodes {

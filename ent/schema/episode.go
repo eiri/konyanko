@@ -50,8 +50,13 @@ func (Episode) Edges() []ent.Edge {
 			Annotations(
 				entgql.OrderField("ITEM_PUBLISH_DATE"),
 			),
-		edge.From("title", Anime.Type).Ref("episodes").Unique().Required(),
-		edge.From("release_group", ReleaseGroup.Type).Ref("episodes").Unique(),
+		edge.From("anime", Anime.Type).
+			Ref("episodes").
+			Unique().
+			Required(),
+		edge.From("release_group", ReleaseGroup.Type).
+			Ref("episodes").
+			Unique(),
 	}
 }
 

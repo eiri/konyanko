@@ -143,15 +143,15 @@ func (eu *EpisodeUpdate) SetItem(i *Item) *EpisodeUpdate {
 	return eu.SetItemID(i.ID)
 }
 
-// SetTitleID sets the "title" edge to the Anime entity by ID.
-func (eu *EpisodeUpdate) SetTitleID(id int) *EpisodeUpdate {
-	eu.mutation.SetTitleID(id)
+// SetAnimeID sets the "anime" edge to the Anime entity by ID.
+func (eu *EpisodeUpdate) SetAnimeID(id int) *EpisodeUpdate {
+	eu.mutation.SetAnimeID(id)
 	return eu
 }
 
-// SetTitle sets the "title" edge to the Anime entity.
-func (eu *EpisodeUpdate) SetTitle(a *Anime) *EpisodeUpdate {
-	return eu.SetTitleID(a.ID)
+// SetAnime sets the "anime" edge to the Anime entity.
+func (eu *EpisodeUpdate) SetAnime(a *Anime) *EpisodeUpdate {
+	return eu.SetAnimeID(a.ID)
 }
 
 // SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID.
@@ -184,9 +184,9 @@ func (eu *EpisodeUpdate) ClearItem() *EpisodeUpdate {
 	return eu
 }
 
-// ClearTitle clears the "title" edge to the Anime entity.
-func (eu *EpisodeUpdate) ClearTitle() *EpisodeUpdate {
-	eu.mutation.ClearTitle()
+// ClearAnime clears the "anime" edge to the Anime entity.
+func (eu *EpisodeUpdate) ClearAnime() *EpisodeUpdate {
+	eu.mutation.ClearAnime()
 	return eu
 }
 
@@ -238,8 +238,8 @@ func (eu *EpisodeUpdate) check() error {
 	if _, ok := eu.mutation.ItemID(); eu.mutation.ItemCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Episode.item"`)
 	}
-	if _, ok := eu.mutation.TitleID(); eu.mutation.TitleCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Episode.title"`)
+	if _, ok := eu.mutation.AnimeID(); eu.mutation.AnimeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Episode.anime"`)
 	}
 	return nil
 }
@@ -315,12 +315,12 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if eu.mutation.TitleCleared() {
+	if eu.mutation.AnimeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   episode.TitleTable,
-			Columns: []string{episode.TitleColumn},
+			Table:   episode.AnimeTable,
+			Columns: []string{episode.AnimeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
@@ -328,12 +328,12 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := eu.mutation.TitleIDs(); len(nodes) > 0 {
+	if nodes := eu.mutation.AnimeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   episode.TitleTable,
-			Columns: []string{episode.TitleColumn},
+			Table:   episode.AnimeTable,
+			Columns: []string{episode.AnimeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
@@ -506,15 +506,15 @@ func (euo *EpisodeUpdateOne) SetItem(i *Item) *EpisodeUpdateOne {
 	return euo.SetItemID(i.ID)
 }
 
-// SetTitleID sets the "title" edge to the Anime entity by ID.
-func (euo *EpisodeUpdateOne) SetTitleID(id int) *EpisodeUpdateOne {
-	euo.mutation.SetTitleID(id)
+// SetAnimeID sets the "anime" edge to the Anime entity by ID.
+func (euo *EpisodeUpdateOne) SetAnimeID(id int) *EpisodeUpdateOne {
+	euo.mutation.SetAnimeID(id)
 	return euo
 }
 
-// SetTitle sets the "title" edge to the Anime entity.
-func (euo *EpisodeUpdateOne) SetTitle(a *Anime) *EpisodeUpdateOne {
-	return euo.SetTitleID(a.ID)
+// SetAnime sets the "anime" edge to the Anime entity.
+func (euo *EpisodeUpdateOne) SetAnime(a *Anime) *EpisodeUpdateOne {
+	return euo.SetAnimeID(a.ID)
 }
 
 // SetReleaseGroupID sets the "release_group" edge to the ReleaseGroup entity by ID.
@@ -547,9 +547,9 @@ func (euo *EpisodeUpdateOne) ClearItem() *EpisodeUpdateOne {
 	return euo
 }
 
-// ClearTitle clears the "title" edge to the Anime entity.
-func (euo *EpisodeUpdateOne) ClearTitle() *EpisodeUpdateOne {
-	euo.mutation.ClearTitle()
+// ClearAnime clears the "anime" edge to the Anime entity.
+func (euo *EpisodeUpdateOne) ClearAnime() *EpisodeUpdateOne {
+	euo.mutation.ClearAnime()
 	return euo
 }
 
@@ -614,8 +614,8 @@ func (euo *EpisodeUpdateOne) check() error {
 	if _, ok := euo.mutation.ItemID(); euo.mutation.ItemCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Episode.item"`)
 	}
-	if _, ok := euo.mutation.TitleID(); euo.mutation.TitleCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Episode.title"`)
+	if _, ok := euo.mutation.AnimeID(); euo.mutation.AnimeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Episode.anime"`)
 	}
 	return nil
 }
@@ -708,12 +708,12 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if euo.mutation.TitleCleared() {
+	if euo.mutation.AnimeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   episode.TitleTable,
-			Columns: []string{episode.TitleColumn},
+			Table:   episode.AnimeTable,
+			Columns: []string{episode.AnimeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),
@@ -721,12 +721,12 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := euo.mutation.TitleIDs(); len(nodes) > 0 {
+	if nodes := euo.mutation.AnimeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   episode.TitleTable,
-			Columns: []string{episode.TitleColumn},
+			Table:   episode.AnimeTable,
+			Columns: []string{episode.AnimeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(anime.FieldID, field.TypeInt),

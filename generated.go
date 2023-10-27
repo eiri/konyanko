@@ -53,6 +53,7 @@ type ComplexityRoot struct {
 	}
 
 	Episode struct {
+		Anime         func(childComplexity int) int
 		AnimeSeason   func(childComplexity int) int
 		AudioCodec    func(childComplexity int) int
 		EpisodeNumber func(childComplexity int) int
@@ -60,7 +61,6 @@ type ComplexityRoot struct {
 		Item          func(childComplexity int) int
 		ReleaseGroup  func(childComplexity int) int
 		Resolution    func(childComplexity int) int
-		Title         func(childComplexity int) int
 		VideoCodec    func(childComplexity int) int
 	}
 
@@ -164,6 +164,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Anime.Title(childComplexity), true
 
+	case "Episode.anime":
+		if e.complexity.Episode.Anime == nil {
+			break
+		}
+
+		return e.complexity.Episode.Anime(childComplexity), true
+
 	case "Episode.animeSeason":
 		if e.complexity.Episode.AnimeSeason == nil {
 			break
@@ -212,13 +219,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Episode.Resolution(childComplexity), true
-
-	case "Episode.title":
-		if e.complexity.Episode.Title == nil {
-			break
-		}
-
-		return e.complexity.Episode.Title(childComplexity), true
 
 	case "Episode.videoCodec":
 		if e.complexity.Episode.VideoCodec == nil {
@@ -891,8 +891,8 @@ func (ec *executionContext) fieldContext_Anime_episodes(ctx context.Context, fie
 				return ec.fieldContext_Episode_audioCodec(ctx, field)
 			case "item":
 				return ec.fieldContext_Episode_item(ctx, field)
-			case "title":
-				return ec.fieldContext_Episode_title(ctx, field)
+			case "anime":
+				return ec.fieldContext_Episode_anime(ctx, field)
 			case "releaseGroup":
 				return ec.fieldContext_Episode_releaseGroup(ctx, field)
 			}
@@ -1217,8 +1217,8 @@ func (ec *executionContext) fieldContext_Episode_item(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Episode_title(ctx context.Context, field graphql.CollectedField, obj *ent.Episode) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Episode_title(ctx, field)
+func (ec *executionContext) _Episode_anime(ctx context.Context, field graphql.CollectedField, obj *ent.Episode) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Episode_anime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1231,7 +1231,7 @@ func (ec *executionContext) _Episode_title(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Title(ctx)
+		return obj.Anime(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1248,7 +1248,7 @@ func (ec *executionContext) _Episode_title(ctx context.Context, field graphql.Co
 	return ec.marshalNAnime2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Episode_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Episode_anime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Episode",
 		Field:      field,
@@ -1513,8 +1513,8 @@ func (ec *executionContext) fieldContext_EpisodeEdge_node(ctx context.Context, f
 				return ec.fieldContext_Episode_audioCodec(ctx, field)
 			case "item":
 				return ec.fieldContext_Episode_item(ctx, field)
-			case "title":
-				return ec.fieldContext_Episode_title(ctx, field)
+			case "anime":
+				return ec.fieldContext_Episode_anime(ctx, field)
 			case "releaseGroup":
 				return ec.fieldContext_Episode_releaseGroup(ctx, field)
 			}
@@ -1882,8 +1882,8 @@ func (ec *executionContext) fieldContext_Item_episode(ctx context.Context, field
 				return ec.fieldContext_Episode_audioCodec(ctx, field)
 			case "item":
 				return ec.fieldContext_Episode_item(ctx, field)
-			case "title":
-				return ec.fieldContext_Episode_title(ctx, field)
+			case "anime":
+				return ec.fieldContext_Episode_anime(ctx, field)
 			case "releaseGroup":
 				return ec.fieldContext_Episode_releaseGroup(ctx, field)
 			}
@@ -2913,8 +2913,8 @@ func (ec *executionContext) fieldContext_ReleaseGroup_episodes(ctx context.Conte
 				return ec.fieldContext_Episode_audioCodec(ctx, field)
 			case "item":
 				return ec.fieldContext_Episode_item(ctx, field)
-			case "title":
-				return ec.fieldContext_Episode_title(ctx, field)
+			case "anime":
+				return ec.fieldContext_Episode_anime(ctx, field)
 			case "releaseGroup":
 				return ec.fieldContext_Episode_releaseGroup(ctx, field)
 			}
@@ -4963,7 +4963,7 @@ func (ec *executionContext) _Episode(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "title":
+		case "anime":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -4972,7 +4972,7 @@ func (ec *executionContext) _Episode(ctx context.Context, sel ast.SelectionSet, 
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Episode_title(ctx, field, obj)
+				res = ec._Episode_anime(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

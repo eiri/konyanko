@@ -18,7 +18,7 @@ type Episode implements Node {
   videoCodec: String
   audioCodec: String
   item: Item!
-  title: Anime!
+  anime: Anime!
   releaseGroup: ReleaseGroup
 }
 """A connection to a list of items."""

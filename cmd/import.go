@@ -119,7 +119,7 @@ func CreateEpisode(i *syndfeed.Item) error {
 	episode := client.Episode.
 		Create().
 		SetItem(item).
-		SetTitle(anime)
+		SetAnime(anime)
 
 	if e.ReleaseGroup != "" {
 		releaseGroup, err := client.ReleaseGroup.

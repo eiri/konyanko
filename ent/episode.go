@@ -42,8 +42,8 @@ type Episode struct {
 type EpisodeEdges struct {
 	// Item holds the value of the item edge.
 	Item *Item `json:"item,omitempty"`
-	// Title holds the value of the title edge.
-	Title *Anime `json:"title,omitempty"`
+	// Anime holds the value of the anime edge.
+	Anime *Anime `json:"anime,omitempty"`
 	// ReleaseGroup holds the value of the release_group edge.
 	ReleaseGroup *ReleaseGroup `json:"release_group,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -66,17 +66,17 @@ func (e EpisodeEdges) ItemOrErr() (*Item, error) {
 	return nil, &NotLoadedError{edge: "item"}
 }
 
-// TitleOrErr returns the Title value or an error if the edge
+// AnimeOrErr returns the Anime value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EpisodeEdges) TitleOrErr() (*Anime, error) {
+func (e EpisodeEdges) AnimeOrErr() (*Anime, error) {
 	if e.loadedTypes[1] {
-		if e.Title == nil {
+		if e.Anime == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: anime.Label}
 		}
-		return e.Title, nil
+		return e.Anime, nil
 	}
-	return nil, &NotLoadedError{edge: "title"}
+	return nil, &NotLoadedError{edge: "anime"}
 }
 
 // ReleaseGroupOrErr returns the ReleaseGroup value or an error if the edge
@@ -200,9 +200,9 @@ func (e *Episode) QueryItem() *ItemQuery {
 	return NewEpisodeClient(e.config).QueryItem(e)
 }
 
-// QueryTitle queries the "title" edge of the Episode entity.
-func (e *Episode) QueryTitle() *AnimeQuery {
-	return NewEpisodeClient(e.config).QueryTitle(e)
+// QueryAnime queries the "anime" edge of the Episode entity.
+func (e *Episode) QueryAnime() *AnimeQuery {
+	return NewEpisodeClient(e.config).QueryAnime(e)
 }
 
 // QueryReleaseGroup queries the "release_group" edge of the Episode entity.

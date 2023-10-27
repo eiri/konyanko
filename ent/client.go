@@ -497,15 +497,15 @@ func (c *EpisodeClient) QueryItem(e *Episode) *ItemQuery {
 	return query
 }
 
-// QueryTitle queries the title edge of a Episode.
-func (c *EpisodeClient) QueryTitle(e *Episode) *AnimeQuery {
+// QueryAnime queries the anime edge of a Episode.
+func (c *EpisodeClient) QueryAnime(e *Episode) *AnimeQuery {
 	query := (&AnimeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(episode.Table, episode.FieldID, id),
 			sqlgraph.To(anime.Table, anime.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, episode.TitleTable, episode.TitleColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, episode.AnimeTable, episode.AnimeColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil

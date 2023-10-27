@@ -121,7 +121,7 @@ func (e *EpisodeQuery) collectField(ctx context.Context, opCtx *graphql.Operatio
 				return err
 			}
 			e.withItem = query
-		case "title":
+		case "anime":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -130,7 +130,7 @@ func (e *EpisodeQuery) collectField(ctx context.Context, opCtx *graphql.Operatio
 			if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, animeImplementors)...); err != nil {
 				return err
 			}
-			e.withTitle = query
+			e.withAnime = query
 		case "releaseGroup":
 			var (
 				alias = field.Alias

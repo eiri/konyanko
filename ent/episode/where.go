@@ -406,21 +406,21 @@ func HasItemWith(preds ...predicate.Item) predicate.Episode {
 	})
 }
 
-// HasTitle applies the HasEdge predicate on the "title" edge.
-func HasTitle() predicate.Episode {
+// HasAnime applies the HasEdge predicate on the "anime" edge.
+func HasAnime() predicate.Episode {
 	return predicate.Episode(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TitleTable, TitleColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, AnimeTable, AnimeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTitleWith applies the HasEdge predicate on the "title" edge with a given conditions (other predicates).
-func HasTitleWith(preds ...predicate.Anime) predicate.Episode {
+// HasAnimeWith applies the HasEdge predicate on the "anime" edge with a given conditions (other predicates).
+func HasAnimeWith(preds ...predicate.Anime) predicate.Episode {
 	return predicate.Episode(func(s *sql.Selector) {
-		step := newTitleStep()
+		step := newAnimeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

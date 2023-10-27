@@ -55,7 +55,7 @@ var (
 					),
 				).
 				WithEpisode(func(q *ent.EpisodeQuery) {
-					q.WithTitle()
+					q.WithAnime()
 					q.WithReleaseGroup()
 				}).
 				All(ctx)
