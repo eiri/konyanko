@@ -47,9 +47,20 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Anime struct {
-		Episodes func(childComplexity int) int
+		Episodes func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) int
 		ID       func(childComplexity int) int
 		Title    func(childComplexity int) int
+	}
+
+	AnimeConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	AnimeEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 
 	Episode struct {
@@ -104,7 +115,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Animes        func(childComplexity int) int
+		Animes        func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.AnimeOrder) int
 		Episodes      func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) int
 		Items         func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder) int
 		Node          func(childComplexity int, id int) int
@@ -122,7 +133,7 @@ type ComplexityRoot struct {
 type QueryResolver interface {
 	Node(ctx context.Context, id int) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []int) ([]ent.Noder, error)
-	Animes(ctx context.Context) ([]*ent.Anime, error)
+	Animes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.AnimeOrder) (*ent.AnimeConnection, error)
 	Episodes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) (*ent.EpisodeConnection, error)
 	Items(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder) (*ent.ItemConnection, error)
 	ReleaseGroups(ctx context.Context) ([]*ent.ReleaseGroup, error)
@@ -148,7 +159,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Anime.Episodes(childComplexity), true
+		args, err := ec.field_Anime_episodes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Anime.Episodes(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].([]*ent.EpisodeOrder)), true
 
 	case "Anime.id":
 		if e.complexity.Anime.ID == nil {
@@ -163,6 +179,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Anime.Title(childComplexity), true
+
+	case "AnimeConnection.edges":
+		if e.complexity.AnimeConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.AnimeConnection.Edges(childComplexity), true
+
+	case "AnimeConnection.pageInfo":
+		if e.complexity.AnimeConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.AnimeConnection.PageInfo(childComplexity), true
+
+	case "AnimeConnection.totalCount":
+		if e.complexity.AnimeConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.AnimeConnection.TotalCount(childComplexity), true
+
+	case "AnimeEdge.cursor":
+		if e.complexity.AnimeEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.AnimeEdge.Cursor(childComplexity), true
+
+	case "AnimeEdge.node":
+		if e.complexity.AnimeEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.AnimeEdge.Node(childComplexity), true
 
 	case "Episode.anime":
 		if e.complexity.Episode.Anime == nil {
@@ -379,7 +430,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Animes(childComplexity), true
+		args, err := ec.field_Query_animes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Animes(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.AnimeOrder)), true
 
 	case "Query.episodes":
 		if e.complexity.Query.Episodes == nil {
@@ -465,6 +521,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAnimeOrder,
 		ec.unmarshalInputEpisodeOrder,
 		ec.unmarshalInputItemOrder,
 	)
@@ -568,6 +625,57 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Anime_episodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 []*ent.EpisodeOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOEpisodeOrder2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeOrderᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -580,6 +688,57 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_animes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *entgql.Cursor[int]
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.AnimeOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOAnimeOrder2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
 	return args, nil
 }
 
@@ -855,18 +1014,21 @@ func (ec *executionContext) _Anime_episodes(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Episodes(ctx)
+		return obj.Episodes(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].([]*ent.EpisodeOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.Episode)
+	res := resTmp.(*ent.EpisodeConnection)
 	fc.Result = res
-	return ec.marshalOEpisode2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeᚄ(ctx, field.Selections, res)
+	return ec.marshalNEpisodeConnection2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐEpisodeConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Anime_episodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -877,26 +1039,263 @@ func (ec *executionContext) fieldContext_Anime_episodes(ctx context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Episode_id(ctx, field)
-			case "episodeNumber":
-				return ec.fieldContext_Episode_episodeNumber(ctx, field)
-			case "animeSeason":
-				return ec.fieldContext_Episode_animeSeason(ctx, field)
-			case "resolution":
-				return ec.fieldContext_Episode_resolution(ctx, field)
-			case "videoCodec":
-				return ec.fieldContext_Episode_videoCodec(ctx, field)
-			case "audioCodec":
-				return ec.fieldContext_Episode_audioCodec(ctx, field)
-			case "item":
-				return ec.fieldContext_Episode_item(ctx, field)
-			case "anime":
-				return ec.fieldContext_Episode_anime(ctx, field)
-			case "releaseGroup":
-				return ec.fieldContext_Episode_releaseGroup(ctx, field)
+			case "edges":
+				return ec.fieldContext_EpisodeConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_EpisodeConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_EpisodeConnection_totalCount(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Episode", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type EpisodeConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Anime_episodes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AnimeConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.AnimeConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AnimeConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.AnimeEdge)
+	fc.Result = res
+	return ec.marshalOAnimeEdge2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AnimeConnection_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AnimeConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_AnimeEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_AnimeEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AnimeEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AnimeConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.AnimeConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AnimeConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(entgql.PageInfo[int])
+	fc.Result = res
+	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AnimeConnection_pageInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AnimeConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AnimeConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.AnimeConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AnimeConnection_totalCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AnimeConnection_totalCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AnimeConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AnimeEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.AnimeEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AnimeEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Anime)
+	fc.Result = res
+	return ec.marshalOAnime2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AnimeEdge_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AnimeEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Anime_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Anime_title(ctx, field)
+			case "episodes":
+				return ec.fieldContext_Anime_episodes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Anime", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AnimeEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.AnimeEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AnimeEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(entgql.Cursor[int])
+	fc.Result = res
+	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AnimeEdge_cursor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AnimeEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Cursor does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2430,7 +2829,7 @@ func (ec *executionContext) _Query_animes(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Animes(rctx)
+		return ec.resolvers.Query().Animes(rctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AnimeOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2442,9 +2841,9 @@ func (ec *executionContext) _Query_animes(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.Anime)
+	res := resTmp.(*ent.AnimeConnection)
 	fc.Result = res
-	return ec.marshalNAnime2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeᚄ(ctx, field.Selections, res)
+	return ec.marshalNAnimeConnection2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_animes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2455,15 +2854,26 @@ func (ec *executionContext) fieldContext_Query_animes(ctx context.Context, field
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Anime_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Anime_title(ctx, field)
-			case "episodes":
-				return ec.fieldContext_Anime_episodes(ctx, field)
+			case "edges":
+				return ec.fieldContext_AnimeConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_AnimeConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_AnimeConnection_totalCount(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Anime", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type AnimeConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_animes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -4697,6 +5107,48 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAnimeOrder(ctx context.Context, obj interface{}) (ent.AnimeOrder, error) {
+	var it ent.AnimeOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	if _, present := asMap["direction"]; !present {
+		asMap["direction"] = "ASC"
+	}
+
+	fieldsInOrder := [...]string{"direction", "field"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Direction = data
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			data, err := ec.unmarshalNAnimeOrderField2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Field = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputEpisodeOrder(ctx context.Context, obj interface{}) (ent.EpisodeOrder, error) {
 	var it ent.EpisodeOrder
 	asMap := map[string]interface{}{}
@@ -4849,6 +5301,9 @@ func (ec *executionContext) _Anime(ctx context.Context, sel ast.SelectionSet, ob
 					}
 				}()
 				res = ec._Anime_episodes(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -4872,6 +5327,93 @@ func (ec *executionContext) _Anime(ctx context.Context, sel ast.SelectionSet, ob
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var animeConnectionImplementors = []string{"AnimeConnection"}
+
+func (ec *executionContext) _AnimeConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.AnimeConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, animeConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AnimeConnection")
+		case "edges":
+			out.Values[i] = ec._AnimeConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._AnimeConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._AnimeConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var animeEdgeImplementors = []string{"AnimeEdge"}
+
+func (ec *executionContext) _AnimeEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.AnimeEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, animeEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AnimeEdge")
+		case "node":
+			out.Values[i] = ec._AnimeEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._AnimeEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5956,50 +6498,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAnime2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Anime) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNAnime2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnime(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalNAnime2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnime(ctx context.Context, sel ast.SelectionSet, v *ent.Anime) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -6008,6 +6506,36 @@ func (ec *executionContext) marshalNAnime2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋen
 		return graphql.Null
 	}
 	return ec._Anime(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNAnimeConnection2githubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeConnection(ctx context.Context, sel ast.SelectionSet, v ent.AnimeConnection) graphql.Marshaler {
+	return ec._AnimeConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAnimeConnection2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeConnection(ctx context.Context, sel ast.SelectionSet, v *ent.AnimeConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AnimeConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNAnimeOrderField2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeOrderField(ctx context.Context, v interface{}) (*ent.AnimeOrderField, error) {
+	var res = new(ent.AnimeOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAnimeOrderField2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.AnimeOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
@@ -6580,6 +7108,69 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalOAnime2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnime(ctx context.Context, sel ast.SelectionSet, v *ent.Anime) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Anime(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAnimeEdge2ᚕᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.AnimeEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAnimeEdge2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOAnimeEdge2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeEdge(ctx context.Context, sel ast.SelectionSet, v *ent.AnimeEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AnimeEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOAnimeOrder2ᚖgithubᚗcomᚋeiriᚋkonyankoᚋentᚐAnimeOrder(ctx context.Context, v interface{}) (*ent.AnimeOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputAnimeOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

@@ -22,8 +22,10 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []int) ([]ent.Noder, erro
 }
 
 // Animes is the resolver for the animes field.
-func (r *queryResolver) Animes(ctx context.Context) ([]*ent.Anime, error) {
-	return r.client.Anime.Query().All(ctx)
+func (r *queryResolver) Animes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.AnimeOrder) (*ent.AnimeConnection, error) {
+	return r.client.Anime.Query().Paginate(ctx, after, first, before, last,
+		ent.WithAnimeOrder(orderBy),
+	)
 }
 
 // Episodes is the resolver for the episodes field.

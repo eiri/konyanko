@@ -234,8 +234,12 @@ func (p *animePager) applyOrder(query *AnimeQuery) *AnimeQuery {
 	if p.order.Field != DefaultAnimeOrder.Field {
 		query = query.Order(DefaultAnimeOrder.Field.toTerm(direction.OrderTermOption()))
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case AnimeOrderFieldEpisodesCount.column:
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return query
 }
@@ -245,8 +249,13 @@ func (p *animePager) orderExpr(query *AnimeQuery) sql.Querier {
 	if p.reverse {
 		direction = direction.Reverse()
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case AnimeOrderFieldEpisodesCount.column:
+		query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
 		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
@@ -306,6 +315,76 @@ func (a *AnimeQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// AnimeOrderFieldTitle orders Anime by title.
+	AnimeOrderFieldTitle = &AnimeOrderField{
+		Value: func(a *Anime) (ent.Value, error) {
+			return a.Title, nil
+		},
+		column: anime.FieldTitle,
+		toTerm: anime.ByTitle,
+		toCursor: func(a *Anime) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.Title,
+			}
+		},
+	}
+	// AnimeOrderFieldEpisodesCount orders by EPISODES_COUNT.
+	AnimeOrderFieldEpisodesCount = &AnimeOrderField{
+		Value: func(a *Anime) (ent.Value, error) {
+			return a.Value("episodes_count")
+		},
+		column: "episodes_count",
+		toTerm: func(opts ...sql.OrderTermOption) anime.OrderOption {
+			return anime.ByEpisodesCount(
+				append(opts, sql.OrderSelectAs("episodes_count"))...,
+			)
+		},
+		toCursor: func(a *Anime) Cursor {
+			cv, _ := a.Value("episodes_count")
+			return Cursor{
+				ID:    a.ID,
+				Value: cv,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f AnimeOrderField) String() string {
+	var str string
+	switch f.column {
+	case AnimeOrderFieldTitle.column:
+		str = "TITLE"
+	case AnimeOrderFieldEpisodesCount.column:
+		str = "EPISODES_COUNT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f AnimeOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *AnimeOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("AnimeOrderField %T must be a string", v)
+	}
+	switch str {
+	case "TITLE":
+		*f = *AnimeOrderFieldTitle
+	case "EPISODES_COUNT":
+		*f = *AnimeOrderFieldEpisodesCount
+	default:
+		return fmt.Errorf("%s is not a valid AnimeOrderField", str)
+	}
+	return nil
 }
 
 // AnimeOrderField defines the ordering field of Anime.
@@ -504,7 +583,7 @@ func (p *episodePager) applyOrder(query *EpisodeQuery) *EpisodeQuery {
 			defaultOrdered = true
 		}
 		switch o.Field.column {
-		case ItemOrderFieldItemPublishDate.column:
+		case ItemOrderFieldItemPublishDate.column, AnimeOrderFieldAnimeTitle.column:
 		default:
 			if len(query.ctx.Fields) > 0 {
 				query.ctx.AppendFieldOnce(o.Field.column)
@@ -524,7 +603,7 @@ func (p *episodePager) applyOrder(query *EpisodeQuery) *EpisodeQuery {
 func (p *episodePager) orderExpr(query *EpisodeQuery) sql.Querier {
 	for _, o := range p.order {
 		switch o.Field.column {
-		case ItemOrderFieldItemPublishDate.column:
+		case ItemOrderFieldItemPublishDate.column, AnimeOrderFieldAnimeTitle.column:
 			direction := o.Direction
 			if p.reverse {
 				direction = direction.Reverse()
@@ -668,6 +747,26 @@ var (
 			}
 		},
 	}
+	// AnimeOrderFieldAnimeTitle orders by ANIME_TITLE.
+	AnimeOrderFieldAnimeTitle = &EpisodeOrderField{
+		Value: func(e *Episode) (ent.Value, error) {
+			return e.Value("anime_title")
+		},
+		column: "anime_title",
+		toTerm: func(opts ...sql.OrderTermOption) episode.OrderOption {
+			return episode.ByAnimeField(
+				anime.FieldTitle,
+				append(opts, sql.OrderSelectAs("anime_title"))...,
+			)
+		},
+		toCursor: func(e *Episode) Cursor {
+			cv, _ := e.Value("anime_title")
+			return Cursor{
+				ID:    e.ID,
+				Value: cv,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -682,6 +781,8 @@ func (f EpisodeOrderField) String() string {
 		str = "RESOLUTION"
 	case ItemOrderFieldItemPublishDate.column:
 		str = "ITEM_PUBLISH_DATE"
+	case AnimeOrderFieldAnimeTitle.column:
+		str = "ANIME_TITLE"
 	}
 	return str
 }
@@ -706,6 +807,8 @@ func (f *EpisodeOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *EpisodeOrderFieldResolution
 	case "ITEM_PUBLISH_DATE":
 		*f = *ItemOrderFieldItemPublishDate
+	case "ANIME_TITLE":
+		*f = *AnimeOrderFieldAnimeTitle
 	default:
 		return fmt.Errorf("%s is not a valid EpisodeOrderField", str)
 	}

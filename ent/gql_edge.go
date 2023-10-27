@@ -8,16 +8,24 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
-func (a *Anime) Episodes(ctx context.Context) (result []*Episode, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = a.NamedEpisodes(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = a.Edges.EpisodesOrErr()
+func (a *Anime) Episodes(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy []*EpisodeOrder,
+) (*EpisodeConnection, error) {
+	opts := []EpisodePaginateOption{
+		WithEpisodeOrder(orderBy),
 	}
-	if IsNotLoaded(err) {
-		result, err = a.QueryEpisodes().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
+	if nodes, err := a.NamedEpisodes(alias); err == nil || hasTotalCount {
+		pager, err := newEpisodePager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &EpisodeConnection{Edges: []*EpisodeEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return a.QueryEpisodes().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (e *Episode) Item(ctx context.Context) (*Item, error) {

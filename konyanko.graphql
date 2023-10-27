@@ -3,7 +3,50 @@ directive @goModel(model: String, models: [String!]) on OBJECT | INPUT_OBJECT | 
 type Anime implements Node {
   id: ID!
   title: String!
-  episodes: [Episode!]
+  episodes(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Episodes returned from the connection."""
+    orderBy: [EpisodeOrder!]
+  ): EpisodeConnection!
+}
+"""A connection to a list of items."""
+type AnimeConnection {
+  """A list of edges."""
+  edges: [AnimeEdge]
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+"""An edge in a connection."""
+type AnimeEdge {
+  """The item at the end of the edge."""
+  node: Anime
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+"""Ordering options for Anime connections"""
+input AnimeOrder {
+  """The ordering direction."""
+  direction: OrderDirection! = ASC
+  """The field by which to order Animes."""
+  field: AnimeOrderField!
+}
+"""Properties by which Anime connections can be ordered."""
+enum AnimeOrderField {
+  TITLE
+  EPISODES_COUNT
 }
 """
 Define a Relay Cursor type:
@@ -50,6 +93,7 @@ enum EpisodeOrderField {
   ANIME_SEASON
   RESOLUTION
   ITEM_PUBLISH_DATE
+  ANIME_TITLE
 }
 type Item implements Node {
   id: ID!
@@ -129,7 +173,22 @@ type Query {
     """The list of node IDs."""
     ids: [ID!]!
   ): [Node]!
-  animes: [Anime!]!
+  animes(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Animes returned from the connection."""
+    orderBy: AnimeOrder
+  ): AnimeConnection!
   episodes(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor

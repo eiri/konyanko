@@ -16,20 +16,31 @@ type Anime struct {
 // Fields of the Anime.
 func (Anime) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("title").NotEmpty().Unique(),
+		field.String("title").
+			NotEmpty().
+			Unique().
+			Annotations(
+				entgql.OrderField("TITLE"),
+			),
 	}
 }
 
 // Edges of the Anime.
 func (Anime) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("episodes", Episode.Type).StorageKey(edge.Column("anime_id")),
+		edge.To("episodes", Episode.Type).
+			StorageKey(edge.Column("anime_id")).
+			Annotations(
+				entgql.RelayConnection(),
+				entgql.OrderField("EPISODES_COUNT"),
+			),
 	}
 }
 
 // Annotations of the Anime.
 func (Anime) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entgql.RelayConnection(),
 		entgql.QueryField(),
 	}
 }
