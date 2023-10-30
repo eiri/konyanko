@@ -22,30 +22,34 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []int) ([]ent.Noder, erro
 }
 
 // Animes is the resolver for the animes field.
-func (r *queryResolver) Animes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.AnimeOrder) (*ent.AnimeConnection, error) {
+func (r *queryResolver) Animes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.AnimeOrder, where *ent.AnimeWhereInput) (*ent.AnimeConnection, error) {
 	return r.client.Anime.Query().Paginate(ctx, after, first, before, last,
 		ent.WithAnimeOrder(orderBy),
+		ent.WithAnimeFilter(where.Filter),
 	)
 }
 
 // Episodes is the resolver for the episodes field.
-func (r *queryResolver) Episodes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder) (*ent.EpisodeConnection, error) {
+func (r *queryResolver) Episodes(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.EpisodeOrder, where *ent.EpisodeWhereInput) (*ent.EpisodeConnection, error) {
 	return r.client.Episode.Query().Paginate(ctx, after, first, before, last,
 		ent.WithEpisodeOrder(orderBy),
+		ent.WithEpisodeFilter(where.Filter),
 	)
 }
 
 // Items is the resolver for the items field.
-func (r *queryResolver) Items(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder) (*ent.ItemConnection, error) {
+func (r *queryResolver) Items(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.ItemOrder, where *ent.ItemWhereInput) (*ent.ItemConnection, error) {
 	return r.client.Item.Query().Paginate(ctx, after, first, before, last,
 		ent.WithItemOrder(orderBy),
+		ent.WithItemFilter(where.Filter),
 	)
 }
 
 // ReleaseGroups is the resolver for the releaseGroups field.
-func (r *queryResolver) ReleaseGroups(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.ReleaseGroupOrder) (*ent.ReleaseGroupConnection, error) {
+func (r *queryResolver) ReleaseGroups(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.ReleaseGroupOrder, where *ent.ReleaseGroupWhereInput) (*ent.ReleaseGroupConnection, error) {
 	return r.client.ReleaseGroup.Query().Paginate(ctx, after, first, before, last,
 		ent.WithReleaseGroupOrder(orderBy),
+		ent.WithReleaseGroupFilter(where.Filter),
 	)
 }
 

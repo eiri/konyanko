@@ -9,10 +9,11 @@ import (
 )
 
 func (a *Anime) Episodes(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy []*EpisodeOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy []*EpisodeOrder, where *EpisodeWhereInput,
 ) (*EpisodeConnection, error) {
 	opts := []EpisodePaginateOption{
 		WithEpisodeOrder(orderBy),
+		WithEpisodeFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
@@ -61,10 +62,11 @@ func (i *Item) Episode(ctx context.Context) (*Episode, error) {
 }
 
 func (rg *ReleaseGroup) Episodes(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy []*EpisodeOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy []*EpisodeOrder, where *EpisodeWhereInput,
 ) (*EpisodeConnection, error) {
 	opts := []EpisodePaginateOption{
 		WithEpisodeOrder(orderBy),
+		WithEpisodeFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := rg.Edges.totalCount[0][alias]

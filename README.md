@@ -9,8 +9,8 @@ A nyaa.si aggregator.
 - [x] Anime name parser
 - [x] Iterative cycles of two above till completed
 - [x] ~Openapi specs from ent schema~
-- [ ] GraphQL schema
-- [ ] API server
+- [x] GraphQL schema
+- [x] API server
 - [ ] ~Vue UI~
 - [ ] Templ + htmx UI
 - [ ] Crontab RSS puller on server

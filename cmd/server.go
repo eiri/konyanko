@@ -30,9 +30,9 @@ func init() {
 func serverRunner(cmd *cobra.Command, args []string) error {
 	srv := handler.NewDefaultServer(konyanko.NewSchema(client))
 	http.Handle("/playground",
-		playground.Handler("Item", "/query"),
+		playground.Handler("Item", "/graphql"),
 	)
-	http.Handle("/query", srv)
+	http.Handle("/graphql", srv)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		return err
 	}

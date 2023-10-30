@@ -43,7 +43,7 @@ func (a *AnimeQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 				path  = append(path, alias)
 				query = (&EpisodeClient{config: a.config}).Query()
 			)
-			args := newEpisodePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newEpisodePaginateArgs(fieldArgs(ctx, new(EpisodeWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -182,6 +182,9 @@ func newAnimePaginateArgs(rv map[string]any) *animePaginateArgs {
 				args.opts = append(args.opts, WithAnimeOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*AnimeWhereInput); ok {
+		args.opts = append(args.opts, WithAnimeFilter(v.Filter))
 	}
 	return args
 }
@@ -325,6 +328,9 @@ func newEpisodePaginateArgs(rv map[string]any) *episodePaginateArgs {
 			args.opts = append(args.opts, WithEpisodeOrder(orders))
 		}
 	}
+	if v, ok := rv[whereField].(*EpisodeWhereInput); ok {
+		args.opts = append(args.opts, WithEpisodeFilter(v.Filter))
+	}
 	return args
 }
 
@@ -447,6 +453,9 @@ func newItemPaginateArgs(rv map[string]any) *itemPaginateArgs {
 			args.opts = append(args.opts, WithItemOrder(orders))
 		}
 	}
+	if v, ok := rv[whereField].(*ItemWhereInput); ok {
+		args.opts = append(args.opts, WithItemFilter(v.Filter))
+	}
 	return args
 }
 
@@ -477,7 +486,7 @@ func (rg *ReleaseGroupQuery) collectField(ctx context.Context, opCtx *graphql.Op
 				path  = append(path, alias)
 				query = (&EpisodeClient{config: rg.config}).Query()
 			)
-			args := newEpisodePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newEpisodePaginateArgs(fieldArgs(ctx, new(EpisodeWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -616,6 +625,9 @@ func newReleaseGroupPaginateArgs(rv map[string]any) *releasegroupPaginateArgs {
 				args.opts = append(args.opts, WithReleaseGroupOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*ReleaseGroupWhereInput); ok {
+		args.opts = append(args.opts, WithReleaseGroupFilter(v.Filter))
 	}
 	return args
 }
