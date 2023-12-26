@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="htmx.min.js"></script>
+    <title>Konyanko</title>
+  </head>
+  <body class="bg-gray-100">
+    <header class="flex justify-center px-4 py-2 h-12 w-full bg-gray-900 text-gray-300">
+      <nav class="flex justify-normal items-baseline w-2/3">
+        <section class="w-24">
+          <h4 class="text-xl font-semibold">
+            <a href="https://nyaa.si/?c=1_2">Nyaa</a>
+          </h4>
+        </section>
+        <section class="w-24">
+          <ul>
+            <li>
+              <a>Unrecognized</a>
+            </li>
+          </ul>
+        </section>
+      </nav>
+    </header>
+    <main class="container mx-auto">
+      <article class="grid grid-cols-3 gap-4 mt-4" hx-get="/list" hx-trigger="load">
+        Loading...
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+package components
+
+import (
+	"github.com/eiri/konyanko/ui/handlers"
+)
+
+type Item struct {
+	URL          string
+	ViewURL      string
+	FileSize     string
+	ReleaseGroup string
+}
+
+type Episode struct {
+	Title       string
+	Season      string
+	Number      string
+	Resolution  string
+	Items       []Item
+}
+
+templ Cards(episodes []Episode) {
+	for _, episode := range episodes {
+		@Card(episode)
+	}
+}
+
+templ Card(e Episode) {
+	<div class="bg-white p-6 rounded-xl overflow-hidden shadow border border-gray-200 text-gray-500">
+		<div class="text-gray-400 text-xs uppercase font-semibold tracking-wide">
+			Season: { e.Season } &bull; Episode: { e.Number }
+		</div>
+		<h4 class="mt-1 font-semibold text-lg lading-tight truncate">
+			{ e.Title }
+		</h4>
+		<div class="text-sm font-medium text-center border-b border-gray-200">
+			<ul class="flex flex-wrap -mb-px">
+				<li class="me-2">
+					<a href="#" class="active text-teal-600 border-teal-600 inline-block p-4 border-b-2 rounded-t-lg">1080</a>
+				</li>
+				<li class="me-2">
+					<a href="#" class="border-transparent hover:text-gray-600 hover:border-gray-300 inline-block p-4 border-b-2 rounded-t-lg" aria-current="page">720</a>
+				</li>
+				<li class="me-2">
+					<a href="#" class="hover:text-gray-600 hover:border-gray-300 inline-block p-4 border-b-2 border-transparent rounded-t-lg">480</a>
+				</li>
+				<li class="me-2">
+					<a href="#" class="hover:text-gray-600 hover:border-gray-300 inline-block p-4 border-b-2 border-transparent rounded-t-lg">Other</a>
+				</li>
+			</ul>
+		</div>
+		@List(e.Items)
+	</div>
+}
+
+templ List(items []Item) {
+	<ul class="mt-4 max-w-md space-y-1 list-inside">
+	for _, item := range items {
+		@ListItem(item)
+	}
+	</ul>
+}
+
+templ ListItem(i Item) {
+	<li class="flex items-center">
+		<a class="mr-2 truncate" href={ templ.SafeURL(i.URL) }>
+			{ i.ReleaseGroup }
+			<span class="text-xs text-gray-400">{ i.FileSize }</span>
+		</a>
+		<a href={ templ.SafeURL(i.ViewURL) } target="_blank">
+			<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5 fill-none stroke-current stroke-gray-400 stroke-2" width="24" height="24" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+				<path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+				<path d="M11 13l9 -9" />
+				<path d="M15 4h5v5" />
+			</svg>
+		</a>
+	</li>
+}

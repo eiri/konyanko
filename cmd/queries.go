@@ -50,7 +50,9 @@ var (
 				Query().
 				Where(
 					item.And(
+						// from today's midnight
 						item.PublishDateGTE(d),
+						// till tomorrow's midnight
 						item.PublishDateLT(d.AddDate(0, 0, 1)),
 					),
 				).

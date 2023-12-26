@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := all
 
 PROJECT := konyanko
-SRC := $(wildcard ./*.go ./cmd/*.go ./ent/**/*.go)
+SRC := $(wildcard ./*.go ./cmd/*.go ./ent/**/*.go ./ui/**/*.go)
+TMPL := $(wildcard ./ui/**/*.templ)
 
 .PHONY: all
 all: build
@@ -31,7 +32,7 @@ list-titles: $(PROJECT)
 
 .PHONY: list-anime
 list-anime: $(PROJECT)
-	@./$< list anime --day 2023-10-10
+	@./$< list anime --day $(shell date +%Y-%m-%d)
 
 .PHONY: list-anime-gron
 list-anime-gron:
@@ -42,6 +43,7 @@ list-irregular: $(PROJECT)
 	@./$< list irregular
 
 .PHONY: server
+server: export KONYANKO_DEV=1
 server: $(PROJECT)
 	./$< $@
 
@@ -54,6 +56,11 @@ schema:
 .PHONY: graphql
 graphql:
 	go run -mod=mod github.com/99designs/gqlgen
+	go mod tidy
+
+.PHONY: templ
+templ: $(TMPL)
+	go run -mod=mod github.com/a-h/templ/cmd/templ generate ./cmd
 	go mod tidy
 
 .PHONY: cli-command
@@ -71,3 +78,4 @@ describe:
 generate:
 	go generate .
 	go mod tidy
+

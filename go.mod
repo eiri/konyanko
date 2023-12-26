@@ -6,6 +6,7 @@ require (
 	entgo.io/contrib v0.4.6-0.20230921075353-58da6fd37195
 	entgo.io/ent v0.12.4
 	github.com/99designs/gqlgen v0.17.36
+	github.com/a-h/templ v0.2.432
 	github.com/dustin/go-humanize v1.0.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.16
