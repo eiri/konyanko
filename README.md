@@ -8,11 +8,11 @@ A nyaa.si aggregator.
 - [x] RSS reader-exporter
 - [x] Anime name parser
 - [x] Iterative cycles of two above till completed
-- [x] ~Openapi specs from ent schema~
+- [x] ~OpenAPI specs from ent schema~
 - [x] GraphQL schema
 - [x] API server
-- [ ] ~Vue UI~
-- [ ] Templ + htmx UI
+- [ ] Vue UI
+- [ ] ~Templ + htmx UI~
 - [ ] Crontab RSS puller on server
 - [ ] Goreleaser
 - [ ] Docker
@@ -70,3 +70,9 @@ $ make migrate
 $ make import
 $ make describe
 ```
+
+## Lessons learned
+
+- It feels like `ent` doesn't really want to be ORM, but rather be a graph API.
+- Generating REST with `ogent` OpenAPI isn't horrible, but resulting API is not really flexible and writing custom end-points is quite a hustle.
+- HTMX + `templ` is interesting combination as an option, but it has all the negatives of REST without positive of `ogent`'s auto-gen. Plus the workflow of "shut down server, regen templ, compile modules, start server" for anything, including tiny tweaks on css is really, really annoying.
