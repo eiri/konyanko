@@ -15,7 +15,7 @@ import (
 var assets embed.FS
 
 type AnimeService interface {
-	Episodes(ctx context.Context) ([]components.Episode, error)
+	Shows(ctx context.Context) ([]components.Anime, error)
 }
 
 type DefaultHandler struct {
@@ -45,14 +45,14 @@ func (h *DefaultHandler) Static() http.Handler {
 }
 
 func (h *DefaultHandler) Get(w http.ResponseWriter, r *http.Request) {
-	episodes, err := h.AnimeService.Episodes(r.Context())
+	shows, err := h.AnimeService.Shows(r.Context())
 	if err != nil {
 		http.Error(w, "failed to get episodes", http.StatusInternalServerError)
 		return
 	}
-	h.View(w, r, episodes)
+	h.View(w, r, shows)
 }
 
-func (h *DefaultHandler) View(w http.ResponseWriter, r *http.Request, episodes []components.Episode) {
-	components.Cards(episodes).Render(r.Context(), w)
+func (h *DefaultHandler) View(w http.ResponseWriter, r *http.Request, shows []components.Anime) {
+	components.Cards(shows).Render(r.Context(), w)
 }

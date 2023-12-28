@@ -7,9 +7,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/dustin/go-humanize"
-
 	"github.com/eiri/konyanko/ent"
+	"github.com/eiri/konyanko/ent/anime"
 	"github.com/eiri/konyanko/ent/episode"
 	"github.com/eiri/konyanko/ui/components"
 )
@@ -22,57 +21,72 @@ func NewAnime(c *ent.Client) Anime {
 	return Anime{Client: c}
 }
 
-func (a Anime) Episodes(ctx context.Context) ([]components.Episode, error) {
-	episodes := make([]components.Episode, 0)
+func (a Anime) Shows(ctx context.Context) ([]components.Anime, error) {
+	resolution := "1080p"
+	shows := make([]components.Anime, 0)
 	// 1080p, 720p, 480p
 	// also nil, 2160p
-	entEpisodes, err := a.Client.Episode.
+	animes, err := a.Client.Anime.
 		Query().
-		Where(episode.Resolution("1080p")).
-		WithAnime().
-		WithItem().
-		WithReleaseGroup().
+		Where(anime.HasEpisodesWith(episode.Resolution(resolution))).
+		WithEpisodes(func(q *ent.EpisodeQuery) {
+			q.Where(episode.Resolution(resolution))
+			q.WithItem()
+			q.WithReleaseGroup()
+		}).
 		All(ctx)
 
-	grouped := make(map[string]components.Episode)
-	for _, entEpisode := range entEpisodes {
-		title := entEpisode.Edges.Anime.Title
-		season := strconv.Itoa(entEpisode.AnimeSeason)
-		number := strconv.Itoa(entEpisode.EpisodeNumber)
-		hash := md5.Sum([]byte(title + season + number))
-		key := hex.EncodeToString(hash[:])
-		episode, ok := grouped[key]
-		if !ok {
-			episode = components.Episode{
-				Title:      title,
-				Season:     season,
-				Number:     number,
-				Resolution: *entEpisode.Resolution,
-				Items:      make([]components.Item, 0),
+	for _, a := range animes {
+		show := components.Anime{
+			Title:    a.Title,
+			Episodes: make([]components.Episode, 0),
+		}
+		grouped := make(map[string]components.Episode)
+		for _, e := range a.Edges.Episodes {
+			season := strconv.Itoa(e.AnimeSeason)
+			number := strconv.Itoa(e.EpisodeNumber)
+			hash := md5.Sum([]byte(season + number))
+			key := hex.EncodeToString(hash[:])
+			episode, ok := grouped[key]
+			if !ok {
+				episode = components.Episode{
+					Season:   season,
+					Number:   number,
+					Torrents: make([]components.Torrent, 0),
+				}
 			}
+			torrent := components.Torrent{
+				URL:         e.Edges.Item.DownloadURL,
+				ViewURL:     e.Edges.Item.ViewURL,
+				FileSize:    e.Edges.Item.FileSize,
+				PublishDate: *e.Edges.Item.PublishDate,
+			}
+			//FIXME - we should just assign published and if not Anonymous to it
+			if e.Edges.ReleaseGroup != nil {
+				torrent.ReleaseGroup = e.Edges.ReleaseGroup.Name
+			}
+			episode.Torrents = append(episode.Torrents, torrent)
+
+			grouped[key] = episode
 		}
 
-		item := components.Item{
-			URL:      entEpisode.Edges.Item.DownloadURL,
-			ViewURL:  entEpisode.Edges.Item.ViewURL,
-			FileSize: humanize.Bytes(uint64(entEpisode.Edges.Item.FileSize)),
+		for _, episode := range grouped {
+			show.Episodes = append(show.Episodes, episode)
 		}
-		//FIXME - we should just assign published and if not Anonymous to it
-		if entEpisode.Edges.ReleaseGroup != nil {
-			item.ReleaseGroup = entEpisode.Edges.ReleaseGroup.Name
-		}
-		episode.Items = append(episode.Items, item)
 
-		grouped[key] = episode
+		sort.Slice(show.Episodes, func(i, j int) bool {
+			if show.Episodes[i].Season == show.Episodes[j].Season {
+				return show.Episodes[i].Number > show.Episodes[j].Number
+			}
+			return show.Episodes[i].Season > show.Episodes[j].Season
+		})
+
+		shows = append(shows, show)
 	}
 
-	for _, episode := range grouped {
-		episodes = append(episodes, episode)
-	}
-
-	sort.Slice(episodes, func(i, j int) bool {
-		return episodes[i].Title < episodes[j].Title
+	sort.Slice(shows, func(i, j int) bool {
+		return shows[i].Title < shows[j].Title
 	})
 
-	return episodes, err
+	return shows, err
 }

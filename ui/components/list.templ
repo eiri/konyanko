@@ -4,34 +4,38 @@ import (
 	"github.com/eiri/konyanko/ui/handlers"
 )
 
-type Item struct {
-	URL          string
-	ViewURL      string
-	FileSize     string
-	ReleaseGroup string
+type Resolution string
+
+type Anime struct {
+	Title string
+	Episodes []Episode
 }
 
 type Episode struct {
-	Title       string
 	Season      string
 	Number      string
-	Resolution  string
-	Items       []Item
+	Torrents       []Torrent
 }
 
-templ Cards(episodes []Episode) {
-	for _, episode := range episodes {
-		@Card(episode)
+type Torrent struct {
+	URL          string
+	ViewURL      string
+	FileSize     int
+	ReleaseGroup string
+	PublishDate  time.Time
+}
+
+
+templ Cards(shows []Anime) {
+	for _, show := range shows {
+		@Card(show)
 	}
 }
 
-templ Card(e Episode) {
-	<div class="bg-white p-6 rounded-xl overflow-hidden shadow border border-gray-200 text-gray-500">
-		<div class="text-gray-400 text-xs uppercase font-semibold tracking-wide">
-			Season: { e.Season } &bull; Episode: { e.Number }
-		</div>
-		<h4 class="mt-1 font-semibold text-lg lading-tight truncate">
-			{ e.Title }
+templ Card(a Anime) {
+	<div class="bg-white mt-4 p-4 rounded-xl overflow-hidden shadow border border-gray-200 text-gray-500">
+		<h4 class="font-semibold text-lg lading-tight truncate">
+			{ a.Title }
 		</h4>
 		<div class="text-sm font-medium text-center border-b border-gray-200">
 			<ul class="flex flex-wrap -mb-px">
@@ -49,25 +53,33 @@ templ Card(e Episode) {
 				</li>
 			</ul>
 		</div>
-		@List(e.Items)
+		for _, e := range a.Episodes {
+			<div class="text-gray-400 text-xs uppercase font-semibold tracking-wide mt-4">
+				Season: { e.Season } &bull; Episode: { e.Number }
+			</div>
+			@List(e.Torrents)
+		}
 	</div>
 }
 
-templ List(items []Item) {
-	<ul class="mt-4 max-w-md space-y-1 list-inside">
+templ List(items []Torrent) {
+	<ul class="max-w-md space-y-1 list-inside">
 	for _, item := range items {
 		@ListItem(item)
 	}
 	</ul>
 }
 
-templ ListItem(i Item) {
+templ ListItem(t Torrent) {
 	<li class="flex items-center">
-		<a class="mr-2 truncate" href={ templ.SafeURL(i.URL) }>
-			{ i.ReleaseGroup }
-			<span class="text-xs text-gray-400">{ i.FileSize }</span>
+		<a class="mr-2 truncate" href={ templ.SafeURL(t.URL) }>
+			{ t.ReleaseGroup }
+			<span class="text-xs text-gray-400 ml-2">
+				{ humanize.Time(t.PublishDate) }
+				<!-- { humanize.Bytes(uint64(i.FileSize)) } -->
+			</span>
 		</a>
-		<a href={ templ.SafeURL(i.ViewURL) } target="_blank">
+		<a href={ templ.SafeURL(t.ViewURL) } target="_blank">
 			<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-5 h-5 fill-none stroke-current stroke-gray-400 stroke-2" width="24" height="24" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
 				<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
