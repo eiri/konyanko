@@ -3,13 +3,17 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	gh "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/spf13/cobra"
 
 	"github.com/eiri/konyanko"
-	"github.com/eiri/konyanko/ui/handlers"
-	"github.com/eiri/konyanko/ui/services"
+	"github.com/eiri/konyanko/ui"
 )
 
 var (
@@ -29,18 +33,28 @@ func init() {
 }
 
 func serverRunner(cmd *cobra.Command, args []string) error {
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Compress(5, "application/json"))
+
+	if _, ok := os.LookupEnv("KONYANKO_DEV"); ok {
+		router.Use(cors.Handler(cors.Options{
+			AllowedOrigins:   []string{"http://*"},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowCredentials: false,
+			MaxAge:           300,
+		}))
+	}
+
 	srv := gh.NewDefaultServer(konyanko.NewSchema(client))
-	// http.Handle("/playground",
-	// 	playground.Handler("Item", "/graphql"),
-	// )
-	http.Handle("/graphql", srv)
+	router.Handle("/playground",
+		playground.Handler("Item", "/graphql"),
+	)
+	router.Handle("/graphql", srv)
+	router.Handle("/", ui.NewStaticHandler())
 
-	as := services.NewAnime(client)
-	h := handlers.New(as)
-	http.Handle("/", h.Static())
-	http.Handle("/list", h)
-
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), router); err != nil {
 		return err
 	}
 	return nil

@@ -1,0 +1,22 @@
+{
+  "name": "konyayko-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@apollo/client": "^3",
+    "@vue/apollo-composable": "^4.0.0-beta.12",
+    "graphql": "^16",
+    "humanize-duration": "^3.31.0",
+    "vue": "^3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4",
+    "vite": "^5"
+  }
+}

@@ -1,8 +1,7 @@
 .DEFAULT_GOAL := all
 
 PROJECT := konyanko
-SRC := $(wildcard ./*.go ./cmd/*.go ./ent/**/*.go ./ui/**/*.go)
-TMPL := $(wildcard ./ui/**/*.templ)
+SRC := $(wildcard ./*.go ./cmd/*.go ./ent/**/*.go ./ui/*.go)
 
 .PHONY: all
 all: build
@@ -56,11 +55,6 @@ schema:
 .PHONY: graphql
 graphql:
 	go run -mod=mod github.com/99designs/gqlgen
-	go mod tidy
-
-.PHONY: templ
-templ: $(TMPL)
-	go run -mod=mod github.com/a-h/templ/cmd/templ generate ./cmd
 	go mod tidy
 
 .PHONY: cli-command
